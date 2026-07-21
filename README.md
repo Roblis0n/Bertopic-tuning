@@ -255,6 +255,8 @@ The repository translates literature into mechanisms and testable hypotheses; it
 bertopic-tuning/
 ├── SKILL.md
 ├── README.md
+├── HANDOFF.md
+├── LICENSE
 ├── agents/
 │   └── openai.yaml
 ├── assets/
@@ -282,6 +284,10 @@ python -m unittest discover -s scripts/tests -v
 ```
 
 The current suite covers diversity evaluation, Pareto selection, snapshot alignment, and study-bundle validation.
+
+## Maintainer handoff
+
+To continue the project in a new Codex conversation, start with the current state, constraints, validation commands, and copy-ready opening prompt in [HANDOFF.md](HANDOFF.md).
 
 ## Scope
 
