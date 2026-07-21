@@ -1,6 +1,6 @@
 ---
 name: bertopic-tuning
-description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity optimization, short web or social-text modeling, long-document topic discovery, model comparison, topic stability, topic lineage, new-corpus updates, continuous iteration, Chinese-corpus analysis, or academically reproducible BERTopic reporting.
+description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity optimization, synonym or stopword management, custom/domain dictionaries, lexical representation iteration, short web or social-text modeling, long-document topic discovery, model comparison, topic stability, topic lineage, new-corpus updates, Chinese-corpus analysis, or academically reproducible BERTopic reporting.
 ---
 
 # BERTopic Tuning
@@ -48,6 +48,7 @@ Read when needed:
 
 - `references/iteration-and-lineage.md` for new data, retraining, merge/split or temporal comparison;
 - `references/bertopic-implementation.md` when implementing or reviewing Python/BERTopic code;
+- `references/lexicon-management-and-iteration.md` when adding synonyms, stopwords, custom/domain terms or iterating lexical representation from model results;
 - `references/web-research-protocol.md` when a decision depends on current papers, package/API behavior, encoder availability, a cited source, or an evidence gap.
 
 ## Required workflow
@@ -104,6 +105,17 @@ Keep representation fixed during this loop so structural effects remain identifi
 
 Freeze assignments, then compare tokenization, domain dictionaries, phrase vocabulary, document-frequency pruning, c-TF-IDF variants, frequent-term suppression, MMR/KeyBERTInspired and grounded labels. Use `update_topics()` for this layer. Recompute representation metrics, but retain the structural scorecard unchanged.
 
+For user-managed lexical resources:
+
+1. Copy `assets/lexicon-config.json`, `synonyms.csv`, `stopwords.csv` and `custom-terms.csv` into the study workspace.
+2. Record the tokenizer name and revision, keep source tables inside the lexicon bundle directory, then compile and validate them with `scripts/build_lexicon_bundle.py`; do not apply a bundle containing conflicts.
+3. Apply custom phrase protection, tokenization, synonym canonicalization and stopword filtering to `lexical_text` only.
+4. Refresh the representation with `update_topics()` and prove that unit assignments plus permanent and local topic IDs did not change.
+5. Run `scripts/evaluate_representation_update.py`, review every generated lexicon candidate, and record accepted, rejected or deferred decisions.
+6. Create a new content-addressed lexicon and representation snapshot only after the audit. Do not use generic `v1`/`v2` names.
+
+Treat custom terms as tokenizer/domain-phrase instructions. Do not pass them as a closed `CountVectorizer(vocabulary=...)` allowlist unless the study explicitly requires and validates a closed vocabulary as a separate analytical policy.
+
 ### 6. Run the taxonomy loop
 
 - Generate nearest-topic pairs from representative-unit topic embeddings and ranked-word overlap.
@@ -119,7 +131,7 @@ Create one scorecard per candidate using `references/diversity-evaluation.md`. I
 Run:
 
 ```text
-python scripts/evaluate_diversity.py --input <topics.json> --output <scorecard.json> --top-k <registered-k> --rbo-p <registered-p> [--semantic-redundancy-threshold <calibrated-value>]
+python scripts/evaluate_diversity.py --input <topics.json> --output <scorecard.json> --top-k <registered-k> --rbo-p <registered-p> [--semantic-redundancy-threshold <calibrated-value>] [--lexicon-manifest <frozen-manifest.json>]
 ```
 
 Select non-dominated candidates with declared objectives and constraints:
@@ -133,12 +145,13 @@ Inspect every finalist's representative, random and boundary units. Record why t
 ### 8. Iterate without losing history
 
 - Distinguish representation refresh, structural refit, taxonomy edit and new-data mapping.
+- Keep lexicon bundle lineage separate from topic lineage. A synonym, stopword or custom-term edit creates a representation candidate, not a new structural model.
 - Freeze permanent `topic_uid` values outside BERTopic's local integer IDs.
 - Use a frozen reference encoder or shared anchor units when embedding spaces change.
 - Calibrate alignment thresholds locally and run:
 
 ```text
-python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json> --thresholds <calibrated-thresholds.json> [--keyword-rbo-p <registered-p-when-keyword-gate-is-used>] --output <alignment.json>
+python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json> --thresholds <calibrated-thresholds.json> [--keyword-rbo-p <registered-p-when-keyword-gate-is-used>] [--lexicon-manifest <frozen-manifest.json>] --output <alignment.json>
 ```
 
 - Treat one-to-many and many-to-one results as split/merge candidates requiring evidence and human review.
@@ -146,7 +159,7 @@ python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json
 
 ### 9. Complete the research bundle
 
-Populate all templates in `assets/`: study contract, corpus profile, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report.
+Populate all core templates in `assets/`: study contract, corpus profile, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
 
 Validate before claiming completion:
 
@@ -167,6 +180,7 @@ Lead with the selected route and substantive model decision. Report:
 4. which thresholds were locally calibrated and how;
 5. strongest counter-evidence and failure modes;
 6. topic merges, splits, new themes and retirements;
-7. reproducible artifact paths and validation results.
+7. lexicon bundle changes, frozen-assignment evidence and unresolved term decisions when enabled;
+8. reproducible artifact paths and validation results.
 
 Do not present paper-derived numbers as universal recommendations. Do not describe a representation-only refresh as a new structural model. Do not claim that low outlier rate proves high-quality topic diversity.

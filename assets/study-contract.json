@@ -65,6 +65,15 @@
   "parent_document_id_field": "",
   "overlap_accounting": "",
   "aggregation_policy": "",
+  "lexicon_policy": {
+    "enabled": false,
+    "apply_to": "lexical_text",
+    "bundle_manifest": "lexicon-manifest.json",
+    "candidate_generation_rule": "",
+    "stop_rule": "",
+    "assignment_invariant_required": true,
+    "human_review_required": true
+  },
   "selection_policy": "pareto",
   "outlier_role": "diagnostic_guardrail_only",
   "metric_contract": {

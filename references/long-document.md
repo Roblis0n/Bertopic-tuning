@@ -133,6 +133,8 @@ Compute effective document theme count, (\exp(H(p(t\mid d)))), only as a diagnos
 
 Use the chunk body for c-TF-IDF, with domain phrase handling and lexical normalization. Use heading context for semantic interpretation when justified.
 
+When a user-managed lexicon bundle is enabled, protect domain phrases in chunk bodies without repeating headings into the lexical view. Compile and apply the same content-addressed bundle to every chunk, then prove that chunk assignments and permanent topic IDs remain unchanged. Audit stopword, synonym and custom-term effects across independent parent documents rather than treating repeated chunks from one document as independent evidence.
+
 Maintain at least two declared levels when the research purpose needs both:
 
 - fine chunk themes for retrieval and evidence tracing;
@@ -198,6 +200,8 @@ Trigger a shadow refit when new documents contain validated missing themes, exis
 
 Use a global taxonomy for time comparison and apply topics-over-time or document-level prevalence aggregation. Independent yearly models cannot be compared by local topic number.
 
+Maintain lexicon bundle lineage when terminology changes. A lexical refresh does not change the chunk-policy or corpus fingerprint; applying a term rule to embedding text does and must enter the structural loop. Review missing protected terms and residual aliases against section headings, original offsets and parent-document diversity of support.
+
 ## Required outputs
 
 - chunking-policy comparison and tokenizer-limit audit;
@@ -207,6 +211,7 @@ Use a global taxonomy for time comparison and apply topics-over-time or document
 - parent-theme hierarchy and level-specific metrics;
 - document-topic distribution with evidence links;
 - document-level bootstrap stability;
+- compiled lexicon bundle, parent-document-stratified candidate audit and frozen-assignment comparison when enabled;
 - missing-theme audit;
 - snapshot and chunk-policy lineage.
 

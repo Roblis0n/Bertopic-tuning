@@ -1,0 +1,2 @@
+snapshot_id,sample_group,unit_id,reference_theme,matched_topic_uid,coverage_status,evidence,reviewer
+structure-fixture,time-holdout,u-1,消费券,T-001,covered,u-1,reviewer-1

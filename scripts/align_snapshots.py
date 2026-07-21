@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from evaluate_diversity import _cosine, _normalize_keyword, _rbo
+from lexicon_tools import validate_lexicon_manifest
 
 
 def _hungarian_maximize(scores: list[list[float]]) -> list[tuple[int, int]]:
@@ -89,15 +90,29 @@ def _keyword_rbo(
     new_topic: dict[str, Any],
     *,
     p: float,
+    aliases: dict[str, str] | None = None,
+    excluded: set[str] | None = None,
 ) -> float | None:
-    old_keywords = [
-        _normalize_keyword(value) for value in old_topic.get("keywords", [])
-    ]
-    new_keywords = [
-        _normalize_keyword(value) for value in new_topic.get("keywords", [])
-    ]
-    old_keywords = [value for value in old_keywords if value]
-    new_keywords = [value for value in new_keywords if value]
+    normalized_aliases = {
+        _normalize_keyword(key): _normalize_keyword(value)
+        for key, value in (aliases or {}).items()
+    }
+    normalized_excluded = {_normalize_keyword(value) for value in (excluded or set())}
+
+    def normalize(values: list[Any]) -> list[str]:
+        result: list[str] = []
+        seen: set[str] = set()
+        for value in values:
+            term = _normalize_keyword(value)
+            term = normalized_aliases.get(term, term)
+            if not term or term in normalized_excluded or term in seen:
+                continue
+            seen.add(term)
+            result.append(term)
+        return result
+
+    old_keywords = normalize(old_topic.get("keywords", []))
+    new_keywords = normalize(new_topic.get("keywords", []))
     if not old_keywords or not new_keywords:
         return None
     depth = max(len(old_keywords), len(new_keywords))
@@ -136,6 +151,8 @@ def align_snapshots(
     *,
     thresholds: dict[str, float],
     keyword_rbo_p: float | None = None,
+    keyword_aliases: dict[str, str] | None = None,
+    excluded_keywords: set[str] | None = None,
 ) -> dict[str, Any]:
     """Align two topic catalogs using explicit, validation-derived evidence gates."""
     if not old_topics or not new_topics:
@@ -175,10 +192,26 @@ def align_snapshots(
                 raise ValueError(f"New topic {new_ids[new_index]} lacks an embedding")
             semantic = _cosine(old_topic["embedding"], new_topic["embedding"])
             semantic_row.append(semantic)
-            keyword = (
+            keyword_surface = (
                 _keyword_rbo(old_topic, new_topic, p=float(keyword_rbo_p))
                 if keyword_rbo_p is not None
                 else None
+            )
+            keyword_canonical = (
+                _keyword_rbo(
+                    old_topic,
+                    new_topic,
+                    p=float(keyword_rbo_p),
+                    aliases=keyword_aliases,
+                    excluded=excluded_keywords,
+                )
+                if keyword_rbo_p is not None
+                else None
+            )
+            keyword = (
+                keyword_canonical
+                if keyword_aliases or excluded_keywords
+                else keyword_surface
             )
             document = _document_jaccard(old_topic, new_topic)
             evidence = {
@@ -186,6 +219,8 @@ def align_snapshots(
                 "new_topic_uid": new_ids[new_index],
                 "semantic_similarity": semantic,
                 "keyword_rbo": keyword,
+                "keyword_rbo_surface": keyword_surface,
+                "keyword_rbo_canonical": keyword_canonical,
                 "document_jaccard": document,
             }
             evidence["qualifies"] = _qualifies(evidence, thresholds)
@@ -243,6 +278,7 @@ def align_snapshots(
     return {
         "thresholds": {name: float(value) for name, value in thresholds.items()},
         "keyword_rbo_p": keyword_rbo_p,
+        "keyword_normalization_applied": bool(keyword_aliases or excluded_keywords),
         "continuity": continuity,
         "provisional_one_to_one_matches": provisional_matches,
         "split_candidates": split_candidates,
@@ -282,6 +318,11 @@ def _parse_args() -> argparse.Namespace:
         type=float,
         help="Required only when the threshold file includes a keyword gate",
     )
+    parser.add_argument(
+        "--lexicon-manifest",
+        type=Path,
+        help="Optional compiled lexicon manifest for canonical keyword evidence",
+    )
     parser.add_argument("--output", required=True, type=Path)
     return parser.parse_args()
 
@@ -291,11 +332,23 @@ def main() -> int:
     thresholds = json.loads(args.thresholds.read_text(encoding="utf-8"))
     if not isinstance(thresholds, dict):
         raise ValueError("Threshold file must contain a JSON object")
+    keyword_aliases: dict[str, str] | None = None
+    excluded_keywords: set[str] | None = None
+    if args.lexicon_manifest:
+        manifest = json.loads(args.lexicon_manifest.read_text(encoding="utf-8-sig"))
+        validate_lexicon_manifest(manifest)
+        keyword_aliases = dict(manifest.get("synonym_map", {}))
+        excluded_keywords = {
+            str(item.get("term", "") if isinstance(item, dict) else item)
+            for item in manifest.get("stopwords", [])
+        }
     result = align_snapshots(
         _load_topics(args.old),
         _load_topics(args.new),
         thresholds=thresholds,
         keyword_rbo_p=args.keyword_rbo_p,
+        keyword_aliases=keyword_aliases,
+        excluded_keywords=excluded_keywords,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(

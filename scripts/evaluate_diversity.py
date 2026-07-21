@@ -15,6 +15,8 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, Iterable
 
+from lexicon_tools import validate_lexicon_manifest
+
 
 def _normalize_keyword(value: Any) -> str:
     return " ".join(str(value).strip().casefold().split())
@@ -86,6 +88,8 @@ def evaluate_topics(
     top_k: int,
     rbo_p: float,
     semantic_redundancy_threshold: float | None = None,
+    keyword_aliases: dict[str, str] | None = None,
+    excluded_keywords: set[str] | None = None,
 ) -> dict[str, Any]:
     """Compute a diversity scorecard without collapsing it into one scalar."""
     if top_k < 1:
@@ -201,7 +205,7 @@ def evaluate_topics(
     pairwise_irbo.sort(key=lambda row: row["rbo"], reverse=True)
     pairwise_semantic.sort(key=lambda row: row["cosine_similarity"], reverse=True)
 
-    return {
+    result = {
         "topic_count": len(topics),
         "top_k": top_k,
         "rbo_p": rbo_p,
@@ -216,6 +220,31 @@ def evaluate_topics(
         "most_semantically_similar_pairs": pairwise_semantic[:20],
         "warnings": warnings,
     }
+    if keyword_aliases is not None or excluded_keywords is not None:
+        aliases = {
+            _normalize_keyword(key): _normalize_keyword(value)
+            for key, value in (keyword_aliases or {}).items()
+        }
+        excluded = {_normalize_keyword(value) for value in (excluded_keywords or set())}
+        concept_topics: list[dict[str, Any]] = []
+        for raw_topic in raw_topics:
+            seen: set[str] = set()
+            normalized_keywords: list[str] = []
+            for value in raw_topic.get("keywords", []):
+                term = _normalize_keyword(value)
+                term = aliases.get(term, term)
+                if not term or term in excluded or term in seen:
+                    continue
+                seen.add(term)
+                normalized_keywords.append(term)
+            concept_topics.append({**raw_topic, "keywords": normalized_keywords})
+        result["concept_normalized"] = evaluate_topics(
+            {**payload, "topics": concept_topics},
+            top_k=top_k,
+            rbo_p=rbo_p,
+            semantic_redundancy_threshold=semantic_redundancy_threshold,
+        )
+    return result
 
 
 def _parse_args() -> argparse.Namespace:
@@ -236,17 +265,34 @@ def _parse_args() -> argparse.Namespace:
         type=float,
         help="Optional validation-derived cosine threshold; no default is assumed",
     )
+    parser.add_argument(
+        "--lexicon-manifest",
+        type=Path,
+        help="Optional compiled lexicon manifest for an additional concept-normalized scorecard",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = _parse_args()
     payload = json.loads(args.input.read_text(encoding="utf-8"))
+    keyword_aliases: dict[str, str] | None = None
+    excluded_keywords: set[str] | None = None
+    if args.lexicon_manifest:
+        manifest = json.loads(args.lexicon_manifest.read_text(encoding="utf-8-sig"))
+        validate_lexicon_manifest(manifest)
+        keyword_aliases = dict(manifest.get("synonym_map", {}))
+        excluded_keywords = {
+            str(item.get("term", "") if isinstance(item, dict) else item)
+            for item in manifest.get("stopwords", [])
+        }
     result = evaluate_topics(
         payload,
         top_k=args.top_k,
         rbo_p=args.rbo_p,
         semantic_redundancy_threshold=args.semantic_redundancy_threshold,
+        keyword_aliases=keyword_aliases,
+        excluded_keywords=excluded_keywords,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(

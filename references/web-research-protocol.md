@@ -118,6 +118,7 @@ Before coding version-sensitive BERTopic behavior:
 - confirm persistence/serialization requirements;
 - verify encoder context length and prompt/prefix from the official model card;
 - record the checked versions and URLs.
+- verify current `CountVectorizer` tokenizer, stop-word and fixed-vocabulary semantics before changing the lexicon adapter.
 
 Package documentation supports what an API does, not whether that operation is scientifically valid for the corpus.
 

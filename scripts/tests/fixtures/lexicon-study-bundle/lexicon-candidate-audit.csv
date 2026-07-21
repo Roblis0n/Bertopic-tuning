@@ -1,0 +1,2 @@
+candidate_id,candidate_type,term,canonical_term,evidence,status,decision_reason,reviewer
+lexicon-candidate-0001,cross_topic_term,创新,,appears across fixture topics,rejected,term is substantively meaningful,reviewer-1

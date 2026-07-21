@@ -130,6 +130,28 @@ For Chinese vectorization:
 - preserve a mapping from normalized terms to display forms;
 - audit whether generic policy/platform words dominate c-TF-IDF.
 
+For user-managed lexical resources, compile the editable tables first and build the vectorizer through the reusable adapter:
+
+```python
+import json
+from pathlib import Path
+
+from lexicon_tools import build_count_vectorizer
+
+bundle = json.loads(Path("lexicon-manifest.json").read_text(encoding="utf-8"))
+vectorizer = build_count_vectorizer(
+    bundle,
+    base_tokenizer=domain_tokenizer,
+    ngram_range=registered_ngram_range,
+    min_df=locally_calibrated_min_df,
+)
+topic_model.update_topics(lexical_texts, vectorizer_model=vectorizer)
+```
+
+The adapter uses phrase protection, the declared tokenizer, synonym canonicalization and stopword filtering. It does not treat custom terms as `CountVectorizer(vocabulary=...)`; that parameter creates a closed allowlist and changes the meaning of corpus-derived vocabulary pruning.
+
+Immediately export assignments again and run `scripts/evaluate_representation_update.py`. Abort the representation workflow if any stable unit or topic identity changed.
+
 ## c-TF-IDF and topic representation
 
 Treat BM25 weighting, frequent-word reduction, n-grams and MMR as hypotheses. Compare them on label fit, within-topic keyword redundancy and stability. They are not substitutes for structural diversity evaluation.
@@ -209,6 +231,8 @@ Save or record:
 - external embedding model identifier/files;
 - preprocessing and segmentation code/config;
 - vectorizer vocabulary and tokenizer revision;
+- compiled lexicon bundle, source hashes and lexicon lineage when enabled;
+- before/after assignment fingerprint and representation comparison;
 - topic catalogs before and after reduction;
 - unit assignments and permanent-ID mapping;
 - environment/package report;

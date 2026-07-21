@@ -1,0 +1,2 @@
+snapshot_id,topic_uid,sample_type,unit_id,relevance,coherence,distinctiveness,label_fit,notes,reviewer
+structure-fixture,T-001,random,u-1,4,4,4,4,lexicon label fits,reviewer-1

@@ -23,6 +23,8 @@ Treat an operational BERTopic system as linked immutable snapshots, not as one m
 | taxonomy | hierarchy, audited merge/split decisions | changes canonical topic mapping |
 | lineage | permanent IDs and old-to-new relationships | no; documents change history |
 
+Keep lexicon lineage alongside this snapshot model. Each compiled synonym/stopword/custom-term bundle has a content-derived ID, optional parent bundle, source hashes and human decisions. Lexicon lineage documents representation inputs; it does not replace topic lineage or authorize topic identity changes.
+
 Give each snapshot a stable descriptive ID containing date/time or a content hash. Do not use ambiguous labels such as “final”, “latest”, or generic v1/v2.
 
 Keep BERTopic's local integer topic ID separate from a permanent `topic_uid`. Never reuse a retired permanent ID for an unrelated theme.
@@ -45,6 +47,9 @@ Required proof:
 - structural assignments and permanent IDs are unchanged;
 - label/keyword relevance improves on held-out audit units;
 - historical and current wording are both preserved when temporal interpretation matters.
+- the selected lexicon bundle and representation snapshot are recorded;
+- before/after assignment fingerprints match exactly;
+- every model-derived lexicon candidate has an accepted, rejected or deferred disposition.
 
 Do not call this a structural retrain.
 
@@ -201,6 +206,8 @@ Never overwrite historical document assignments. Store at least:
 - representation snapshot ID;
 - lineage snapshot ID;
 - assignment probability/distance when available.
+
+Never overwrite historical lexicon bundles either. Store the bundle used for each representation snapshot, the accepted/rejected term decisions, and a rollback pointer to the prior representation. Use `assets/lexicon-lineage.csv` for the resource history and `assets/topic-lineage.csv` for substantive topic continuity.
 
 ## Monitoring after release
 

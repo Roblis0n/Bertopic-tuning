@@ -12,6 +12,7 @@ The central objective is **effective thematic diversity**: distinct, well-covere
 - Corpus-derived tuning decisions instead of universal parameter grids copied from papers or examples.
 - Pareto-based model selection with explicit quality constraints.
 - Topic alignment and lineage tracking across corpus or model updates.
+- User-managed synonym, stopword and custom/domain-term bundles with frozen-assignment representation iteration.
 - Portable command-line tools, study templates, tests, and research-oriented reporting guidance.
 - An academic evidence map and a protocol for verifying current papers, software behavior, and model availability.
 
@@ -129,7 +130,7 @@ plan for future corpus updates.
 2. **Create a study contract** defining the research claim, modeling route, meaningful theme size, evaluation dimensions, calibration rules, and stopping criteria.
 3. **Fit an auditable baseline** with cached embeddings and fixed evaluation samples.
 4. **Tune structure** through testable hypotheses about the encoder, UMAP, HDBSCAN, granularity, seeds, and resamples.
-5. **Tune representation** while assignments remain fixed: tokenization, phrases, c-TF-IDF variants, frequent-term suppression, MMR, and grounded labels.
+5. **Tune representation** while assignments remain fixed: tokenization, phrases, user-managed lexicon bundles, c-TF-IDF variants, frequent-term suppression, MMR, and grounded labels.
 6. **Audit the taxonomy** before any merge or split, using nearest-topic pairs and representative evidence.
 7. **Select on a Pareto frontier** under explicit coherence, coverage, stability, and labelability constraints.
 8. **Track iteration and lineage** with permanent topic UIDs and calibrated snapshot alignment.
@@ -139,7 +140,7 @@ The detailed operating procedure is in [SKILL.md](SKILL.md).
 
 ## Included command-line tools
 
-The helper scripts use only the Python standard library. They evaluate exported model artifacts; they do not impose a BERTopic version, encoder, or universal tuning grid.
+The portable command-line tools use only the Python standard library. The optional `build_count_vectorizer()` adapter imports scikit-learn only inside the user's modeling environment. The repository does not impose a BERTopic version, encoder, tokenizer or universal tuning grid.
 
 | Tool | Purpose |
 |---|---|
@@ -147,6 +148,8 @@ The helper scripts use only the Python standard library. They evaluate exported 
 | `scripts/select_pareto.py` | Filters candidates by explicit constraints and returns the non-dominated model set |
 | `scripts/align_snapshots.py` | Aligns old and new topic snapshots using locally calibrated semantic, keyword, and document evidence |
 | `scripts/validate_study_bundle.py` | Checks whether the required research artifacts and decisions are complete |
+| `scripts/build_lexicon_bundle.py` | Validates editable synonym, stopword and custom-term tables and compiles a content-addressed manifest |
+| `scripts/evaluate_representation_update.py` | Proves assignments stayed frozen and compares surface/concept lexical evidence before and after a lexicon refresh |
 
 ### Evaluate diversity
 
@@ -210,6 +213,37 @@ One-to-many and many-to-one matches are split and merge candidates requiring evi
 python scripts/validate_study_bundle.py <study-bundle-directory>
 ```
 
+### Compile and iterate user lexicons
+
+Copy `lexicon-config.json`, `synonyms.csv`, `stopwords.csv` and `custom-terms.csv` from `assets/`, edit ordinary UTF-8 CSV/JSON files, then compile them:
+
+```bash
+python scripts/build_lexicon_bundle.py \
+  --config study/lexicon-config.json \
+  --output study/lexicon-manifest.json
+```
+
+Fill the tokenizer `name` and `revision` before compiling, and keep all three CSV source tables inside the study's lexicon directory. The compiler rejects unidentified tokenizers, paths that escape the bundle, conflicts, cycles, and incomplete active-row evidence; the study-bundle validator rejects stale or tampered manifests.
+
+Apply the compiled bundle to the lexical tokenizer and refresh topics with BERTopic's `update_topics()`. Then prove that assignments stayed unchanged and generate the next review queue:
+
+```bash
+python scripts/evaluate_representation_update.py \
+  --before-topics study/baseline-topics.json \
+  --after-topics study/candidate-topics.json \
+  --before-assignments study/baseline-assignments.csv \
+  --after-assignments study/candidate-assignments.csv \
+  --lexicon-manifest study/lexicon-manifest.json \
+  --top-k <registered-keyword-depth> \
+  --rbo-p <registered-rank-persistence> \
+  --output study/representation-comparison.json \
+  --candidate-output study/lexicon-candidate-audit.csv
+```
+
+Custom terms protect tokenizer phrases; they are not passed as a closed `CountVectorizer(vocabulary=...)` allowlist. Review every generated candidate before changing a source table. See [references/lexicon-management-and-iteration.md](references/lexicon-management-and-iteration.md).
+
+Assignment exports use `unit_id` plus `topic_uid` (preferred) or `topic_id`. The evaluator rejects changed assignments, changed permanent or local topic IDs, and assignment IDs absent from the topic catalog; `-1` remains the permitted outlier assignment.
+
 ## Study templates
 
 The `assets/` directory contains reusable artifacts for a reproducible study:
@@ -226,6 +260,8 @@ The `assets/` directory contains reusable artifacts for a reproducible study:
 - `topic-lineage.csv`
 - `evidence-log.csv`
 - `decision-report.md`
+- `lexicon-config.json`, `synonyms.csv`, `stopwords.csv`, `custom-terms.csv`
+- `lexicon-candidate-audit.csv`, `lexicon-lineage.csv`, `representation-iteration.csv`
 
 Copy these templates into the analysis workspace and complete them with corpus-specific evidence. A header-only template or an unexplained threshold is not a finished artifact.
 
@@ -237,6 +273,8 @@ The skill distinguishes four kinds of change:
 - **Structural refit:** embeddings or clustering change topic membership.
 - **Taxonomy edit:** reviewed topics are merged, split, renamed, or retired.
 - **New-data mapping:** new units are mapped into a frozen reference taxonomy before deciding whether retraining is necessary.
+
+A synonym, stopword or custom-term edit is a representation refresh when it affects `lexical_text` only. Each compiled bundle receives a content-derived ID and separate lexicon lineage. If the edit touches embedding text or changes assignments, it becomes a structural refit candidate.
 
 Permanent `topic_uid` values are kept separate from BERTopic's local integer IDs. Each update records continuations, new topics, retirements, merges, splits, unresolved mappings, and the evidence behind those decisions. See [references/iteration-and-lineage.md](references/iteration-and-lineage.md).
 
@@ -265,10 +303,13 @@ bertopic-tuning/
 │   ├── network-short-text.md
 │   ├── long-document.md
 │   ├── diversity-evaluation.md
+│   ├── lexicon-management-and-iteration.md
 │   ├── iteration-and-lineage.md
 │   └── research, implementation, and reporting guidance
 └── scripts/
     ├── evaluate_diversity.py
+    ├── build_lexicon_bundle.py
+    ├── evaluate_representation_update.py
     ├── select_pareto.py
     ├── align_snapshots.py
     ├── validate_study_bundle.py

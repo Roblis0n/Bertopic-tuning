@@ -1,0 +1,37 @@
+{
+  "study_id": "lexicon-fixture",
+  "route": "network-short",
+  "research_question": "验证词表刷新能否改善主题表示而不改变分配",
+  "analysis_unit": "post",
+  "diversity_definition": ["lexical", "semantic", "coverage", "stability"],
+  "minimum_meaningful_theme": {"basis": "domain_review", "value": "documented"},
+  "calibration_plan": {
+    "unjustified_value_token": "pending_local_calibration",
+    "candidate_generation_policy": "adaptive-local-evidence",
+    "stop_rule_required": true,
+    "thresholds": [
+      {
+        "name": "labelability_floor",
+        "status": "calibrated",
+        "evidence_basis": "held-out topic audit",
+        "candidate_generation_rule": "review every model-derived lexicon diagnostic",
+        "stop_rule": "stop after every candidate has a disposition",
+        "artifact": "human-topic-audit.csv"
+      }
+    ]
+  },
+  "validation_groups": ["account", "time"],
+  "embedding_context_policy": "unchanged during representation refresh",
+  "selection_policy": "pareto",
+  "outlier_role": "diagnostic_guardrail_only",
+  "paper_transfer_policy": "mechanisms-and-local-tests-not-parameters",
+  "lexicon_policy": {
+    "enabled": true,
+    "apply_to": "lexical_text",
+    "bundle_manifest": "lexicon-manifest.json",
+    "candidate_generation_rule": "rank every cross-topic term and unresolved lexicon diagnostic for review",
+    "stop_rule": "stop when every generated candidate has an accepted, rejected, or deferred disposition",
+    "assignment_invariant_required": true,
+    "human_review_required": true
+  }
+}

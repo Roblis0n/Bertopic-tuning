@@ -1,0 +1,2 @@
+snapshot_id,topic_uid_a,topic_uid_b,lexical_overlap,semantic_similarity,definition_distinction,merge_decision,evidence,reviewer
+structure-fixture,T-001,T-002,0.2,0.2,distinct,keep_separate,pair-packet,reviewer-1

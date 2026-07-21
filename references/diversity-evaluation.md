@@ -52,6 +52,17 @@ Use rank-biased overlap (RBO) for each topic pair and report inverse RBO (IRBO) 
 
 Pairwise means can hide a few near-duplicate topics, so always inspect the upper tail of overlap.
 
+### Surface and concept-normalized lexical evidence
+
+When candidates use different synonym, stopword or custom-term resources, report two lexical views:
+
+- **surface** TD/IRBO from the exported ranked terms;
+- **concept-normalized** TD/IRBO after applying one frozen, independently audited synonym map and exclusion list to every candidate.
+
+Do not score each candidate with its own private normalization map; that makes the measurement move with the intervention. Preserve both views because surface readability and conceptual redundancy answer different questions. A decrease in concept-normalized diversity can reveal that apparent topic variety was only synonym fragmentation, while an increase in surface diversity can still be useful for communication.
+
+Also report stopword leakage, residual synonym variants and protected-term recovery. These are representation diagnostics, not evidence that cluster assignments, semantic coverage or structural stability improved.
+
 ## Semantic metrics
 
 Create topic embeddings from representative-unit embeddings or a robust topic medoid/centroid. Keep the reference encoder fixed when comparing snapshots. Top-word embeddings alone can measure the representation rather than the underlying assigned content.
@@ -236,6 +247,8 @@ Run `scripts/evaluate_diversity.py` for portable lexical/semantic metrics and `s
 | coherence high, coverage low | broad common themes dominate | inspect missing themes; protect rare support and revise units |
 | diversity high, stability low | microcluster fragmentation | raise evidence support or favor reproducible hierarchy |
 | labels diverse, assignments identical | representation-only cosmetic change | report as label improvement, not structural gain |
+| surface TD rises, concept-normalized TD does not | synonym or spelling substitution | inspect the frozen lexicon map and topic-pair evidence |
+| stopword leakage falls, rare-theme label fit falls | substantive term removed as generic | restore the term and stratify its support |
 | coverage high, distinctiveness low | forced assignment or over-broad clusters | restore density boundaries; audit assigned fringe units |
 | stable topics follow source/account | leakage or corpus confounding | group validation and artifact removal |
 | long-document stability high only by chunk bootstrap | parent-document leakage | repeat bootstrap by parent document |

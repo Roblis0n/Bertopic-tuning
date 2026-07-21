@@ -1,0 +1,2 @@
+candidate_id,topic_count,td,irbo,semantic_diversity,coverage,stability,coherence,human_labelability,outlier_fraction
+R-LEX,2,0.8,0.7,0.6,0.8,0.9,0.7,0.9,0.1

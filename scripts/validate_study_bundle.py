@@ -9,6 +9,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from lexicon_tools import compile_lexicon_bundle
+
 
 REQUIRED_FILES = {
     "study-contract.json",
@@ -23,6 +25,17 @@ REQUIRED_FILES = {
     "missing-theme-audit.csv",
     "evidence-log.csv",
     "decision-report.md",
+}
+
+LEXICON_REQUIRED_FILES = {
+    "lexicon-config.json",
+    "synonyms.csv",
+    "stopwords.csv",
+    "custom-terms.csv",
+    "lexicon-manifest.json",
+    "lexicon-candidate-audit.csv",
+    "lexicon-lineage.csv",
+    "representation-iteration.csv",
 }
 
 CORPUS_PROFILE_FIELDS = {
@@ -135,6 +148,41 @@ TABLE_FIELDS = {
         "scope_limit",
         "accessed_on",
     },
+    "lexicon-candidate-audit.csv": {
+        "candidate_id",
+        "candidate_type",
+        "term",
+        "canonical_term",
+        "evidence",
+        "status",
+        "decision_reason",
+        "reviewer",
+    },
+    "lexicon-lineage.csv": {
+        "old_bundle_id",
+        "new_bundle_id",
+        "change_type",
+        "term",
+        "canonical_term",
+        "evidence",
+        "human_decision",
+        "decision_reason",
+        "effective_at",
+    },
+    "representation-iteration.csv": {
+        "candidate_id",
+        "parent_representation_snapshot_id",
+        "representation_snapshot_id",
+        "lexicon_bundle_id",
+        "assignment_fingerprint",
+        "assignment_unchanged",
+        "surface_scorecard",
+        "concept_scorecard",
+        "human_labelability",
+        "pareto_status",
+        "decision",
+        "decision_reason",
+    },
 }
 
 NONEMPTY_TABLES = {
@@ -229,6 +277,183 @@ def validate_parameter_governance(contract: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _is_true(value: Any) -> bool:
+    return value is True or str(value).strip().casefold() in {"true", "1", "yes"}
+
+
+def validate_lexicon_governance(
+    contract: dict[str, Any],
+    manifest: dict[str, Any] | None,
+    iteration_rows: list[dict[str, Any]],
+    registry_rows: list[dict[str, Any]] | None = None,
+) -> list[str]:
+    """Validate optional lexicon governance without treating it as structural tuning."""
+    policy = contract.get("lexicon_policy")
+    if not isinstance(policy, dict) or not policy.get("enabled"):
+        return []
+
+    errors: list[str] = []
+    required_policy_fields = {
+        "apply_to",
+        "bundle_manifest",
+        "candidate_generation_rule",
+        "stop_rule",
+        "assignment_invariant_required",
+        "human_review_required",
+    }
+    for field in sorted(required_policy_fields):
+        if field not in policy or policy.get(field) in (None, ""):
+            errors.append(f"lexicon_policy lacks required field: {field}")
+    if policy.get("apply_to") != "lexical_text":
+        errors.append("lexicon_policy.apply_to must be lexical_text")
+    if policy.get("assignment_invariant_required") is not True:
+        errors.append("lexicon_policy.assignment_invariant_required must be true")
+    if policy.get("human_review_required") is not True:
+        errors.append("lexicon_policy.human_review_required must be true")
+    if policy.get("bundle_manifest") != "lexicon-manifest.json":
+        errors.append("lexicon_policy.bundle_manifest must be lexicon-manifest.json")
+
+    if not isinstance(manifest, dict):
+        errors.append("lexicon-manifest.json must contain a JSON object")
+    else:
+        if manifest.get("apply_to") != "lexical_text":
+            errors.append("lexicon-manifest.json apply_to must be lexical_text")
+        if not str(manifest.get("bundle_id", "")).strip():
+            errors.append("lexicon-manifest.json must contain bundle_id")
+        if not str(manifest.get("content_sha256", "")).strip():
+            errors.append("lexicon-manifest.json must contain content_sha256")
+        if manifest.get("conflicts") not in ([], None):
+            errors.append("lexicon-manifest.json contains unresolved conflicts")
+
+    current_bundle_id = (
+        str(manifest.get("bundle_id", "")).strip()
+        if isinstance(manifest, dict)
+        else ""
+    )
+    if not iteration_rows:
+        errors.append("representation-iteration.csv must contain at least one completed refresh")
+    for index, row in enumerate(iteration_rows, start=2):
+        prefix = f"representation-iteration.csv row {index}"
+        for field in (
+            "candidate_id",
+            "representation_snapshot_id",
+            "lexicon_bundle_id",
+            "assignment_fingerprint",
+        ):
+            if not str(row.get(field, "")).strip():
+                errors.append(f"{prefix} lacks {field}")
+        if not _is_true(row.get("assignment_unchanged")):
+            errors.append(f"{prefix} assignment_unchanged must be true")
+    if current_bundle_id and not any(
+        str(row.get("lexicon_bundle_id", "")).strip() == current_bundle_id
+        for row in iteration_rows
+    ):
+        errors.append(
+            "representation-iteration.csv must contain the current lexicon bundle"
+        )
+
+    if registry_rows is not None:
+        representation_rows = [
+            row
+            for row in registry_rows
+            if str(row.get("run_type", "")).strip().casefold() == "representation"
+        ]
+        if not representation_rows:
+            errors.append(
+                "experiment-registry.csv must contain a representation run for the enabled lexicon policy"
+            )
+        for index, row in enumerate(representation_rows, start=2):
+            prefix = f"experiment-registry.csv representation row {index}"
+            for field in (
+                "candidate_id",
+                "representation_snapshot_id",
+                "lexicon_bundle_id",
+                "assignment_fingerprint",
+            ):
+                if not str(row.get(field, "")).strip():
+                    errors.append(f"{prefix} lacks {field}")
+        registry_links = {
+            (
+                str(row.get("candidate_id", "")).strip(),
+                str(row.get("representation_snapshot_id", "")).strip(),
+                str(row.get("lexicon_bundle_id", "")).strip(),
+                str(row.get("assignment_fingerprint", "")).strip(),
+            )
+            for row in representation_rows
+        }
+        for index, row in enumerate(iteration_rows, start=2):
+            link = (
+                str(row.get("candidate_id", "")).strip(),
+                str(row.get("representation_snapshot_id", "")).strip(),
+                str(row.get("lexicon_bundle_id", "")).strip(),
+                str(row.get("assignment_fingerprint", "")).strip(),
+            )
+            if all(link) and link not in registry_links:
+                errors.append(
+                    f"representation-iteration.csv row {index} has no matching representation registry row"
+                )
+        if current_bundle_id and not any(
+            str(row.get("lexicon_bundle_id", "")).strip() == current_bundle_id
+            for row in representation_rows
+        ):
+            errors.append(
+                "experiment-registry.csv must link the current lexicon bundle to a representation run"
+            )
+    return errors
+
+
+def validate_lexicon_sources(
+    root: Path, manifest: dict[str, Any] | None
+) -> list[str]:
+    """Recompile editable lexicon sources and verify that the manifest is current."""
+    root = Path(root)
+    if not isinstance(manifest, dict):
+        return ["Cannot validate lexicon sources without a valid manifest"]
+    config_path = root / "lexicon-config.json"
+    if not config_path.is_file():
+        return ["Cannot validate lexicon sources: lexicon-config.json is missing"]
+    try:
+        compiled = compile_lexicon_bundle(config_path)
+    except ValueError as exc:
+        return [f"Cannot compile lexicon source tables: {exc}"]
+    errors: list[str] = []
+    controlled_fields = (
+        "schema_version",
+        "bundle_name",
+        "parent_bundle_id",
+        "apply_to",
+        "normalization",
+        "tokenizer",
+        "synonyms",
+        "stopwords",
+        "custom_terms",
+        "bundle_id",
+        "content_sha256",
+        "synonym_map",
+        "counts",
+        "conflicts",
+    )
+    for field in controlled_fields:
+        if compiled.get(field) != manifest.get(field):
+            errors.append(
+                f"lexicon-manifest.json {field} does not match the editable source tables"
+            )
+    compiled_sources = {
+        (row.get("kind"), row.get("path")): row.get("sha256")
+        for row in compiled.get("source_files", [])
+    }
+    manifest_sources = {
+        (row.get("kind"), row.get("path")): row.get("sha256")
+        for row in manifest.get("source_files", [])
+        if isinstance(row, dict)
+    }
+    if compiled_sources != manifest_sources:
+        errors.append(
+            "lexicon-manifest.json source file hashes do not match the editable source tables"
+        )
+    return errors
+
+
 def validate_bundle(root: Path) -> dict[str, Any]:
     """Return a machine-readable audit of a study bundle."""
     root = Path(root)
@@ -296,6 +521,17 @@ def validate_bundle(root: Path) -> dict[str, Any]:
         elif loaded is not None:
             errors.append("study-contract.json must contain a JSON object")
 
+    lexicon_enabled = bool(
+        contract
+        and isinstance(contract.get("lexicon_policy"), dict)
+        and contract["lexicon_policy"].get("enabled")
+    )
+    if lexicon_enabled:
+        missing_lexicon = sorted(
+            name for name in LEXICON_REQUIRED_FILES if not (root / name).is_file()
+        )
+        errors.extend(f"Missing required file: {name}" for name in missing_lexicon)
+
     profile_path = root / "corpus-profile.json"
     if profile_path.is_file():
         loaded = _read_json(profile_path, errors)
@@ -319,6 +555,42 @@ def validate_bundle(root: Path) -> dict[str, Any]:
         errors.extend(f"{name} lacks required column: {field}" for field in missing_columns)
         if name in NONEMPTY_TABLES and not rows:
             errors.append(f"{name} must contain at least one evidence row")
+
+    lexicon_manifest: dict[str, Any] | None = None
+    lexicon_manifest_path = root / "lexicon-manifest.json"
+    if lexicon_manifest_path.is_file():
+        loaded = _read_json(lexicon_manifest_path, errors)
+        if isinstance(loaded, dict):
+            lexicon_manifest = loaded
+        elif loaded is not None:
+            errors.append("lexicon-manifest.json must contain a JSON object")
+    if contract:
+        errors.extend(
+            validate_lexicon_governance(
+                contract,
+                lexicon_manifest,
+                tables.get("representation-iteration.csv", []),
+                tables.get("experiment-registry.csv", []),
+            )
+        )
+    if lexicon_enabled:
+        errors.extend(validate_lexicon_sources(root, lexicon_manifest))
+
+    if lexicon_enabled:
+        allowed_candidate_statuses = {"accepted", "rejected", "deferred"}
+        for index, row in enumerate(
+            tables.get("lexicon-candidate-audit.csv", []), start=2
+        ):
+            status = str(row.get("status", "")).strip().casefold()
+            if status not in allowed_candidate_statuses:
+                errors.append(
+                    f"lexicon-candidate-audit.csv row {index} status must be accepted, rejected, or deferred"
+                )
+            for field in ("decision_reason", "reviewer"):
+                if not str(row.get(field, "")).strip():
+                    errors.append(
+                        f"lexicon-candidate-audit.csv row {index} lacks {field}"
+                    )
 
     selected_model: dict[str, Any] | None = None
     selected_path = root / "selected-model.json"

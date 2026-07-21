@@ -24,6 +24,10 @@ Summarize embedding, UMAP and clustering hypotheses, controlled comparisons and 
 
 Summarize lexical/c-TF-IDF/keyword/label changes and confirm whether assignments remained unchanged.
 
+## Lexicon resources and representation iteration
+
+Link the compiled lexicon bundle, list accepted/rejected/deferred synonym, stopword and custom-term candidates, report the frozen assignment fingerprint, compare surface and concept-normalized lexical metrics, and state the stop rule and rollback decision.
+
 ## Taxonomy experiments
 
 Report hierarchy, merge and split candidates with nearest-topic evidence and human decisions.

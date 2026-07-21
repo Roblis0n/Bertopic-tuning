@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "bundle_name": "fixture lexicon",
+  "parent_bundle_id": "",
+  "apply_to": "lexical_text",
+  "normalization": {
+    "unicode_form": null,
+    "casefold": false,
+    "collapse_whitespace": true
+  },
+  "tokenizer": {
+    "name": "fixture-tokenizer",
+    "revision": "fixture"
+  },
+  "synonyms": [
+    {
+      "variant": "AI",
+      "canonical_term": "人工智能",
+      "source": "domain-review",
+      "reason": "统一简称"
+    }
+  ],
+  "stopwords": [
+    {
+      "term": "的",
+      "source": "topic-audit",
+      "reason": "无主题信息"
+    }
+  ],
+  "custom_terms": [
+    {
+      "term": "消费券",
+      "display_form": "消费券",
+      "term_type": "domain_phrase",
+      "source": "domain-review",
+      "reason": "保护领域短语"
+    }
+  ],
+  "bundle_id": "lexicon-9da2001c0cdc444a",
+  "content_sha256": "9da2001c0cdc444a3ef9c35740c9f27c37d822fdc54304827cad2d5d6472d32f",
+  "synonym_map": {
+    "AI": "人工智能"
+  },
+  "source_files": [
+    {
+      "kind": "custom_terms",
+      "path": "custom-terms.csv",
+      "sha256": "76433c815134383a7928c33dbc125f2407ceabb45cae152434d1ed615af73bf1"
+    },
+    {
+      "kind": "stopwords",
+      "path": "stopwords.csv",
+      "sha256": "e8411333d3485ee4d996ab2ef2648bd60fc3dec4a938c2b0d9302eb096a5762e"
+    },
+    {
+      "kind": "synonyms",
+      "path": "synonyms.csv",
+      "sha256": "e51758d9f89df264ba1dd45d50da0b4ac3cc7f7a0588a770d92216de84d3a642"
+    }
+  ],
+  "counts": {
+    "synonyms": 1,
+    "stopwords": 1,
+    "custom_terms": 1
+  },
+  "conflicts": []
+}

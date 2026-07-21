@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "bundle_name": "fixture lexicon",
+  "parent_bundle_id": "",
+  "apply_to": "lexical_text",
+  "normalization": {
+    "unicode_form": null,
+    "casefold": false,
+    "collapse_whitespace": true
+  },
+  "tokenizer": {"name": "fixture-tokenizer", "revision": "fixture"},
+  "files": {
+    "synonyms": "synonyms.csv",
+    "stopwords": "stopwords.csv",
+    "custom_terms": "custom-terms.csv"
+  }
+}

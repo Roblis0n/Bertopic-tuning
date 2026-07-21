@@ -1,0 +1,2 @@
+snapshot_id,representation_snapshot_id,lexicon_bundle_id,topic_uid,local_topic_id,label,definition,inclusion,exclusion,size,representative_units,nearest_topic_uid,nearest_similarity,status
+structure-fixture,representation-lexicon-fixture,lexicon-9da2001c0cdc444a,T-001,0,消费券,消费券使用体验,消费券相关文本,无关补贴,2,u-1|u-2,T-002,0.2,active

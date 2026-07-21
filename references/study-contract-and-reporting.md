@@ -83,6 +83,19 @@ For `long-document`, record:
 
 For `mixed`, define `route_subsets` and whether taxonomies remain separate or are aligned.
 
+### Optional lexicon policy
+
+When synonym, stopword or custom-term resources are enabled, complete `lexicon_policy` with:
+
+- `apply_to: lexical_text`;
+- the expected `lexicon-manifest.json` path;
+- a model-result candidate-generation rule;
+- a locally justified iteration stop rule;
+- `assignment_invariant_required: true`;
+- the human review and adjudication policy.
+
+Applying the same resources to embedding text is outside this policy and requires a structural candidate.
+
 ## Corpus fingerprint
 
 Create `corpus-profile.json` or an equivalent immutable record containing:
@@ -234,6 +247,14 @@ Also retain when permitted:
 - human/LLM prompts and raw audit outputs;
 - previous production snapshot and rollback instructions.
 
+When lexical resources are enabled, also retain:
+
+- `lexicon-manifest.json` and its editable source tables;
+- `lexicon-candidate-audit.csv`;
+- `lexicon-lineage.csv`;
+- `representation-iteration.csv`;
+- the before/after topic and assignment exports used by the comparison tool.
+
 If the corpus cannot be shared, release an ethical, privacy-preserving replication package containing schemas, hashes, preprocessing rules, topic-term information, aggregate metrics and synthetic/test fixtures where possible.
 
 ## Completion audit
@@ -251,6 +272,7 @@ Then verify manually:
 - every threshold has a local calibration source;
 - no paper parameter was copied as a default;
 - representation-only changes are labeled correctly;
+- enabled lexicon resources have no unresolved conflicts, all candidates have dispositions and assignment fingerprints match;
 - nearest-topic pairs and missing themes were audited;
 - long-text bootstrap uses parent documents;
 - network-text bootstrap respects duplicate/source dependence;

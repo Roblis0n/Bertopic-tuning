@@ -180,6 +180,8 @@ Use official documentation for current API behavior; verify the installed BERTop
 
 Documentation explains API behavior, not scholarly validity. Do not treat a library default as an evidence-backed research threshold.
 
+For lexical-resource work, the transferable implementation fact is that a custom vectorizer can refresh c-TF-IDF topic representations through `update_topics()` without refitting clusters. The scientific validity of a synonym, stopword or custom-term decision still requires target-corpus evidence, a frozen assignment check and human audit. A fixed `CountVectorizer` vocabulary is an allowlist, not a synonym or tokenizer dictionary.
+
 ## Citation integrity protocol
 
 Before citing a source in a new report:

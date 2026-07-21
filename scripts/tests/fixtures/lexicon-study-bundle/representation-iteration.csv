@@ -1,0 +1,2 @@
+candidate_id,parent_representation_snapshot_id,representation_snapshot_id,lexicon_bundle_id,assignment_fingerprint,assignment_unchanged,surface_scorecard,concept_scorecard,human_labelability,pareto_status,decision,decision_reason
+R-LEX,representation-baseline,representation-lexicon-fixture,lexicon-9da2001c0cdc444a,sha256:assignments,true,surface.json,concept.json,0.9,frontier,selected,improved label fit under frozen assignments

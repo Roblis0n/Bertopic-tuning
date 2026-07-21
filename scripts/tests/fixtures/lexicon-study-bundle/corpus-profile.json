@@ -1,0 +1,6 @@
+{
+  "corpus_fingerprint": "sha256:lexicon-fixture",
+  "unit_count": 3,
+  "length_profile": {"tokenizer": "fixture-tokenizer", "distribution": {}},
+  "group_fields": ["account", "time"]
+}

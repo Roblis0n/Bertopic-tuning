@@ -11,9 +11,12 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 from align_snapshots import align_snapshots  # noqa: E402
 from evaluate_diversity import evaluate_topics  # noqa: E402
+from lexicon_tools import compile_lexicon_bundle  # noqa: E402
 from select_pareto import select_pareto  # noqa: E402
 from validate_study_bundle import (  # noqa: E402
     validate_bundle,
+    validate_lexicon_governance,
+    validate_lexicon_sources,
     validate_parameter_governance,
 )
 
@@ -89,6 +92,50 @@ class DiversityEvaluationTests(unittest.TestCase):
         result = evaluate_topics(payload, top_k=2, rbo_p=0.9)
         self.assertIsNone(result["semantic_diversity_median"])
         self.assertTrue(any("embedding" in warning for warning in result["warnings"]))
+
+    def test_concept_normalization_prevents_synonym_fragmentation(self):
+        payload = {
+            "topics": [
+                {"topic_id": "A", "keywords": ["AI", "创新", "的"]},
+                {"topic_id": "B", "keywords": ["人工智能", "创新", "应用"]},
+            ]
+        }
+
+        result = evaluate_topics(
+            payload,
+            top_k=3,
+            rbo_p=0.9,
+            keyword_aliases={"AI": "人工智能"},
+            excluded_keywords={"的"},
+        )
+
+        self.assertIn("concept_normalized", result)
+        self.assertLess(
+            result["concept_normalized"]["topic_diversity"],
+            result["topic_diversity"],
+        )
+
+    def test_empty_frozen_lexicon_still_emits_concept_scorecard(self):
+        payload = {
+            "topics": [
+                {"topic_id": "A", "keywords": ["甲", "乙"]},
+                {"topic_id": "B", "keywords": ["丙", "丁"]},
+            ]
+        }
+
+        result = evaluate_topics(
+            payload,
+            top_k=2,
+            rbo_p=0.9,
+            keyword_aliases={},
+            excluded_keywords=set(),
+        )
+
+        self.assertIn("concept_normalized", result)
+        self.assertEqual(
+            result["concept_normalized"]["topic_diversity"],
+            result["topic_diversity"],
+        )
 
 
 class ParetoSelectionTests(unittest.TestCase):
@@ -185,6 +232,35 @@ class SnapshotAlignmentTests(unittest.TestCase):
             set(result["split_candidates"][0]["new_topic_uids"]),
             {"N-X", "N-Y"},
         )
+
+    def test_keyword_alignment_can_use_a_frozen_synonym_map(self):
+        old_topics = [
+            {
+                "topic_uid": "T-A",
+                "embedding": [1.0, 0.0],
+                "keywords": ["AI", "创新"],
+            }
+        ]
+        new_topics = [
+            {
+                "topic_uid": "N-X",
+                "embedding": [1.0, 0.0],
+                "keywords": ["人工智能", "创新"],
+            }
+        ]
+
+        result = align_snapshots(
+            old_topics,
+            new_topics,
+            thresholds={"semantic": 0.9, "keyword": 0.9},
+            keyword_rbo_p=0.9,
+            keyword_aliases={"AI": "人工智能"},
+        )
+
+        self.assertEqual(len(result["continuity"]), 1)
+        evidence = result["continuity"][0]
+        self.assertLess(evidence["keyword_rbo_surface"], 0.9)
+        self.assertAlmostEqual(evidence["keyword_rbo_canonical"], 1.0)
 
 
 class StudyBundleValidationTests(unittest.TestCase):
@@ -372,6 +448,13 @@ class StudyBundleValidationTests(unittest.TestCase):
             result = validate_bundle(root)
             self.assertTrue(result["valid"], result["errors"])
 
+    def test_complete_lexicon_enabled_fixture_passes(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+
+        result = validate_bundle(fixture)
+
+        self.assertTrue(result["valid"], result["errors"])
+
     def test_missing_contract_is_an_error(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = validate_bundle(Path(tmp))
@@ -380,6 +463,335 @@ class StudyBundleValidationTests(unittest.TestCase):
             self.assertTrue(any("corpus-profile.json" in item for item in result["errors"]))
             self.assertTrue(any("topic-pair-audit.csv" in item for item in result["errors"]))
             self.assertTrue(any("missing-theme-audit.csv" in item for item in result["errors"]))
+
+    def test_enabled_lexicon_policy_requires_iteration_artifacts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "study-contract.json").write_text(
+                json.dumps(
+                    {
+                        "route": "network-short",
+                        "lexicon_policy": {
+                            "enabled": True,
+                            "apply_to": "lexical_text",
+                            "bundle_manifest": "lexicon-manifest.json",
+                            "candidate_generation_rule": "rank all model-derived diagnostics for review",
+                            "stop_rule": "stop when every candidate has a disposition",
+                            "assignment_invariant_required": True,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_bundle(root)
+
+            for name in (
+                "lexicon-config.json",
+                "synonyms.csv",
+                "stopwords.csv",
+                "custom-terms.csv",
+                "lexicon-manifest.json",
+                "lexicon-candidate-audit.csv",
+                "lexicon-lineage.csv",
+                "representation-iteration.csv",
+            ):
+                self.assertTrue(
+                    any(name in error for error in result["errors"]),
+                    (name, result["errors"]),
+                )
+
+    def test_lexicon_governance_rejects_nonlexical_or_changed_assignments(self):
+        contract = {
+            "lexicon_policy": {
+                "enabled": True,
+                "apply_to": "embedding_text",
+                "bundle_manifest": "lexicon-manifest.json",
+                "candidate_generation_rule": "review diagnostics",
+                "stop_rule": "all candidates adjudicated",
+                "assignment_invariant_required": True,
+            }
+        }
+        manifest = {
+            "bundle_id": "lexicon-test",
+            "content_sha256": "abc",
+            "apply_to": "embedding_text",
+            "conflicts": [],
+        }
+        iteration_rows = [
+            {
+                "lexicon_bundle_id": "lexicon-test",
+                "assignment_fingerprint": "sha256:test",
+                "assignment_unchanged": "false",
+            }
+        ]
+
+        errors = validate_lexicon_governance(contract, manifest, iteration_rows)
+
+        self.assertTrue(any("lexical_text" in error for error in errors))
+        self.assertTrue(any("assignment_unchanged" in error for error in errors))
+
+    def test_lexicon_governance_requires_registry_links(self):
+        contract = {
+            "lexicon_policy": {
+                "enabled": True,
+                "apply_to": "lexical_text",
+                "bundle_manifest": "lexicon-manifest.json",
+                "candidate_generation_rule": "review diagnostics",
+                "stop_rule": "all candidates adjudicated",
+                "assignment_invariant_required": True,
+            }
+        }
+        manifest = {
+            "bundle_id": "lexicon-test",
+            "content_sha256": "abc",
+            "apply_to": "lexical_text",
+            "conflicts": [],
+        }
+        iteration_rows = [
+            {
+                "lexicon_bundle_id": "lexicon-test",
+                "assignment_fingerprint": "sha256:test",
+                "assignment_unchanged": "true",
+            }
+        ]
+
+        errors = validate_lexicon_governance(
+            contract,
+            manifest,
+            iteration_rows,
+            registry_rows=[{"candidate_id": "R-1", "run_type": "representation"}],
+        )
+
+        self.assertTrue(any("representation_snapshot_id" in error for error in errors))
+        self.assertTrue(any("lexicon_bundle_id" in error for error in errors))
+        self.assertTrue(any("assignment_fingerprint" in error for error in errors))
+
+    def test_lexicon_governance_links_iterations_without_rejecting_history(self):
+        contract = {
+            "lexicon_policy": {
+                "enabled": True,
+                "apply_to": "lexical_text",
+                "bundle_manifest": "lexicon-manifest.json",
+                "candidate_generation_rule": "review diagnostics",
+                "stop_rule": "all candidates adjudicated",
+                "assignment_invariant_required": True,
+                "human_review_required": True,
+            }
+        }
+        manifest = {
+            "bundle_id": "lexicon-current",
+            "content_sha256": "abc",
+            "apply_to": "lexical_text",
+            "conflicts": [],
+        }
+        iteration_rows = [
+            {
+                "candidate_id": "R-2",
+                "representation_snapshot_id": "representation-current",
+                "lexicon_bundle_id": "lexicon-current",
+                "assignment_fingerprint": "sha256:current",
+                "assignment_unchanged": "true",
+                "surface_scorecard": "surface.json",
+                "concept_scorecard": "concept.json",
+                "human_labelability": "0.9",
+                "pareto_status": "frontier",
+                "decision": "selected",
+                "decision_reason": "improved labels",
+            }
+        ]
+        registry_rows = [
+            {
+                "candidate_id": "R-1",
+                "run_type": "representation",
+                "representation_snapshot_id": "representation-old",
+                "lexicon_bundle_id": "lexicon-old",
+                "assignment_fingerprint": "sha256:old",
+            },
+            {
+                "candidate_id": "R-2",
+                "run_type": "representation",
+                "representation_snapshot_id": "representation-current",
+                "lexicon_bundle_id": "lexicon-current",
+                "assignment_fingerprint": "sha256:current",
+            },
+        ]
+
+        errors = validate_lexicon_governance(
+            contract, manifest, iteration_rows, registry_rows=registry_rows
+        )
+
+        self.assertEqual(errors, [])
+
+    def test_lexicon_governance_rejects_unlinked_iteration(self):
+        contract = {
+            "lexicon_policy": {
+                "enabled": True,
+                "apply_to": "lexical_text",
+                "bundle_manifest": "lexicon-manifest.json",
+                "candidate_generation_rule": "review diagnostics",
+                "stop_rule": "all candidates adjudicated",
+                "assignment_invariant_required": True,
+                "human_review_required": True,
+            }
+        }
+        manifest = {
+            "bundle_id": "lexicon-current",
+            "content_sha256": "abc",
+            "apply_to": "lexical_text",
+            "conflicts": [],
+        }
+        iteration_rows = [
+            {
+                "candidate_id": "R-2",
+                "representation_snapshot_id": "representation-current",
+                "lexicon_bundle_id": "lexicon-current",
+                "assignment_fingerprint": "sha256:current",
+                "assignment_unchanged": "true",
+                "surface_scorecard": "surface.json",
+                "concept_scorecard": "concept.json",
+                "human_labelability": "0.9",
+                "pareto_status": "frontier",
+                "decision": "selected",
+                "decision_reason": "improved labels",
+            }
+        ]
+        registry_rows = [
+            {
+                "candidate_id": "R-2",
+                "run_type": "representation",
+                "representation_snapshot_id": "different-snapshot",
+                "lexicon_bundle_id": "lexicon-current",
+                "assignment_fingerprint": "sha256:current",
+            }
+        ]
+
+        errors = validate_lexicon_governance(
+            contract, manifest, iteration_rows, registry_rows=registry_rows
+        )
+
+        self.assertTrue(any("matching representation registry row" in error for error in errors))
+
+    def test_lexicon_source_tables_must_match_compiled_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = {
+                "schema_version": 1,
+                "bundle_name": "test",
+                "parent_bundle_id": "",
+                "apply_to": "lexical_text",
+                "normalization": {
+                    "unicode_form": None,
+                    "casefold": False,
+                    "collapse_whitespace": True,
+                },
+                "tokenizer": {"name": "fixture", "revision": "1"},
+                "files": {
+                    "synonyms": "synonyms.csv",
+                    "stopwords": "stopwords.csv",
+                    "custom_terms": "custom-terms.csv",
+                },
+            }
+            (root / "lexicon-config.json").write_text(
+                json.dumps(config, ensure_ascii=False), encoding="utf-8"
+            )
+            tables = {
+                "synonyms.csv": [
+                    ["canonical_term", "variant", "status", "source", "reason"],
+                    ["人工智能", "AI", "active", "review", "alias"],
+                ],
+                "stopwords.csv": [["term", "status", "source", "reason"]],
+                "custom-terms.csv": [
+                    ["term", "display_form", "term_type", "status", "source", "reason"]
+                ],
+            }
+            for name, rows in tables.items():
+                with (root / name).open("w", encoding="utf-8", newline="") as handle:
+                    csv.writer(handle).writerows(rows)
+            manifest = compile_lexicon_bundle(root / "lexicon-config.json")
+            with (root / "stopwords.csv").open("a", encoding="utf-8", newline="") as handle:
+                csv.writer(handle).writerow(["平台", "active", "audit", "artifact"])
+
+            errors = validate_lexicon_sources(root, manifest)
+
+            self.assertTrue(any("does not match" in error for error in errors), errors)
+
+    def test_lexicon_manifest_operational_content_must_match_sources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = {
+                "schema_version": 1,
+                "bundle_name": "test",
+                "parent_bundle_id": "",
+                "apply_to": "lexical_text",
+                "normalization": {
+                    "unicode_form": None,
+                    "casefold": False,
+                    "collapse_whitespace": True,
+                },
+                "tokenizer": {"name": "fixture", "revision": "1"},
+                "files": {
+                    "synonyms": "synonyms.csv",
+                    "stopwords": "stopwords.csv",
+                    "custom_terms": "custom-terms.csv",
+                },
+            }
+            (root / "lexicon-config.json").write_text(
+                json.dumps(config, ensure_ascii=False), encoding="utf-8"
+            )
+            tables = {
+                "synonyms.csv": [
+                    ["canonical_term", "variant", "status", "source", "reason"],
+                    ["人工智能", "AI", "active", "review", "alias"],
+                ],
+                "stopwords.csv": [["term", "status", "source", "reason"]],
+                "custom-terms.csv": [
+                    ["term", "display_form", "term_type", "status", "source", "reason"]
+                ],
+            }
+            for name, rows in tables.items():
+                with (root / name).open("w", encoding="utf-8", newline="") as handle:
+                    csv.writer(handle).writerows(rows)
+            manifest = compile_lexicon_bundle(root / "lexicon-config.json")
+            manifest["synonym_map"] = {"AI": "错误概念"}
+
+            errors = validate_lexicon_sources(root, manifest)
+
+            self.assertTrue(any("synonym_map" in error for error in errors), errors)
+
+    def test_disabled_lexicon_policy_allows_empty_optional_iteration_template(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with (root / "representation-iteration.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as handle:
+                writer = csv.writer(handle)
+                writer.writerow(
+                    [
+                        "candidate_id",
+                        "parent_representation_snapshot_id",
+                        "representation_snapshot_id",
+                        "lexicon_bundle_id",
+                        "assignment_fingerprint",
+                        "assignment_unchanged",
+                        "surface_scorecard",
+                        "concept_scorecard",
+                        "human_labelability",
+                        "pareto_status",
+                        "decision",
+                        "decision_reason",
+                    ]
+                )
+
+            result = validate_bundle(root)
+
+            self.assertFalse(
+                any(
+                    error == "representation-iteration.csv must contain at least one evidence row"
+                    for error in result["errors"]
+                ),
+                result["errors"],
+            )
 
 
 class SkillInstructionTests(unittest.TestCase):
@@ -400,6 +812,21 @@ class SkillInstructionTests(unittest.TestCase):
         self.assertIn("$bertopic-tuning", openai_yaml)
         self.assertNotIn("academic-bertopic-tuning", skill_text + openai_yaml)
 
+    def test_hashed_text_resources_use_stable_line_endings(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        attributes_path = skill_root / ".gitattributes"
+        if attributes_path.is_file():
+            attributes = attributes_path.read_text(encoding="utf-8")
+            self.assertIn("*.csv text eol=lf", attributes)
+            self.assertIn("*.json text eol=lf", attributes)
+        for relative in (
+            "assets/lexicon-config.json",
+            "assets/synonyms.csv",
+            "assets/stopwords.csv",
+            "assets/custom-terms.csv",
+        ):
+            self.assertNotIn(b"\r\n", (skill_root / relative).read_bytes(), relative)
+
     def test_parameter_transfer_firewall_is_explicit(self):
         skill_root = Path(__file__).resolve().parents[2]
         skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
@@ -419,6 +846,120 @@ class SkillInstructionTests(unittest.TestCase):
             "--keyword-rbo-p <registered-p-when-keyword-gate-is-used>", skill_text
         )
         self.assertNotIn("probe below, at and above", skill_text)
+
+    def test_lexicon_iteration_workflow_is_discoverable_and_guarded(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        lexicon_reference = skill_root / "references" / "lexicon-management-and-iteration.md"
+
+        self.assertIn("synonym", skill_text.split("---", 2)[1].casefold())
+        self.assertIn("stopword", skill_text.split("---", 2)[1].casefold())
+        self.assertIn("references/lexicon-management-and-iteration.md", skill_text)
+        self.assertIn("scripts/build_lexicon_bundle.py", skill_text)
+        self.assertIn("scripts/evaluate_representation_update.py", skill_text)
+        self.assertTrue(lexicon_reference.is_file())
+        reference_text = lexicon_reference.read_text(encoding="utf-8")
+        self.assertIn("phrase protection", reference_text)
+        self.assertIn("synonym canonicalization", reference_text)
+        self.assertIn("stopword filtering", reference_text)
+        self.assertIn("closed vocabulary", reference_text)
+        self.assertIn("assignments_unchanged", reference_text)
+
+    def test_lexicon_asset_templates_have_auditable_schemas(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        asset_root = skill_root / "assets"
+        expected_headers = {
+            "synonyms.csv": {"canonical_term", "variant", "status", "source", "reason"},
+            "stopwords.csv": {"term", "status", "source", "reason"},
+            "custom-terms.csv": {
+                "term",
+                "display_form",
+                "term_type",
+                "status",
+                "source",
+                "reason",
+            },
+            "lexicon-candidate-audit.csv": {
+                "candidate_id",
+                "candidate_type",
+                "term",
+                "evidence",
+                "status",
+                "decision_reason",
+                "reviewer",
+            },
+            "lexicon-lineage.csv": {
+                "old_bundle_id",
+                "new_bundle_id",
+                "change_type",
+                "term",
+                "human_decision",
+            },
+            "representation-iteration.csv": {
+                "candidate_id",
+                "representation_snapshot_id",
+                "lexicon_bundle_id",
+                "assignment_fingerprint",
+                "assignment_unchanged",
+                "decision",
+            },
+        }
+        for name, required in expected_headers.items():
+            with (asset_root / name).open("r", encoding="utf-8-sig", newline="") as handle:
+                header = set(next(csv.reader(handle)))
+            self.assertTrue(required.issubset(header), (name, required.difference(header)))
+
+        config = json.loads((asset_root / "lexicon-config.json").read_text(encoding="utf-8"))
+        self.assertEqual(config["apply_to"], "lexical_text")
+        contract = json.loads((asset_root / "study-contract.json").read_text(encoding="utf-8"))
+        self.assertIn("lexicon_policy", contract)
+        self.assertTrue(contract["lexicon_policy"]["assignment_invariant_required"])
+
+        extended_headers = {
+            "experiment-registry.csv": {
+                "representation_snapshot_id",
+                "lexicon_bundle_id",
+                "assignment_fingerprint",
+            },
+            "candidate-metrics.csv": {
+                "concept_td",
+                "concept_irbo",
+                "stopword_leakage",
+                "synonym_residual",
+                "custom_term_recovery",
+            },
+            "topic-catalog.csv": {"representation_snapshot_id", "lexicon_bundle_id"},
+        }
+        for name, required in extended_headers.items():
+            with (asset_root / name).open("r", encoding="utf-8-sig", newline="") as handle:
+                header = set(next(csv.reader(handle)))
+            self.assertTrue(required.issubset(header), (name, required.difference(header)))
+
+        decision_report = (asset_root / "decision-report.md").read_text(encoding="utf-8")
+        self.assertIn("Lexicon resources and representation iteration", decision_report)
+
+    def test_lexicon_feature_is_integrated_across_routes_and_handoff(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        required_text = {
+            "references/network-short-text.md": "lexicon bundle",
+            "references/long-document.md": "lexicon bundle",
+            "references/diversity-evaluation.md": "concept-normalized",
+            "references/bertopic-implementation.md": "build_count_vectorizer",
+            "references/iteration-and-lineage.md": "lexicon lineage",
+            "references/study-contract-and-reporting.md": "lexicon-manifest.json",
+            "agents/openai.yaml": "同义词",
+        }
+        for relative, needle in required_text.items():
+            content = (skill_root / relative).read_text(encoding="utf-8")
+            self.assertIn(needle, content, relative)
+        repository_only_text = {
+            "README.md": "build_lexicon_bundle.py",
+            "HANDOFF.md": "evaluate_representation_update.py",
+        }
+        for relative, needle in repository_only_text.items():
+            path = skill_root / relative
+            if path.is_file():
+                self.assertIn(needle, path.read_text(encoding="utf-8"), relative)
 
 
 if __name__ == "__main__":

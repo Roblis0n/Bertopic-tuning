@@ -142,6 +142,8 @@ After freezing assignments:
 - inspect whether keyword changes merely cosmetically raise TD;
 - export representative, random and boundary units for every topic.
 
+For a user-managed lexicon bundle, derive candidates from aliases, abbreviations, hashtags, slang, templates and source markers found in representative, random and boundary units. Compile the bundle before use, apply it only to the lexical view, and verify that every stable unit retains its assignment. Review apparent stopwords by account, thread, source and time before removal: a frequent campaign term may be substantive when diffusion is the research object.
+
 Generate nearest-topic pairs with both lexical overlap and representative-unit semantic similarity. Audit false splits caused by aliases, hashtags, entities, events or community-specific language.
 
 Prefer a moderately fine candidate followed by audited post-hoc agglomeration when it preserves distinct rare themes better than global coarsening. Do not force a target topic count unless the downstream ontology requires it; if it does, document the loss of diversity at that operating point.
@@ -181,6 +183,8 @@ Fit one global taxonomy for temporal prevalence and use topic-over-time represen
 
 When merging a new batch model with an existing model, calibrate topic-similarity decisions using known retained, changed and genuinely new themes. Never inherit the library's default similarity threshold as an academic decision rule.
 
+Iterate lexical resources through `references/lexicon-management-and-iteration.md`. Treat cross-topic terms and residual aliases as review candidates, not automatic edits. Record accepted, rejected and deferred decisions plus lexicon bundle lineage separately from topic lineage.
+
 ## Required outputs
 
 - duplicate and source-leakage audit;
@@ -190,6 +194,7 @@ When merging a new batch model with an existing model, calibrate topic-similarit
 - rare-theme survival table;
 - nearest-topic semantic/lexical audit;
 - time/source/account-stratified scorecard;
+- compiled lexicon bundle, candidate audit and frozen-assignment comparison when lexical resources are enabled;
 - novelty-pool summary and snapshot lineage.
 
 ## Red flags
