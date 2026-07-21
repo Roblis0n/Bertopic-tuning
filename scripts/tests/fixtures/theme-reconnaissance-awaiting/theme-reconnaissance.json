@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "reconnaissance_id": "recon-20260721-a1",
+  "corpus_fingerprint": "sha256:corpus-test",
+  "route": "network-short",
+  "created_at": "2026-07-21T12:00:00+08:00",
+  "research_question": "识别围绕公共服务的主题及新兴问题",
+  "user_theme": {
+    "mainline": "公共服务",
+    "mode": "coverage_and_interpretation_anchor",
+    "allow_emergent_themes": true,
+    "inclusion_intent": "服务可及性与体验",
+    "exclusion_intent": "纯平台模板"
+  },
+  "coverage": {
+    "source_unit_count": 12,
+    "eligible_unit_count": 10,
+    "reviewed_unit_count": 8,
+    "duplicate_inherited_unit_count": 2,
+    "excluded_unit_count": 2,
+    "failed_unit_count": 0,
+    "coverage_complete": true,
+    "failed_unit_ids": [],
+    "exclusion_basis": "two empty rows"
+  },
+  "parent_document_coverage": {
+    "applicable": false,
+    "eligible_parent_document_count": null,
+    "reviewed_parent_document_count": null,
+    "failed_parent_document_count": null,
+    "coverage_complete": false
+  },
+  "topic_count_estimate": {
+    "interpretation": "pre_model_hypothesis_not_target_k",
+    "coarse": {
+      "lower_bound": 1,
+      "point_estimate": 1,
+      "upper_bound": 1,
+      "candidate_theme_ids": [
+        "PRE-C-001"
+      ],
+      "basis": "one stable parent theme across independent sources"
+    },
+    "fine": {
+      "lower_bound": 1,
+      "point_estimate": 1,
+      "upper_bound": 2,
+      "candidate_theme_ids": [
+        "PRE-F-001"
+      ],
+      "basis": "one stable subtheme and one unresolved split boundary"
+    }
+  },
+  "unresolved_boundaries": [
+    "PRE-F-001 may split by service channel"
+  ],
+  "excluded_artifact_candidate_ids": [],
+  "strongest_counter_evidence": "one source uses the same term differently"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "authorization_id": "auth-lexicon-fixture",
+  "reconnaissance_id": "recon-lexicon-fixture",
+  "corpus_fingerprint": "sha256:lexicon-fixture",
+  "gate_status": "approved_for_modeling",
+  "modeling_may_start": true,
+  "user_theme_mode": "coverage_and_interpretation_anchor",
+  "allow_emergent_themes": true,
+  "user_instruction": "按预估继续验证词表刷新",
+  "resolved_candidate_theme_ids": [
+    "PRE-C-LEX",
+    "PRE-F-LEX"
+  ],
+  "decision_recorded_at": "2026-07-21T12:30:00+08:00"
+}

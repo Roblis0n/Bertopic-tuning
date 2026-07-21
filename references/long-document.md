@@ -4,6 +4,7 @@
 
 - Research threat model
 - Analysis-unit design
+- Pre-model full-corpus reconnaissance
 - Chunking calibration
 - Corpus-wide modeling
 - Document aggregation
@@ -48,6 +49,18 @@ Preserve:
 - embedding, lexical and display text views.
 
 Never let a chunk lose its parent-document link.
+
+## Pre-model full-corpus reconnaissance
+
+Before calibrating the final modeling unit or fitting BERTopic, inspect every eligible parent document and record `parent_document_coverage` in `theme-reconnaissance.json`.
+
+- Traverse natural sections, headings, paragraphs and other provisional semantic spans across the entire document, including late sections rather than only abstracts or beginnings. Retain section paths and original character or token offsets for traceability.
+- Link candidate themes to evidence unit IDs and parent-document spread; repeated sections from one parent do not constitute independent support across documents.
+- Mark references, appendices, tables, boilerplate and other excluded material explicitly and reconcile their counts with source-unit accounting.
+- Preserve secondary and contradictory themes even when the user's mainline is concentrated in another section.
+- For mixed corpora, mark the long-document route subset on every candidate and report shared versus route-specific candidates.
+
+These provisional reading spans support complete reconnaissance only. They do not freeze `chunking_policy`, overlap, discovery weights or the final analysis unit; those remain locally calibrated study-contract decisions. Present the coarse/fine preview and pause at `awaiting_user_direction` before modeling.
 
 ## Chunking calibration
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "BERTopic Tuning"
-  short_description: "面向短网络文本与长文本的BERTopic调参、同义词停用词管理与持续迭代"
-  default_prompt: "使用 $bertopic-tuning 为我的语料执行以主题多样性为核心的 BERTopic 调参与模型迭代，并支持审核同义词、停用词和自定义词表。"
+  short_description: "先做全量主题预侦察与用户确认，再执行BERTopic调参与持续迭代"
+  default_prompt: "使用 $bertopic-tuning 先围绕我的研究主线完成全量主题预侦察，报告粗细粒度主题数量与类型并等待我的指示；获得授权后再执行以主题多样性为核心的 BERTopic 建模、调参与可复现迭代，并审核同义词、停用词和自定义词表。"

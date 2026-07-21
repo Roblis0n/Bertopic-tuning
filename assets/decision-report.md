@@ -12,6 +12,14 @@ Link the study contract and corpus profile.
 
 Explain the network-short, long-document or mixed route and the evidence supporting the unit/context/chunk policy.
 
+## Full-corpus theme reconnaissance and user direction
+
+Report the coverage ledger, coarse and fine topic-count estimates, user-mainline themes, supporting/contextual themes, recurrent emergent themes, uncertain boundaries and artifacts. Link `theme-reconnaissance.json`, `theme-candidate-audit.csv` and the approved `modeling-authorization.json`. State the user instruction and confirm that modeling began only after approval.
+
+## Preview-versus-model comparison
+
+Compare the selected model with the approved preview: covered candidate themes, missing themes, unexpected themes, merges, splits and preview assumptions rejected by model or human evidence. Do not treat the preview count as a target K.
+
 ## Academic mechanisms and local tests
 
 Map each paper-derived idea to its transfer conditions, target-corpus experiment and result. Do not list copied parameters.

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from lexicon_tools import compile_lexicon_bundle
+from validate_theme_reconnaissance import validate_theme_reconnaissance
 
 
 REQUIRED_FILES = {
@@ -25,6 +26,9 @@ REQUIRED_FILES = {
     "missing-theme-audit.csv",
     "evidence-log.csv",
     "decision-report.md",
+    "theme-reconnaissance.json",
+    "theme-candidate-audit.csv",
+    "modeling-authorization.json",
 }
 
 LEXICON_REQUIRED_FILES = {
@@ -58,6 +62,7 @@ CONTRACT_FIELDS = {
     "selection_policy",
     "outlier_role",
     "paper_transfer_policy",
+    "pre_model_reconnaissance",
 }
 
 TABLE_FIELDS = {
@@ -65,6 +70,7 @@ TABLE_FIELDS = {
         "candidate_id",
         "run_type",
         "parent_snapshot_id",
+        "authorization_id",
         "corpus_fingerprint",
         "analysis_unit",
         "embedding_model",
@@ -497,6 +503,26 @@ def validate_bundle(root: Path) -> dict[str, Any]:
                 errors.append(
                     "outlier_role must be 'diagnostic_guardrail_only'; it is not a primary objective"
                 )
+            reconnaissance_policy = contract.get("pre_model_reconnaissance")
+            expected_reconnaissance_policy = {
+                "required": True,
+                "user_theme_mode": "coverage_and_interpretation_anchor",
+                "allow_emergent_themes": True,
+                "reconnaissance_artifact": "theme-reconnaissance.json",
+                "candidate_audit_artifact": "theme-candidate-audit.csv",
+                "authorization_artifact": "modeling-authorization.json",
+                "user_authorization_required": True,
+            }
+            if not isinstance(reconnaissance_policy, dict):
+                errors.append(
+                    "study-contract.json pre_model_reconnaissance must be an object"
+                )
+            else:
+                for field, expected in expected_reconnaissance_policy.items():
+                    if reconnaissance_policy.get(field) != expected:
+                        errors.append(
+                            f"pre_model_reconnaissance.{field} must be {expected!r}"
+                        )
             errors.extend(validate_parameter_governance(contract))
             if not contract.get("minimum_meaningful_theme"):
                 errors.append("minimum_meaningful_theme must be justified before clustering")
@@ -555,6 +581,41 @@ def validate_bundle(root: Path) -> dict[str, Any]:
         errors.extend(f"{name} lacks required column: {field}" for field in missing_columns)
         if name in NONEMPTY_TABLES and not rows:
             errors.append(f"{name} must contain at least one evidence row")
+
+    reconnaissance_audit = validate_theme_reconnaissance(
+        root, require_approval=True
+    )
+    errors.extend(
+        f"Theme reconnaissance: {item}"
+        for item in reconnaissance_audit["errors"]
+    )
+    approved_authorization_id = str(
+        reconnaissance_audit.get("authorization_id", "")
+    ).strip()
+    modeling_run_types = {
+        "baseline",
+        "structural",
+        "representation",
+        "taxonomy",
+        "mapping",
+    }
+    for index, row in enumerate(
+        tables.get("experiment-registry.csv", []), start=2
+    ):
+        run_type = str(row.get("run_type", "")).strip().casefold()
+        if run_type not in modeling_run_types:
+            continue
+        row_authorization_id = str(row.get("authorization_id", "")).strip()
+        if not row_authorization_id:
+            errors.append(
+                f"experiment-registry.csv row {index} modeling run lacks "
+                "authorization_id"
+            )
+        elif row_authorization_id != approved_authorization_id:
+            errors.append(
+                f"experiment-registry.csv row {index} authorization_id does "
+                "not match the approved reconnaissance"
+            )
 
     lexicon_manifest: dict[str, Any] | None = None
     lexicon_manifest_path = root / "lexicon-manifest.json"

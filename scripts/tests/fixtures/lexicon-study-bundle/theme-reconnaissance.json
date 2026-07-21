@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reconnaissance_id": "recon-lexicon-fixture",
+  "corpus_fingerprint": "sha256:lexicon-fixture",
+  "route": "network-short",
+  "created_at": "2026-07-21T12:00:00+08:00",
+  "research_question": "验证词表刷新能否改善主题表示而不改变分配",
+  "user_theme": {
+    "mainline": "词表刷新与主题表示",
+    "mode": "coverage_and_interpretation_anchor",
+    "allow_emergent_themes": true,
+    "inclusion_intent": "词表规范化及主题表示质量",
+    "exclusion_intent": "与词表刷新无关的模板噪声"
+  },
+  "coverage": {
+    "source_unit_count": 3,
+    "eligible_unit_count": 3,
+    "reviewed_unit_count": 3,
+    "duplicate_inherited_unit_count": 0,
+    "excluded_unit_count": 0,
+    "failed_unit_count": 0,
+    "coverage_complete": true,
+    "failed_unit_ids": [],
+    "exclusion_basis": "no exclusions"
+  },
+  "parent_document_coverage": {
+    "applicable": false,
+    "eligible_parent_document_count": null,
+    "reviewed_parent_document_count": null,
+    "failed_parent_document_count": null,
+    "coverage_complete": false
+  },
+  "topic_count_estimate": {
+    "interpretation": "pre_model_hypothesis_not_target_k",
+    "coarse": {
+      "lower_bound": 1,
+      "point_estimate": 1,
+      "upper_bound": 1,
+      "candidate_theme_ids": ["PRE-C-LEX"],
+      "basis": "all reviewed units concern topic representation quality"
+    },
+    "fine": {
+      "lower_bound": 1,
+      "point_estimate": 1,
+      "upper_bound": 1,
+      "candidate_theme_ids": ["PRE-F-LEX"],
+      "basis": "the fixture tests one independently supported lexical-normalization mechanism"
+    }
+  },
+  "unresolved_boundaries": [],
+  "excluded_artifact_candidate_ids": [],
+  "strongest_counter_evidence": "fixture size limits generalization"
+}

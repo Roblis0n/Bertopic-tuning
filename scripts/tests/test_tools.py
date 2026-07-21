@@ -305,6 +305,15 @@ class StudyBundleValidationTests(unittest.TestCase):
                 "selection_policy": "pareto",
                 "outlier_role": "diagnostic_guardrail_only",
                 "paper_transfer_policy": "mechanisms-and-local-tests-not-parameters",
+                "pre_model_reconnaissance": {
+                    "required": True,
+                    "user_theme_mode": "coverage_and_interpretation_anchor",
+                    "allow_emergent_themes": True,
+                    "reconnaissance_artifact": "theme-reconnaissance.json",
+                    "candidate_audit_artifact": "theme-candidate-audit.csv",
+                    "authorization_artifact": "modeling-authorization.json",
+                    "user_authorization_required": True,
+                },
             }
             (root / "study-contract.json").write_text(
                 json.dumps(contract, ensure_ascii=False), encoding="utf-8"
@@ -320,6 +329,154 @@ class StudyBundleValidationTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            reconnaissance = {
+                "schema_version": 1,
+                "reconnaissance_id": "recon-study-001",
+                "corpus_fingerprint": "sha256:test",
+                "route": "network-short",
+                "created_at": "2026-07-21T12:00:00+08:00",
+                "research_question": "发现可复现且彼此区分的公共议题",
+                "user_theme": {
+                    "mainline": "公共议题",
+                    "mode": "coverage_and_interpretation_anchor",
+                    "allow_emergent_themes": True,
+                    "inclusion_intent": "公共议题及相关表达",
+                    "exclusion_intent": "纯平台模板",
+                },
+                "coverage": {
+                    "source_unit_count": 100,
+                    "eligible_unit_count": 100,
+                    "reviewed_unit_count": 100,
+                    "duplicate_inherited_unit_count": 0,
+                    "excluded_unit_count": 0,
+                    "failed_unit_count": 0,
+                    "coverage_complete": True,
+                    "failed_unit_ids": [],
+                    "exclusion_basis": "no exclusions",
+                },
+                "parent_document_coverage": {
+                    "applicable": False,
+                    "eligible_parent_document_count": None,
+                    "reviewed_parent_document_count": None,
+                    "failed_parent_document_count": None,
+                    "coverage_complete": False,
+                },
+                "topic_count_estimate": {
+                    "interpretation": "pre_model_hypothesis_not_target_k",
+                    "coarse": {
+                        "lower_bound": 1,
+                        "point_estimate": 1,
+                        "upper_bound": 1,
+                        "candidate_theme_ids": ["PRE-C-001"],
+                        "basis": "one broad public-issue family in the fixture",
+                    },
+                    "fine": {
+                        "lower_bound": 1,
+                        "point_estimate": 1,
+                        "upper_bound": 2,
+                        "candidate_theme_ids": ["PRE-F-001"],
+                        "basis": "one supported issue with one unresolved split",
+                    },
+                },
+                "unresolved_boundaries": ["PRE-F-001 may split with more evidence"],
+                "excluded_artifact_candidate_ids": [],
+                "strongest_counter_evidence": "the compact fixture limits granularity",
+            }
+            (root / "theme-reconnaissance.json").write_text(
+                json.dumps(reconnaissance, ensure_ascii=False), encoding="utf-8"
+            )
+            with (root / "theme-candidate-audit.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as handle:
+                writer = csv.writer(handle)
+                writer.writerow(
+                    [
+                        "reconnaissance_id",
+                        "candidate_theme_id",
+                        "parent_candidate_theme_id",
+                        "hierarchy_level",
+                        "route_subset",
+                        "provisional_label",
+                        "theme_type",
+                        "relation_to_user_mainline",
+                        "definition",
+                        "inclusion",
+                        "exclusion",
+                        "independent_support",
+                        "evidence_unit_ids",
+                        "source_or_parent_spread",
+                        "duplicate_or_artifact_risk",
+                        "uncertainty",
+                        "user_disposition",
+                        "user_instruction",
+                    ]
+                )
+                writer.writerows(
+                    [
+                        [
+                            "recon-study-001",
+                            "PRE-C-001",
+                            "",
+                            "coarse",
+                            "network-short",
+                            "公共议题",
+                            "issue-family",
+                            "mainline",
+                            "公共事务相关表达",
+                            "涉及公共议题",
+                            "纯平台模板",
+                            "multiple independent sources",
+                            "u1|u2",
+                            "source-a|source-b",
+                            "low",
+                            "compact fixture",
+                            "accepted",
+                            "按预估继续",
+                        ],
+                        [
+                            "recon-study-001",
+                            "PRE-F-001",
+                            "PRE-C-001",
+                            "fine",
+                            "network-short",
+                            "具体议题",
+                            "subtheme",
+                            "supporting",
+                            "公共议题的具体表达",
+                            "具体政策或服务表达",
+                            "无实质内容的模板",
+                            "multiple independent sources",
+                            "u1|u2",
+                            "source-a|source-b",
+                            "low",
+                            "possible split with more evidence",
+                            "accepted",
+                            "按预估继续",
+                        ],
+                    ]
+                )
+            (root / "modeling-authorization.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "authorization_id": "auth-study-001",
+                        "reconnaissance_id": "recon-study-001",
+                        "corpus_fingerprint": "sha256:test",
+                        "gate_status": "approved_for_modeling",
+                        "modeling_may_start": True,
+                        "user_theme_mode": "coverage_and_interpretation_anchor",
+                        "allow_emergent_themes": True,
+                        "user_instruction": "按预估继续",
+                        "resolved_candidate_theme_ids": [
+                            "PRE-C-001",
+                            "PRE-F-001",
+                        ],
+                        "decision_recorded_at": "2026-07-21T12:30:00+08:00",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
             (root / "selected-model.json").write_text(
                 json.dumps({"candidate_id": "C-001"}), encoding="utf-8"
             )
@@ -331,6 +488,7 @@ class StudyBundleValidationTests(unittest.TestCase):
                         "candidate_id",
                         "run_type",
                         "parent_snapshot_id",
+                        "authorization_id",
                         "corpus_fingerprint",
                         "analysis_unit",
                         "embedding_model",
@@ -339,7 +497,7 @@ class StudyBundleValidationTests(unittest.TestCase):
                         "representation_config",
                         "status",
                     ],
-                    ["C-001", "structural", "", "sha256:test", "post", "encoder", "{}", "{}", "{}", "selected"],
+                    ["C-001", "structural", "", "auth-study-001", "sha256:test", "post", "encoder", "{}", "{}", "{}", "selected"],
                 ),
                 "candidate-metrics.csv": (
                     [
@@ -454,6 +612,63 @@ class StudyBundleValidationTests(unittest.TestCase):
         result = validate_bundle(fixture)
 
         self.assertTrue(result["valid"], result["errors"])
+
+    def test_modeling_registry_rejects_mismatched_authorization(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            registry = root / "experiment-registry.csv"
+            with registry.open(
+                "r", encoding="utf-8-sig", newline=""
+            ) as handle:
+                rows = list(csv.DictReader(handle))
+                fieldnames = list(rows[0])
+            rows[0]["authorization_id"] = "auth-wrong"
+            with registry.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any("authorization_id" in error for error in result["errors"]),
+                result["errors"],
+            )
+
+    def test_modeling_registry_rejects_missing_authorization(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            registry = root / "experiment-registry.csv"
+            with registry.open(
+                "r", encoding="utf-8-sig", newline=""
+            ) as handle:
+                rows = list(csv.DictReader(handle))
+                fieldnames = list(rows[0])
+            rows[0]["authorization_id"] = ""
+            with registry.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any(
+                    "modeling run lacks authorization_id" in error
+                    for error in result["errors"]
+                ),
+                result["errors"],
+            )
 
     def test_missing_contract_is_an_error(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -824,8 +1039,113 @@ class SkillInstructionTests(unittest.TestCase):
             "assets/synonyms.csv",
             "assets/stopwords.csv",
             "assets/custom-terms.csv",
+            "assets/theme-reconnaissance.json",
+            "assets/theme-candidate-audit.csv",
+            "assets/modeling-authorization.json",
         ):
             self.assertNotIn(b"\r\n", (skill_root / relative).read_bytes(), relative)
+
+    def test_theme_reconnaissance_assets_have_auditable_schemas(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        asset_root = skill_root / "assets"
+
+        reconnaissance = json.loads(
+            (asset_root / "theme-reconnaissance.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(reconnaissance["schema_version"], 1)
+        self.assertEqual(
+            reconnaissance["user_theme"]["mode"],
+            "coverage_and_interpretation_anchor",
+        )
+        self.assertTrue(reconnaissance["user_theme"]["allow_emergent_themes"])
+        self.assertIn("coverage", reconnaissance)
+        self.assertIn("coarse", reconnaissance["topic_count_estimate"])
+        self.assertIn("fine", reconnaissance["topic_count_estimate"])
+
+        with (asset_root / "theme-candidate-audit.csv").open(
+            "r", encoding="utf-8-sig", newline=""
+        ) as handle:
+            header = set(next(csv.reader(handle)))
+        required = {
+            "reconnaissance_id",
+            "candidate_theme_id",
+            "parent_candidate_theme_id",
+            "hierarchy_level",
+            "route_subset",
+            "provisional_label",
+            "theme_type",
+            "relation_to_user_mainline",
+            "definition",
+            "inclusion",
+            "exclusion",
+            "independent_support",
+            "evidence_unit_ids",
+            "source_or_parent_spread",
+            "duplicate_or_artifact_risk",
+            "uncertainty",
+            "user_disposition",
+            "user_instruction",
+        }
+        self.assertTrue(required.issubset(header), required.difference(header))
+
+        authorization = json.loads(
+            (asset_root / "modeling-authorization.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(authorization["gate_status"], "awaiting_user_direction")
+        self.assertFalse(authorization["modeling_may_start"])
+        self.assertEqual(
+            authorization["user_theme_mode"],
+            "coverage_and_interpretation_anchor",
+        )
+
+        contract = json.loads(
+            (asset_root / "study-contract.json").read_text(encoding="utf-8")
+        )
+        policy = contract["pre_model_reconnaissance"]
+        self.assertTrue(policy["required"])
+        self.assertTrue(policy["user_authorization_required"])
+        self.assertEqual(
+            policy["authorization_artifact"], "modeling-authorization.json"
+        )
+
+        with (asset_root / "experiment-registry.csv").open(
+            "r", encoding="utf-8-sig", newline=""
+        ) as handle:
+            registry_header = set(next(csv.reader(handle)))
+        self.assertIn("authorization_id", registry_header)
+
+    def test_full_corpus_reconnaissance_is_integrated_and_guarded(self):
+        skill_root = Path(__file__).resolve().parents[2]
+        required_text = {
+            "SKILL.md": "awaiting_user_direction",
+            "references/corpus-theme-reconnaissance.md": (
+                "coverage_and_interpretation_anchor"
+            ),
+            "references/network-short-text.md": "duplicate_inherited_unit_count",
+            "references/long-document.md": "parent_document_coverage",
+            "references/study-contract-and-reporting.md": (
+                "modeling-authorization.json"
+            ),
+            "references/bertopic-implementation.md": "approved_for_modeling",
+            "agents/openai.yaml": "全量主题预侦察",
+        }
+        for relative, needle in required_text.items():
+            path = skill_root / relative
+            self.assertTrue(path.is_file(), relative)
+            self.assertIn(needle, path.read_text(encoding="utf-8"), relative)
+
+        repository_readme = skill_root / "README.md"
+        if repository_readme.is_file():
+            self.assertIn(
+                "validate_theme_reconnaissance.py",
+                repository_readme.read_text(encoding="utf-8"),
+            )
+
+        skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        reconnaissance_position = skill_text.index("awaiting_user_direction")
+        baseline_position = skill_text.index("Establish an auditable baseline")
+        self.assertLess(reconnaissance_position, baseline_position)
+        self.assertIn("pre_model_hypothesis_not_target_k", skill_text)
 
     def test_parameter_transfer_firewall_is_explicit(self):
         skill_root = Path(__file__).resolve().parents[2]

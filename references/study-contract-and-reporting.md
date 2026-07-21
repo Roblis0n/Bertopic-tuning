@@ -3,6 +3,7 @@
 ## Contents
 
 - Contract-before-modeling rule
+- Full-corpus reconnaissance and authorization
 - Study-contract fields
 - Corpus fingerprint
 - Experiment registry
@@ -13,13 +14,33 @@
 
 ## Contract-before-modeling rule
 
-Create the study contract before fitting candidates. The contract prevents silent changes in analysis unit, metric depth, threshold source, validation sample or selection priority after results are visible.
+Create the study contract after the user has reviewed the full-corpus reconnaissance and before fitting candidates. The contract prevents silent changes in analysis unit, metric depth, threshold source, validation sample or selection priority after results are visible.
 
 Copy templates from `assets/` into a study-specific output directory. Preserve the templates in plain CSV/JSON/Markdown; do not add decorative formatting that obscures machine readability.
+
+## Full-corpus reconnaissance and authorization
+
+Before the study contract is frozen, complete and show these three artifacts to the user:
+
+- `theme-reconnaissance.json`: corpus fingerprint, user-theme anchor, full accounting, parent-document coverage when applicable, coarse/fine estimates, uncertainty, artifact exclusions and counter-evidence;
+- `theme-candidate-audit.csv`: evidence-linked candidate hierarchy, relation to the user's mainline and one disposition per candidate after review;
+- `modeling-authorization.json`: explicit gate state, user instruction, resolved candidate IDs and decision timestamp.
+
+The user theme mode is `coverage_and_interpretation_anchor`, with emergent themes open. The estimate is `pre_model_hypothesis_not_target_k`; it is not a forced BERTopic topic count. Full coverage requires exact accounting of reviewed, exact-duplicate-inherited, excluded and failed units. Long and mixed routes also require complete parent-document coverage.
+
+Set `gate_status: awaiting_user_direction` and `modeling_may_start: false` while the preview is with the user. Modeling begins only after the user direction is recorded, every candidate has a disposition, the gate becomes `approved_for_modeling`, and this command succeeds:
+
+```text
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
+```
+
+The approved `authorization_id` must appear in each modeling row of `experiment-registry.csv`. A changed corpus fingerprint, route, research question, user-theme policy or resolved candidate map invalidates stale authorization. See `references/corpus-theme-reconnaissance.md` for the complete method.
 
 ## Study-contract fields
 
 Complete `study-contract.json`.
+
+Keep `pre_model_reconnaissance.required` and `user_authorization_required` true. Its three artifact paths must point to the approved files, `user_theme_mode` must remain `coverage_and_interpretation_anchor`, and `allow_emergent_themes` must remain true unless the user explicitly changes the analytical scope and the authorization is renewed.
 
 ### Identity and scope
 
@@ -119,6 +140,7 @@ Use `experiment-registry.csv`. One row equals one candidate run. Record failed r
 Required content includes:
 
 - candidate and parent snapshot IDs;
+- approved `authorization_id` matching `modeling-authorization.json`;
 - corpus fingerprint and analysis unit;
 - run type: baseline, structural, representation, taxonomy or mapping;
 - exact embedding model/revision and embedding cache ID;
@@ -203,16 +225,18 @@ Complete `decision-report.md` in this order:
 
 1. outcome and selected route;
 2. research question and corpus fingerprint;
-3. analysis-unit decision;
-4. paper-derived mechanisms and local tests;
-5. structural, representation and taxonomy experiments;
-6. diversity scorecard and matched-granularity comparison;
-7. Pareto frontier and selection rationale;
-8. human audit and missing themes;
-9. stability and uncertainty;
-10. outlier composition as diagnostic;
-11. lineage and release decision;
-12. limitations, counter-evidence and reproducibility instructions.
+3. full-corpus reconnaissance, user-theme mainline and authorization decision;
+4. preview-versus-model confirmation, merge, split, absence and emergence audit;
+5. analysis-unit decision;
+6. paper-derived mechanisms and local tests;
+7. structural, representation and taxonomy experiments;
+8. diversity scorecard and matched-granularity comparison;
+9. Pareto frontier and selection rationale;
+10. human audit and missing themes;
+11. stability and uncertainty;
+12. outlier composition as diagnostic;
+13. lineage and release decision;
+14. limitations, counter-evidence and reproducibility instructions.
 
 Lead with the result, not a chronological tool diary.
 
@@ -221,8 +245,11 @@ Lead with the result, not a chronological tool diary.
 The minimum bundle contains:
 
 ```text
-study-contract.json
 corpus-profile.json
+theme-reconnaissance.json
+theme-candidate-audit.csv
+modeling-authorization.json
+study-contract.json
 experiment-registry.csv
 candidate-metrics.csv
 selected-model.json
@@ -262,12 +289,15 @@ If the corpus cannot be shared, release an ethical, privacy-preserving replicati
 Run:
 
 ```text
+python scripts/validate_theme_reconnaissance.py <bundle-directory> --require-approval
 python scripts/validate_study_bundle.py <bundle-directory>
 ```
 
 Then verify manually:
 
 - every explicit research requirement maps to an artifact;
+- full-corpus and parent-document accounting pass, the user direction is recorded, and all modeling runs link the approved authorization ID;
+- preview-versus-model disagreements and emergent themes are reported rather than hidden;
 - all candidate comparisons use the same evaluation data and granularity rule;
 - every threshold has a local calibration source;
 - no paper parameter was copied as a default;

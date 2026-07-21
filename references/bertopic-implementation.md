@@ -3,6 +3,7 @@
 ## Contents
 
 - Environment and version checks
+- Pre-fit reconnaissance guard
 - Config-driven pipeline
 - Text-view separation
 - Structural versus representation operations
@@ -25,6 +26,34 @@ Typical dependencies are:
 - a Chinese tokenizer/segmenter only when required for lexical representation.
 
 Record exact package, encoder and tokenizer revisions. Do not silently install or upgrade packages in an established research environment.
+
+## Pre-fit reconnaissance guard
+
+Place the authorization check at the entry point that can create embeddings or call `BERTopic.fit`, not only in a notebook note or UI message. The check must run before expensive or irreversible modeling actions.
+
+```python
+import json
+from pathlib import Path
+
+from scripts.validate_theme_reconnaissance import validate_theme_reconnaissance
+
+
+def require_modeling_authorization(bundle_dir):
+    bundle = Path(bundle_dir)
+    result = validate_theme_reconnaissance(bundle, require_approval=True)
+    if not result["valid"]:
+        details = "; ".join(result["errors"])
+        raise RuntimeError(f"Pre-model reconnaissance gate failed: {details}")
+
+    authorization = json.loads(
+        (bundle / "modeling-authorization.json").read_text(encoding="utf-8")
+    )
+    if authorization["gate_status"] != "approved_for_modeling":
+        raise RuntimeError("Modeling is not authorized")
+    return authorization["authorization_id"]
+```
+
+Call `require_modeling_authorization()` before loading or computing embeddings, then write its returned ID into the `authorization_id` column of every modeling registry row. Never bypass the guard with a separate boolean or reuse an authorization whose corpus fingerprint no longer matches.
 
 ## Config-driven pipeline
 

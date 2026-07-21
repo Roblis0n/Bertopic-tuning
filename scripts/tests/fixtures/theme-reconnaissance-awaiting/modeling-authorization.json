@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "authorization_id": "",
+  "reconnaissance_id": "recon-20260721-a1",
+  "corpus_fingerprint": "sha256:corpus-test",
+  "gate_status": "awaiting_user_direction",
+  "modeling_may_start": false,
+  "user_theme_mode": "coverage_and_interpretation_anchor",
+  "allow_emergent_themes": true,
+  "user_instruction": "",
+  "resolved_candidate_theme_ids": [],
+  "decision_recorded_at": ""
+}

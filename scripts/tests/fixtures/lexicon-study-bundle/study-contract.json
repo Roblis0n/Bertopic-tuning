@@ -25,6 +25,15 @@
   "selection_policy": "pareto",
   "outlier_role": "diagnostic_guardrail_only",
   "paper_transfer_policy": "mechanisms-and-local-tests-not-parameters",
+  "pre_model_reconnaissance": {
+    "required": true,
+    "user_theme_mode": "coverage_and_interpretation_anchor",
+    "allow_emergent_themes": true,
+    "reconnaissance_artifact": "theme-reconnaissance.json",
+    "candidate_audit_artifact": "theme-candidate-audit.csv",
+    "authorization_artifact": "modeling-authorization.json",
+    "user_authorization_required": true
+  },
   "lexicon_policy": {
     "enabled": true,
     "apply_to": "lexical_text",

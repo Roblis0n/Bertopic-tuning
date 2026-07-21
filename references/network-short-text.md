@@ -4,6 +4,7 @@
 
 - Research threat model
 - Corpus construction
+- Pre-model full-corpus reconnaissance
 - Text views and Chinese handling
 - Context enrichment
 - Structural experiments
@@ -49,6 +50,18 @@ Do not automatically collapse:
 - identical messages posted in analytically distinct populations when population comparison is central.
 
 Record the deduplication rule and provide sensitivity results with and without duplicate weighting.
+
+## Pre-model full-corpus reconnaissance
+
+Before embeddings or BERTopic fitting, read and account for the complete short-text corpus using `references/corpus-theme-reconnaissance.md`.
+
+- Review one canonical unit for each verified exact-duplicate group and record every inherited member in `duplicate_inherited_unit_count`.
+- Do not inherit interpretation across near duplicates. Review their changed wording and context because stance, target, event or theme can differ.
+- Preserve account, thread, source, community and time spread in the candidate evidence so repeated activity from one group does not masquerade as independent thematic support.
+- Keep templates, URL patterns, platform markers, coordinated slogans and other artifacts as explicit artifact candidates; show their exclusion to the user instead of silently deleting them.
+- Link every substantive candidate to stable evidence unit IDs and classify its relationship to the user's mainline.
+
+Present coarse and fine candidate maps, set the authorization gate to `awaiting_user_direction`, and stop before modeling. The reconnaissance estimate is a hypothesis for later coverage and missing-theme audits, not a target topic count.
 
 ## Text views and Chinese handling
 

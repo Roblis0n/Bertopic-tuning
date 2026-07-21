@@ -1,2 +1,2 @@
-candidate_id,run_type,parent_snapshot_id,representation_snapshot_id,lexicon_bundle_id,assignment_fingerprint,corpus_fingerprint,analysis_unit,embedding_model,umap_config,hdbscan_config,representation_config,status
-R-LEX,representation,structure-fixture,representation-lexicon-fixture,lexicon-9da2001c0cdc444a,sha256:assignments,sha256:lexicon-fixture,post,fixture-encoder,{},{},lexicon-manifest.json,selected
+candidate_id,run_type,parent_snapshot_id,authorization_id,representation_snapshot_id,lexicon_bundle_id,assignment_fingerprint,corpus_fingerprint,analysis_unit,embedding_model,umap_config,hdbscan_config,representation_config,status
+R-LEX,representation,structure-fixture,auth-lexicon-fixture,representation-lexicon-fixture,lexicon-9da2001c0cdc444a,sha256:assignments,sha256:lexicon-fixture,post,fixture-encoder,{},{},lexicon-manifest.json,selected

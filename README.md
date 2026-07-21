@@ -7,6 +7,8 @@ The central objective is **effective thematic diversity**: distinct, well-covere
 ## What this repository provides
 
 - Separate modeling routes for short, noisy network text and multi-theme long documents.
+- A mandatory full-corpus theme reconnaissance that previews coarse/fine theme counts and candidate types around the user's mainline before modeling.
+- An explicit user-direction gate: the skill reports its provisional map, pauses, and fits BERTopic only after recorded authorization.
 - A multi-dimensional diversity framework covering lexical distinctiveness, semantic distinctiveness, theme coverage, stability, and human interpretability.
 - A clear separation between structural clustering, topic representation, taxonomy editing, and model governance.
 - Corpus-derived tuning decisions instead of universal parameter grids copied from papers or examples.
@@ -96,15 +98,15 @@ git -C .agents\skills\bertopic-tuning pull --ff-only
 
 ## Using the skill
 
-Invoke it explicitly with `$bertopic-tuning` and provide the corpus location, research question, and any existing model outputs.
+Invoke it explicitly with `$bertopic-tuning` and provide the corpus location, research question, user-theme mainline, and any existing model outputs. The skill first reads and accounts for the complete corpus, reports a provisional theme map and count range, then pauses for your direction before modeling.
 
 Example for short network text:
 
 ```text
 Use $bertopic-tuning to design and execute a diversity-first BERTopic study for
-Chinese social-media posts. Audit duplicates and platform artifacts, compare
-structural candidates, and select a Pareto-optimal model without minimizing the
-outlier fraction as the primary objective.
+Chinese social-media posts. First inspect the full corpus and show me coarse and
+fine candidate themes centered on my research mainline. Wait for my direction,
+then compare structural candidates and select a Pareto-optimal model.
 ```
 
 Example for long documents:
@@ -120,30 +122,33 @@ plan for future corpus updates.
 
 ```text
 使用 $bertopic-tuning 分析这批长文本。先按语义结构切分并保留父文档关系，
-再以词汇区分度、语义区分度、主题覆盖、稳定性和人工可解释性共同评估模型，
-不要把降低离群率作为主要目标。
+全量浏览语料并围绕我的研究主线预估粗粒度和细粒度主题。先把预估结果告诉我，
+等我确认合并、拆分或调整后再建模；最后共同评估主题覆盖、稳定性和可解释性。
 ```
 
 ## End-to-end workflow
 
 1. **Inspect and fingerprint** the corpus, metadata, duplicates, languages, lengths, sources, dates, and parent-document structure.
-2. **Create a study contract** defining the research claim, modeling route, meaningful theme size, evaluation dimensions, calibration rules, and stopping criteria.
-3. **Fit an auditable baseline** with cached embeddings and fixed evaluation samples.
-4. **Tune structure** through testable hypotheses about the encoder, UMAP, HDBSCAN, granularity, seeds, and resamples.
-5. **Tune representation** while assignments remain fixed: tokenization, phrases, user-managed lexicon bundles, c-TF-IDF variants, frequent-term suppression, MMR, and grounded labels.
-6. **Audit the taxonomy** before any merge or split, using nearest-topic pairs and representative evidence.
-7. **Select on a Pareto frontier** under explicit coherence, coverage, stability, and labelability constraints.
-8. **Track iteration and lineage** with permanent topic UIDs and calibrated snapshot alignment.
-9. **Complete and validate the study bundle** so every decision, failure, threshold, and topic change remains reproducible.
+2. **Reconnoiter the full corpus** and report evidence-linked coarse/fine theme estimates, candidate types, artifacts, uncertainty, and relation to the user's mainline.
+3. **Pause for user direction** and record candidate dispositions plus explicit authorization; no embeddings or model fitting occur while the gate is waiting.
+4. **Create a study contract** defining the research claim, modeling route, meaningful theme size, evaluation dimensions, calibration rules, and stopping criteria.
+5. **Fit an auditable baseline** with cached embeddings and fixed evaluation samples.
+6. **Tune structure** through testable hypotheses about the encoder, UMAP, HDBSCAN, granularity, seeds, and resamples.
+7. **Tune representation** while assignments remain fixed: tokenization, phrases, user-managed lexicon bundles, c-TF-IDF variants, frequent-term suppression, MMR, and grounded labels.
+8. **Audit the taxonomy** before any merge or split, using nearest-topic pairs and representative evidence.
+9. **Select on a Pareto frontier** under explicit coherence, coverage, stability, and labelability constraints.
+10. **Track iteration and lineage** with permanent topic UIDs and calibrated snapshot alignment.
+11. **Complete and validate the study bundle** so every decision, failure, threshold, and topic change remains reproducible.
 
 The detailed operating procedure is in [SKILL.md](SKILL.md).
 
 ## Included command-line tools
 
-The portable command-line tools use only the Python standard library. The optional `build_count_vectorizer()` adapter imports scikit-learn only inside the user's modeling environment. The repository does not impose a BERTopic version, encoder, tokenizer or universal tuning grid.
+The portable command-line tools use only the Python standard library. The reconnaissance validator checks artifacts and the pause gate; it does not call an LLM provider or claim to read a corpus by itself. The optional `build_count_vectorizer()` adapter imports scikit-learn only inside the user's modeling environment. The repository does not impose a BERTopic version, encoder, tokenizer or universal tuning grid.
 
 | Tool | Purpose |
 |---|---|
+| `scripts/validate_theme_reconnaissance.py` | Verifies full-corpus accounting, candidate hierarchy, count estimates, fingerprints, and the user-authorization gate before modeling |
 | `scripts/evaluate_diversity.py` | Calculates topic-level lexical and semantic diversity diagnostics from a portable topic catalog |
 | `scripts/select_pareto.py` | Filters candidates by explicit constraints and returns the non-dominated model set |
 | `scripts/align_snapshots.py` | Aligns old and new topic snapshots using locally calibrated semantic, keyword, and document evidence |
@@ -207,6 +212,22 @@ python scripts/align_snapshots.py \
 
 One-to-many and many-to-one matches are split and merge candidates requiring evidence and review; they are not automatic lineage decisions.
 
+### Validate the pre-model theme preview
+
+Copy `theme-reconnaissance.json`, `theme-candidate-audit.csv`, `modeling-authorization.json` and `corpus-profile.json` from `assets/` into the study bundle. After full-corpus review, validate the preview before showing it to the user:
+
+```bash
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory>
+```
+
+Leave the gate at `awaiting_user_direction` while the user reviews the candidate map. After recording all accept, reject, merge, split, defer or reframe instructions, require approval before any modeling process begins:
+
+```bash
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
+```
+
+The coarse/fine estimate is explicitly `pre_model_hypothesis_not_target_k`; it supports later coverage and missing-theme checks but never forces BERTopic's topic count. See [references/corpus-theme-reconnaissance.md](references/corpus-theme-reconnaissance.md).
+
 ### Validate a completed study bundle
 
 ```bash
@@ -248,8 +269,11 @@ Assignment exports use `unit_id` plus `topic_uid` (preferred) or `topic_id`. The
 
 The `assets/` directory contains reusable artifacts for a reproducible study:
 
-- `study-contract.json`
 - `corpus-profile.json`
+- `theme-reconnaissance.json`
+- `theme-candidate-audit.csv`
+- `modeling-authorization.json`
+- `study-contract.json`
 - `experiment-registry.csv`
 - `candidate-metrics.csv`
 - `selected-model.json`
@@ -282,6 +306,7 @@ Permanent `topic_uid` values are kept separate from BERTopic's local integer IDs
 
 The repository translates literature into mechanisms and testable hypotheses; it does not copy numerical settings from unrelated corpora. Use:
 
+- [references/corpus-theme-reconnaissance.md](references/corpus-theme-reconnaissance.md) for the full-corpus preview, count estimation, and authorization gate;
 - [references/academic-evidence.md](references/academic-evidence.md) for the evidence map and source-to-decision boundaries;
 - [references/web-research-protocol.md](references/web-research-protocol.md) when claims depend on current papers, APIs, package behavior, or model availability;
 - [references/study-contract-and-reporting.md](references/study-contract-and-reporting.md) for required artifacts and reporting standards;
@@ -293,13 +318,13 @@ The repository translates literature into mechanisms and testable hypotheses; it
 bertopic-tuning/
 ├── SKILL.md
 ├── README.md
-├── HANDOFF.md
 ├── LICENSE
 ├── agents/
 │   └── openai.yaml
 ├── assets/
 │   └── reusable study and audit templates
 ├── references/
+│   ├── corpus-theme-reconnaissance.md
 │   ├── network-short-text.md
 │   ├── long-document.md
 │   ├── diversity-evaluation.md
@@ -307,6 +332,7 @@ bertopic-tuning/
 │   ├── iteration-and-lineage.md
 │   └── research, implementation, and reporting guidance
 └── scripts/
+    ├── validate_theme_reconnaissance.py
     ├── evaluate_diversity.py
     ├── build_lexicon_bundle.py
     ├── evaluate_representation_update.py
@@ -324,15 +350,11 @@ Run the complete test suite from the repository root:
 python -m unittest discover -s scripts/tests -v
 ```
 
-The current suite covers diversity evaluation, Pareto selection, snapshot alignment, and study-bundle validation.
-
-## Maintainer handoff
-
-To continue the project in a new Codex conversation, start with the current state, constraints, validation commands, and copy-ready opening prompt in [HANDOFF.md](HANDOFF.md).
+The suite covers pre-model reconnaissance and authorization, diversity evaluation, Pareto selection, snapshot alignment, lexicon iteration, and completed study-bundle validation.
 
 ## Scope
 
-This repository is a research and decision framework plus portable evaluation tooling. It intentionally does not prescribe one embedding model, one topic count, one HDBSCAN setting, or one universal threshold. Those choices must be generated and justified from the target corpus, research question, validation design, and compute constraints.
+This repository is a research and decision framework plus portable evaluation tooling. It estimates a provisional coarse/fine theme range from the complete target corpus and asks for user direction before modeling, but intentionally does not prescribe one embedding model, one target topic count, one HDBSCAN setting, or one universal threshold. Final choices must be generated and justified from the target corpus, research question, validation design, user authorization, and compute constraints.
 
 ## License
 

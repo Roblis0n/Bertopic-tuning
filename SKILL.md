@@ -25,6 +25,7 @@ Translate papers into mechanisms and testable hypotheses. Never copy a paper's h
 10. Preserve raw text, corpus fingerprints, failed candidates, representative units, audit decisions and topic lineage.
 11. Do not invent operational numbers. This includes fixed/default grids, ratios around a substantive support value, universal seed/resample/reviewer/sample counts, similarity cutoffs, topic-count bands and metric weights. If target-corpus evidence is unavailable, record `pending_local_calibration` and specify the estimand, calibration data, candidate-generation rule and stop rule.
 12. Do not turn named models from papers, leaderboards or examples into a mandatory shortlist. Generate candidates from the task, language, context length, license, deployment and compute requirements; verify current availability when it matters.
+13. Do not fit a baseline or any BERTopic candidate before a complete full-corpus theme reconnaissance has been shown to the user and `modeling-authorization.json` records `approved_for_modeling`.
 
 ## Route the corpus
 
@@ -40,6 +41,7 @@ A long online article follows the long-document route. A concise formal response
 
 Always read:
 
+- `references/corpus-theme-reconnaissance.md` for the mandatory pre-model preview and authorization gate;
 - `references/diversity-evaluation.md` for metrics, calibration and selection;
 - `references/study-contract-and-reporting.md` for artifacts and reporting;
 - `references/academic-evidence.md` before making literature-backed claims.
@@ -53,7 +55,7 @@ Read when needed:
 
 ## Required workflow
 
-Track and finish this sequence. Do not stop after a parameter suggestion when the available data and tools permit execution.
+Track and finish this sequence. The full-corpus reconnaissance gate is the required intentional pause: show the preview, stop for user direction, and resume only after explicit modeling authorization. Outside that gate, do not stop after a parameter suggestion when the available data and tools permit execution.
 
 ### 1. Inspect and fingerprint
 
@@ -63,7 +65,31 @@ Track and finish this sequence. Do not stop after a parameter suggestion when th
 - Hash the data snapshot and preprocessing configuration.
 - State whether BERTopic's hard primary assignment is compatible with the research claim. If mixed membership or covariate inference is essential, retain BERTopic for discovery only and add a suitable robustness model.
 
-### 2. Create the study contract
+### 2. Conduct full-corpus theme reconnaissance and pause
+
+- Copy `assets/theme-reconnaissance.json`, `theme-candidate-audit.csv` and `modeling-authorization.json` into the study workspace.
+- Restate the user's theme as a `coverage_and_interpretation_anchor`; keep emergent themes open unless the user explicitly changes the analytical scope.
+- Account for every source unit. Directly review each eligible unit or inherit interpretation only from a verified exact duplicate. A sample, truncated scan or near-duplicate inheritance is not full-corpus coverage.
+- For long or mixed corpora, cover every eligible parent document using provisional reading sections without freezing the later chunking policy.
+- Produce an evidence-linked candidate hierarchy; classify each candidate as `mainline`, `supporting`, `contextual`, `emergent`, `artifact` or `uncertain`; and report artifact exclusions, unresolved boundaries, and coarse/fine lower-point-upper topic-count estimates.
+- Label the count estimate `pre_model_hypothesis_not_target_k`. Never turn it into a forced BERTopic topic count or clustering target.
+- Present the preview, set `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop before embeddings or model fitting.
+
+Validate the preview:
+
+```text
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory>
+```
+
+After the user accepts, rejects, merges, splits, defers or reframes candidates, record every disposition and the user's instruction. Resume only when this passes:
+
+```text
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
+```
+
+Read `references/corpus-theme-reconnaissance.md` for the accounting equations, route-specific review method, reporting order and invalidation rules.
+
+### 3. Create the study contract
 
 Copy `assets/study-contract.json` into the analysis workspace and complete it before fitting candidates. Define:
 
@@ -77,18 +103,20 @@ Copy `assets/study-contract.json` into the analysis workspace and complete it be
 - model-selection policy (`pareto`);
 - outlier role (`diagnostic_guardrail_only`).
 
+Retain the mandatory `pre_model_reconnaissance` policy, link the approved reconnaissance and authorization artifacts, and store the approval's `authorization_id`. If the corpus fingerprint, route, research question or resolved preview changes, invalidate the old authorization before fitting.
+
 If a value cannot yet be justified, record `pending_local_calibration` plus the calibration experiment that will estimate it. Do not replace it with a paper's number, a conventional default, a fixed multiplier of a local quantity or an invented pilot grid.
 
 When academic claims, current software behavior or model availability matter, run the conditional search protocol before freezing the contract. Log verified sources, mechanisms, transfer conditions and limitations in `evidence-log.csv`.
 
-### 3. Establish an auditable baseline
+### 4. Establish an auditable baseline
 
 - Cache embeddings so structural candidates use identical vectors when the encoder is fixed.
 - Fit a transparent baseline and export assignments, probabilities when available, topic words, representative/random/boundary units and topic embeddings.
 - Keep the evaluation corpus and sampling rules fixed across candidates.
-- Register every candidate, including failures, in `experiment-registry.csv`.
+- Register every candidate, including failures, in `experiment-registry.csv`, and link its approved `authorization_id`.
 
-### 4. Run the structural loop
+### 5. Run the structural loop
 
 Change assignments only through structural experiments:
 
@@ -101,7 +129,7 @@ Change assignments only through structural experiments:
 
 Keep representation fixed during this loop so structural effects remain identifiable.
 
-### 5. Run the representation loop
+### 6. Run the representation loop
 
 Freeze assignments, then compare tokenization, domain dictionaries, phrase vocabulary, document-frequency pruning, c-TF-IDF variants, frequent-term suppression, MMR/KeyBERTInspired and grounded labels. Use `update_topics()` for this layer. Recompute representation metrics, but retain the structural scorecard unchanged.
 
@@ -116,7 +144,7 @@ For user-managed lexical resources:
 
 Treat custom terms as tokenizer/domain-phrase instructions. Do not pass them as a closed `CountVectorizer(vocabulary=...)` allowlist unless the study explicitly requires and validates a closed vocabulary as a separate analytical policy.
 
-### 6. Run the taxonomy loop
+### 7. Run the taxonomy loop
 
 - Generate nearest-topic pairs from representative-unit topic embeddings and ranked-word overlap.
 - Audit the most similar pairs before merging.
@@ -124,7 +152,7 @@ Treat custom terms as tokenizer/domain-phrase instructions. Do not pass them as 
 - Split a broad topic only when subthemes are distinct, recur across resamples and admit non-overlapping inclusion/exclusion rules.
 - Evaluate diversity and coherence again at each intended hierarchy level.
 
-### 7. Evaluate and select
+### 8. Evaluate and select
 
 Create one scorecard per candidate using `references/diversity-evaluation.md`. Include TD as a descriptive screen, rank-aware lexical overlap, nearest-topic semantic similarity, theme coverage, stability, coherence and labelability floors, group leakage checks, and outlier fraction as a reported guardrail.
 
@@ -142,7 +170,7 @@ python scripts/select_pareto.py --input <candidate-metrics.csv> --output <pareto
 
 Inspect every finalist's representative, random and boundary units. Record why the chosen Pareto point fits the research purpose; do not automatically choose the model with the most topics.
 
-### 8. Iterate without losing history
+### 9. Iterate without losing history
 
 - Distinguish representation refresh, structural refit, taxonomy edit and new-data mapping.
 - Keep lexicon bundle lineage separate from topic lineage. A synonym, stopword or custom-term edit creates a representation candidate, not a new structural model.
@@ -157,13 +185,14 @@ python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json
 - Treat one-to-many and many-to-one results as split/merge candidates requiring evidence and human review.
 - For temporal analysis, prefer one global taxonomy plus topics-over-time. Do not compare independently fitted period-specific topic numbers.
 
-### 9. Complete the research bundle
+### 10. Complete the research bundle
 
-Populate all core templates in `assets/`: study contract, corpus profile, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
+Populate all core templates in `assets/`: corpus profile, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
 
 Validate before claiming completion:
 
 ```text
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 python scripts/validate_study_bundle.py <study-bundle-directory>
 python -m unittest discover -s scripts/tests -v
 ```
@@ -174,13 +203,15 @@ Fix every validation error. A header-only template, uncited decision, uncalibrat
 
 Lead with the selected route and substantive model decision. Report:
 
-1. what changed and which layer changed;
-2. which diversity dimensions improved, deteriorated or remain uncertain;
-3. whether comparisons used matched granularity;
-4. which thresholds were locally calibrated and how;
-5. strongest counter-evidence and failure modes;
-6. topic merges, splits, new themes and retirements;
-7. lexicon bundle changes, frozen-assignment evidence and unresolved term decisions when enabled;
-8. reproducible artifact paths and validation results.
+1. the approved pre-model reconnaissance, full-corpus coverage accounting, user direction and authorization ID;
+2. preview-versus-model confirmations, merges, splits, absences and emergent themes;
+3. what changed and which layer changed;
+4. which diversity dimensions improved, deteriorated or remain uncertain;
+5. whether comparisons used matched granularity;
+6. which thresholds were locally calibrated and how;
+7. strongest counter-evidence and failure modes;
+8. topic merges, splits, new themes and retirements;
+9. lexicon bundle changes, frozen-assignment evidence and unresolved term decisions when enabled;
+10. reproducible artifact paths and validation results.
 
 Do not present paper-derived numbers as universal recommendations. Do not describe a representation-only refresh as a new structural model. Do not claim that low outlier rate proves high-quality topic diversity.

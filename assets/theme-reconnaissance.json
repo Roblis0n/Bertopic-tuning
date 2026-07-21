@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reconnaissance_id": "",
+  "corpus_fingerprint": "",
+  "route": "",
+  "created_at": "",
+  "research_question": "",
+  "user_theme": {
+    "mainline": "",
+    "mode": "coverage_and_interpretation_anchor",
+    "allow_emergent_themes": true,
+    "inclusion_intent": "",
+    "exclusion_intent": ""
+  },
+  "coverage": {
+    "source_unit_count": null,
+    "eligible_unit_count": null,
+    "reviewed_unit_count": null,
+    "duplicate_inherited_unit_count": null,
+    "excluded_unit_count": null,
+    "failed_unit_count": null,
+    "coverage_complete": false,
+    "failed_unit_ids": [],
+    "exclusion_basis": ""
+  },
+  "parent_document_coverage": {
+    "applicable": false,
+    "eligible_parent_document_count": null,
+    "reviewed_parent_document_count": null,
+    "failed_parent_document_count": null,
+    "coverage_complete": false
+  },
+  "topic_count_estimate": {
+    "interpretation": "pre_model_hypothesis_not_target_k",
+    "coarse": {
+      "lower_bound": null,
+      "point_estimate": null,
+      "upper_bound": null,
+      "candidate_theme_ids": [],
+      "basis": ""
+    },
+    "fine": {
+      "lower_bound": null,
+      "point_estimate": null,
+      "upper_bound": null,
+      "candidate_theme_ids": [],
+      "basis": ""
+    }
+  },
+  "unresolved_boundaries": [],
+  "excluded_artifact_candidate_ids": [],
+  "strongest_counter_evidence": ""
+}
