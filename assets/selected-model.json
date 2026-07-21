@@ -1,0 +1,14 @@
+{
+  "candidate_id": "",
+  "structure_snapshot_id": "",
+  "representation_snapshot_id": "",
+  "taxonomy_snapshot_id": "",
+  "eligible_pareto_frontier": [],
+  "constraints_and_calibration_sources": [],
+  "operating_granularity": "",
+  "decision_basis": "",
+  "uncertainty_and_ties": "",
+  "rejected_alternatives": [],
+  "human_review_decision": "",
+  "release_status": ""
+}

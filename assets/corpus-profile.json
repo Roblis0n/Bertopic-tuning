@@ -1,0 +1,21 @@
+{
+  "corpus_fingerprint": "",
+  "source_artifacts": [],
+  "unit_count": null,
+  "parent_document_count": null,
+  "schema": {},
+  "length_profile": {
+    "tokenizer": "",
+    "tokenizer_revision": "",
+    "distribution": {},
+    "truncation_risk": ""
+  },
+  "languages": {},
+  "duplicate_profile": {},
+  "group_fields": [],
+  "source_time_profile": {},
+  "missing_text_profile": {},
+  "preprocessing_config_hash": "",
+  "segmentation_config_hash": "",
+  "created_at": ""
+}

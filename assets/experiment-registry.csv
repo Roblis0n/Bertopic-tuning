@@ -1,0 +1,1 @@
+candidate_id,run_type,parent_snapshot_id,corpus_fingerprint,analysis_unit,embedding_model,umap_config,hdbscan_config,representation_config,hypothesis,seed,resample_id,software_versions,artifact_uri,status,rejection_reason

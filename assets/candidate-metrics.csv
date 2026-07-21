@@ -1,0 +1,1 @@
+candidate_id,hierarchy_level,topic_count,td,td_k,irbo,rbo_p,semantic_diversity,nearest_similarity_p90,semantic_redundant_pair_fraction,coverage,coverage_method,stability,stability_method,coherence,human_labelability,source_leakage,outlier_fraction,uncertainty_artifact,constraint_failures,pareto_status

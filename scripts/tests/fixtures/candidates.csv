@@ -1,0 +1,4 @@
+candidate_id,irbo,semantic_diversity,coverage,stability,coherence,outlier_fraction
+C-local,0.91,0.72,0.84,0.79,0.63,0.22
+C-balanced,0.84,0.86,0.88,0.83,0.66,0.24
+C-fragmented,0.97,0.93,0.61,0.41,0.28,0.08

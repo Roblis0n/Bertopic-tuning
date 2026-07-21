@@ -1,0 +1,16 @@
+{
+  "topics": [
+    {
+      "topic_uid": "N-health",
+      "keywords": ["疫苗", "免疫", "接种"],
+      "embedding": [0.99, 0.01],
+      "anchor_unit_ids": ["u1", "u2"]
+    },
+    {
+      "topic_uid": "N-housing",
+      "keywords": ["住房", "保障房", "租金"],
+      "embedding": [0.01, 0.99],
+      "anchor_unit_ids": ["u3", "u4"]
+    }
+  ]
+}

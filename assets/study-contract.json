@@ -1,0 +1,83 @@
+{
+  "study_id": "",
+  "research_question": "",
+  "inferential_scope": "exploratory-discovery",
+  "population_and_sampling": "",
+  "route": "",
+  "route_subsets": {},
+  "analysis_unit": "",
+  "diversity_definition": [
+    "lexical",
+    "semantic",
+    "coverage",
+    "stability",
+    "interpretability"
+  ],
+  "minimum_meaningful_theme": {
+    "definition": "",
+    "support_unit": "",
+    "evidence_source": "",
+    "calibration_artifact": ""
+  },
+  "granularity_scope": {
+    "comparison_rule": "",
+    "hierarchy_levels": []
+  },
+  "calibration_plan": {
+    "unjustified_value_token": "pending_local_calibration",
+    "candidate_generation_policy": "adaptive-local-evidence",
+    "stop_rule_required": true,
+    "thresholds": [
+      {
+        "name": "",
+        "status": "pending_local_calibration",
+        "evidence_basis": "",
+        "candidate_generation_rule": "",
+        "stop_rule": "",
+        "artifact": ""
+      }
+    ],
+    "labeled_or_reference_data": "",
+    "uncertainty_method": "",
+    "prohibited_shortcuts": [
+      "paper-parameter-copying",
+      "library-default-as-evidence",
+      "fixed-multiplier-grid",
+      "universal-seed-resample-reviewer-or-sample-count"
+    ]
+  },
+  "validation_groups": [],
+  "validation_holdouts": [],
+  "human_audit_plan": {
+    "reviewer_design": "",
+    "sampling_basis": "precision-required-for-claim",
+    "sample_types": [
+      "representative",
+      "random",
+      "boundary",
+      "nearest-topic-pair",
+      "missing-theme"
+    ]
+  },
+  "embedding_context_policy": "",
+  "duplicate_and_source_policy": "",
+  "chunking_policy": "",
+  "parent_document_id_field": "",
+  "overlap_accounting": "",
+  "aggregation_policy": "",
+  "selection_policy": "pareto",
+  "outlier_role": "diagnostic_guardrail_only",
+  "metric_contract": {
+    "top_k": null,
+    "rbo_p": null,
+    "semantic_redundancy_threshold": null,
+    "coherence_floor": null,
+    "labelability_floor": null,
+    "coverage_floor": null,
+    "stability_floor": null
+  },
+  "paper_transfer_policy": "mechanisms-and-local-tests-not-parameters",
+  "software_and_model_versions": {},
+  "created_at": "",
+  "approved_by": ""
+}

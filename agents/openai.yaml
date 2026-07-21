@@ -1,0 +1,4 @@
+interface:
+  display_name: "BERTopic Tuning"
+  short_description: "面向短网络文本与长文本的学术BERTopic调参与持续迭代"
+  default_prompt: "使用 $bertopic-tuning 为我的语料设计并执行以主题多样性为核心的 BERTopic 调参与模型迭代研究。"
