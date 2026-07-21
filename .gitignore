@@ -36,3 +36,6 @@ Desktop.ini
 *.log
 *.tmp
 *.temp
+
+# Local maintainer handoff notes
+HANDOFF.md
