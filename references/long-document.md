@@ -50,17 +50,18 @@ Preserve:
 
 Never let a chunk lose its parent-document link.
 
-## Pre-model full-corpus reconnaissance
+## Pre-model corpus-scale reconnaissance
 
-Before calibrating the final modeling unit or fitting BERTopic, inspect every eligible parent document and record `parent_document_coverage` in `theme-reconnaissance.json`.
+Before calibrating the final modeling unit or fitting BERTopic, census every eligible parent document and record `parent_document_coverage` in `theme-reconnaissance.json`. If direct review of every document exceeds the registered resource envelope, use `references/scalable-corpus-reading.md`.
 
-- Traverse natural sections, headings, paragraphs and other provisional semantic spans across the entire document, including late sections rather than only abstracts or beginnings. Retain section paths and original character or token offsets for traceability.
-- Link candidate themes to evidence unit IDs and parent-document spread; repeated sections from one parent do not constitute independent support across documents.
+- In direct mode, traverse natural sections, headings, paragraphs and other provisional semantic spans across every document. In progressive mode, inventory all section paths and select distributed traceable spans across source, time, type, length and within-document position; never use only abstracts or beginnings.
+- Escalate relevant sections or full documents when selected spans cannot establish stance, contradiction, novelty or candidate boundaries. Retain section paths and original character or token offsets for traceability.
+- Link candidate themes to evidence unit IDs and parent-document spread; every long-document ledger row retains its parent ID, the declared parent count matches distinct ledger parent IDs, and repeated sections from one parent do not constitute independent support across documents.
 - Mark references, appendices, tables, boilerplate and other excluded material explicitly and reconcile their counts with source-unit accounting.
-- Preserve secondary and contradictory themes even when the user's mainline is concentrated in another section.
-- For mixed corpora, mark the long-document route subset on every candidate and report shared versus route-specific candidates.
+- Use lexical novelty and uncertainty queues plus an independent probability holdout to protect secondary and contradictory themes when the user's mainline is concentrated elsewhere.
+- For mixed corpora, use only concrete `network-short` or `long-document` values on ledger rows, require both subsets, mark the long-document route subset on every candidate and report shared versus route-specific candidates.
 
-These provisional reading spans support complete reconnaissance only. They do not freeze `chunking_policy`, overlap, discovery weights or the final analysis unit; those remain locally calibrated study-contract decisions. Present the coarse/fine preview and pause at `awaiting_user_direction` before modeling.
+These provisional reading spans support reconnaissance only. They do not freeze `chunking_policy`, overlap, discovery weights or the final analysis unit; those remain locally calibrated study-contract decisions. Present the reading mode, full-text/extracted/unreviewed parent counts, holdout and residual risk before the coarse/fine preview, then pause at `awaiting_user_direction` before modeling.
 
 ## Chunking calibration
 

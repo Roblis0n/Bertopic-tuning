@@ -7,7 +7,7 @@ The central objective is **effective thematic diversity**: distinct, well-covere
 ## What this repository provides
 
 - Separate modeling routes for short, noisy network text and multi-theme long documents.
-- A mandatory full-corpus theme reconnaissance that previews coarse/fine theme counts and candidate types around the user's mainline before modeling.
+- A mandatory corpus-scale theme reconnaissance with full source accounting, direct full-text review for manageable corpora, and audited progressive extraction/reading for large or multi-file corpora.
 - An explicit user-direction gate: the skill reports its provisional map, pauses, and fits BERTopic only after recorded authorization.
 - A multi-dimensional diversity framework covering lexical distinctiveness, semantic distinctiveness, theme coverage, stability, and human interpretability.
 - A clear separation between structural clustering, topic representation, taxonomy editing, and model governance.
@@ -98,7 +98,7 @@ git -C .agents\skills\bertopic-tuning pull --ff-only
 
 ## Using the skill
 
-Invoke it explicitly with `$bertopic-tuning` and provide the corpus location, research question, user-theme mainline, and any existing model outputs. The skill first reads and accounts for the complete corpus, reports a provisional theme map and count range, then pauses for your direction before modeling.
+Invoke it explicitly with `$bertopic-tuning` and provide the corpus location, research question, user-theme mainline, and any existing model outputs. The skill first accounts for every source unit and estimates whether complete unique-content reading fits the available context and time. It then uses either direct full-text review or audited progressive extraction, reports the semantic-review denominator, residual risk, provisional theme map and count range, and pauses for your direction before modeling. Exhausting the resource budget before the registered stopping rule is satisfied produces an `interim` incomplete reconnaissance, not an approvable `stop_with_residual_risk` preview.
 
 Example for short network text:
 
@@ -121,16 +121,17 @@ plan for future corpus updates.
 中文调用示例：
 
 ```text
-使用 $bertopic-tuning 分析这批长文本。先按语义结构切分并保留父文档关系，
-全量浏览语料并围绕我的研究主线预估粗粒度和细粒度主题。先把预估结果告诉我，
-等我确认合并、拆分或调整后再建模；最后共同评估主题覆盖、稳定性和可解释性。
+使用 $bertopic-tuning 分析这批长文本。先全量核算语料并保留父文档关系；若全文
+阅读超出时间或上下文预算，改用可审计的分层提取、风险升级全文和独立留出复核。
+先告诉我实际语义阅读覆盖、残余风险及粗细粒度主题预估，等我确认后再建模；最后
+共同评估主题覆盖、稳定性和可解释性。
 ```
 
 ## End-to-end workflow
 
-1. **Inspect and fingerprint** the corpus, metadata, duplicates, languages, lengths, sources, dates, and parent-document structure.
-2. **Reconnoiter the full corpus** and report evidence-linked coarse/fine theme estimates, candidate types, artifacts, uncertainty, and relation to the user's mainline.
-3. **Pause for user direction** and record candidate dispositions plus explicit authorization; no embeddings or model fitting occur while the gate is waiting.
+1. **Inspect and fingerprint** the corpus, metadata, duplicates, languages, lengths, sources, dates, parent-document structure and per-unit content SHA-256.
+2. **Choose and execute the reading mode**: reconcile a full source census with unique ledger IDs; use direct full text when feasible or progressive extraction with registered artifacts, bounded hashed spans, five selection channels and a final-independent probability holdout. Mixed corpora must satisfy these requirements separately in both route subsets. Then report semantic-review depth, residual risk and evidence-linked coarse/fine estimates.
+3. **Pause for user direction** and record candidate dispositions plus explicit authorization bound to the current pre-model artifact fingerprint; no embeddings or model fitting occur while the gate is waiting.
 4. **Create a study contract** defining the research claim, modeling route, meaningful theme size, evaluation dimensions, calibration rules, and stopping criteria.
 5. **Fit an auditable baseline** with cached embeddings and fixed evaluation samples.
 6. **Tune structure** through testable hypotheses about the encoder, UMAP, HDBSCAN, granularity, seeds, and resamples.
@@ -148,7 +149,7 @@ The portable command-line tools use only the Python standard library. The reconn
 
 | Tool | Purpose |
 |---|---|
-| `scripts/validate_theme_reconnaissance.py` | Verifies full-corpus accounting, candidate hierarchy, count estimates, fingerprints, and the user-authorization gate before modeling |
+| `scripts/validate_theme_reconnaissance.py` | Verifies unique ledger IDs, content hash/length and canonical duplicate identity, registered bounded extraction spans, per-route mixed coverage/channels/holdouts, parent accounting, semantic-review depth, prevalence firewall, structured stopping state, pre-model artifact binding, and the authorization gate |
 | `scripts/evaluate_diversity.py` | Calculates topic-level lexical and semantic diversity diagnostics from a portable topic catalog |
 | `scripts/select_pareto.py` | Filters candidates by explicit constraints and returns the non-dominated model set |
 | `scripts/align_snapshots.py` | Aligns old and new topic snapshots using locally calibrated semantic, keyword, and document evidence |
@@ -214,13 +215,13 @@ One-to-many and many-to-one matches are split and merge candidates requiring evi
 
 ### Validate the pre-model theme preview
 
-Copy `theme-reconnaissance.json`, `theme-candidate-audit.csv`, `modeling-authorization.json` and `corpus-profile.json` from `assets/` into the study bundle. After full-corpus review, validate the preview before showing it to the user:
+Copy `corpus-reading-plan.json`, `corpus-reading-ledger.csv`, `theme-reconnaissance.json`, `theme-candidate-audit.csv`, `modeling-authorization.json` and `corpus-profile.json` from `assets/` into the study bundle. After reconciling the source census and completing the registered direct or progressive reading procedure, validate the preview before showing it to the user:
 
 ```bash
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory>
 ```
 
-Leave the gate at `awaiting_user_direction` while the user reviews the candidate map. After recording all accept, reject, merge, split, defer or reframe instructions, require approval before any modeling process begins:
+Leave the gate at `awaiting_user_direction` while the user reviews the candidate map, semantic-review denominator and residual risk. A completed plan must be `complete_for_preview`, use the appropriate full-text or local-holdout termination basis, and record `resource_budget_exhausted: false`; resource exhaustion produces only an interim result. Candidate rows remain `prevalence_claimed: false` with `claim_scope: semantic_evidence_only`. After recording all accept, reject, merge, split, defer or reframe instructions—and `progressive_reading_risk_acknowledged: true` for progressive reading—record a fresh `pre_model_artifact_fingerprint` over the approved profile, plan, ledger, reconnaissance and candidate map, then require approval before any modeling process begins:
 
 ```bash
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
@@ -270,6 +271,8 @@ Assignment exports use `unit_id` plus `topic_uid` (preferred) or `topic_id`. The
 The `assets/` directory contains reusable artifacts for a reproducible study:
 
 - `corpus-profile.json`
+- `corpus-reading-plan.json`
+- `corpus-reading-ledger.csv`
 - `theme-reconnaissance.json`
 - `theme-candidate-audit.csv`
 - `modeling-authorization.json`
@@ -306,7 +309,8 @@ Permanent `topic_uid` values are kept separate from BERTopic's local integer IDs
 
 The repository translates literature into mechanisms and testable hypotheses; it does not copy numerical settings from unrelated corpora. Use:
 
-- [references/corpus-theme-reconnaissance.md](references/corpus-theme-reconnaissance.md) for the full-corpus preview, count estimation, and authorization gate;
+- [references/corpus-theme-reconnaissance.md](references/corpus-theme-reconnaissance.md) for the corpus-scale preview, count estimation, and authorization gate;
+- [references/scalable-corpus-reading.md](references/scalable-corpus-reading.md) for large/multi-file extraction, adaptive selection, full-text escalation, holdout auditing and residual-risk reporting;
 - [references/academic-evidence.md](references/academic-evidence.md) for the evidence map and source-to-decision boundaries;
 - [references/web-research-protocol.md](references/web-research-protocol.md) when claims depend on current papers, APIs, package behavior, or model availability;
 - [references/study-contract-and-reporting.md](references/study-contract-and-reporting.md) for required artifacts and reporting standards;
@@ -325,6 +329,7 @@ bertopic-tuning/
 │   └── reusable study and audit templates
 ├── references/
 │   ├── corpus-theme-reconnaissance.md
+│   ├── scalable-corpus-reading.md
 │   ├── network-short-text.md
 │   ├── long-document.md
 │   ├── diversity-evaluation.md
@@ -354,7 +359,7 @@ The suite covers pre-model reconnaissance and authorization, diversity evaluatio
 
 ## Scope
 
-This repository is a research and decision framework plus portable evaluation tooling. It estimates a provisional coarse/fine theme range from the complete target corpus and asks for user direction before modeling, but intentionally does not prescribe one embedding model, one target topic count, one HDBSCAN setting, or one universal threshold. Final choices must be generated and justified from the target corpus, research question, validation design, user authorization, and compute constraints.
+This repository is a research and decision framework plus portable evaluation tooling. It estimates a provisional coarse/fine theme range from audited target-corpus evidence and asks for user direction before modeling. For large corpora it reports the exact semantic-review denominator and residual risk instead of pretending that selected evidence is complete full-text coverage. It intentionally does not prescribe one embedding model, one target topic count, one HDBSCAN setting, one reading sample size, or one universal threshold. Final choices must be generated and justified from the target corpus, research question, validation design, user authorization, and compute constraints.
 
 ## License
 

@@ -69,9 +69,12 @@
     "required": true,
     "user_theme_mode": "coverage_and_interpretation_anchor",
     "allow_emergent_themes": true,
+    "reading_plan_artifact": "corpus-reading-plan.json",
+    "reading_ledger_artifact": "corpus-reading-ledger.csv",
     "reconnaissance_artifact": "theme-reconnaissance.json",
     "candidate_audit_artifact": "theme-candidate-audit.csv",
     "authorization_artifact": "modeling-authorization.json",
+    "authorization_id": "",
     "user_authorization_required": true
   },
   "lexicon_policy": {

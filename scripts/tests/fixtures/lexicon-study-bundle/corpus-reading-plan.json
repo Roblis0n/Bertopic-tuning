@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "reading_plan_id": "read-plan-lexicon-fixture",
+  "reconnaissance_id": "recon-lexicon-fixture",
+  "corpus_fingerprint": "sha256:lexicon-fixture",
+  "mode": "direct_full_text",
+  "decision_basis": {
+    "estimated_unique_full_text_tokens": 300,
+    "usable_reconnaissance_tokens": 2000,
+    "time_budget": "fixture budget",
+    "direct_full_text_feasible": true,
+    "reason": "the three-unit fixture fits the budget"
+  },
+  "census": {
+    "ledger_artifact": "corpus-reading-ledger.csv",
+    "all_source_units_profiled": true,
+    "profile_fields": ["unit_id", "source", "time", "language", "length"],
+    "exact_duplicate_policy": "inherit only exact content",
+    "near_duplicate_policy": "review independently"
+  },
+  "extraction": {
+    "streaming_or_batched": true,
+    "raw_text_preserved": true,
+    "unit_card_fields": ["unit_id", "raw_text"],
+    "registered_artifacts": [
+      {"artifact_path": "fixtures/raw/u1.txt", "artifact_sha256": "sha256:0dd2417ad84166293a23c447ed2808cea71968bda8c2e476e6257ded52465be0"},
+      {"artifact_path": "fixtures/raw/u2.txt", "artifact_sha256": "sha256:36ebee298e8309852644878404c9d205e33a2c5d9282e0f0978cb21f2612d3cc"},
+      {"artifact_path": "fixtures/raw/u3.txt", "artifact_sha256": "sha256:6597c83f7b8a5db5559185a5e1a2b300740403729df02e50dfc52073f688e3c2"}
+    ],
+    "short_text_policy": "read complete text",
+    "long_document_policy": "read all natural sections",
+    "card_size_basis": "no truncation in direct mode"
+  },
+  "selection": {
+    "stratification_fields": ["source", "time", "language", "length"],
+    "selection_channels": ["complete_unique_content"],
+    "candidate_generation_rule": "read every eligible unit",
+    "escalation_rule": "not applicable because all units are read"
+  },
+  "stopping": {
+    "estimand": "complete eligible-content review",
+    "rule": "stop when every eligible unit is read",
+    "status": "satisfied",
+    "reconnaissance_state": "complete_for_preview",
+    "termination_basis": "complete_full_text_review",
+    "resource_budget_exhausted": false,
+    "holdout_audit_performed": false,
+    "holdout_unit_count": 0,
+    "new_candidate_theme_count": 0,
+    "material_change_detected": false,
+    "decision": "not_applicable_full_text",
+    "evidence": "all three units were read"
+  },
+  "residual_risk": "fixture size limits generalization"
+}

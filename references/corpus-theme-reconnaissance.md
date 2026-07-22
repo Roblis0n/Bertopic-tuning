@@ -1,9 +1,10 @@
-# Full-Corpus Theme Reconnaissance
+# Corpus-Scale Theme Reconnaissance
 
 ## Contents
 
 - Purpose and boundary
 - User-theme brief
+- Reading-mode decision
 - Full-corpus accounting
 - Reading procedure
 - Candidate-theme map
@@ -16,7 +17,7 @@
 
 ## Purpose and boundary
 
-Run a full-corpus theme reconnaissance after fingerprinting and before any embedding, dimensionality reduction, clustering, topic reduction, or BERTopic fit. Its purpose is to give the user an evidence-linked provisional map of what the corpus appears to contain, estimate a defensible coarse and fine topic-count range, and obtain explicit direction for the modeling study.
+Run a corpus-scale theme reconnaissance after fingerprinting and before any embedding, dimensionality reduction, clustering, topic reduction, or BERTopic fit. Its purpose is to give the user an evidence-linked provisional map of what the reviewed corpus evidence appears to contain, estimate a defensible coarse and fine topic-count range, and obtain explicit direction for the modeling study.
 
 This stage is qualitative reconnaissance, not a topic model. Its estimate must be recorded as `pre_model_hypothesis_not_target_k`. It must not be copied into `nr_topics`, HDBSCAN parameters, a forced cluster count, or a model-selection target. Later modeling may confirm, merge, split, reject, or add themes.
 
@@ -41,35 +42,52 @@ Store this in `theme-reconnaissance.json` under `user_theme`. Classify each cand
 - `artifact`: template, boilerplate, source marker, duplicated campaign, reference list, or other non-substantive pattern;
 - `uncertain`: evidence is insufficient to place the candidate reliably.
 
+## Reading-mode decision
+
+Copy `assets/corpus-reading-plan.json` and `assets/corpus-reading-ledger.csv` before semantic review. Estimate eligible unique-content tokens after exact-duplicate registration, reserve context for synthesis and audit, and record the available time. Choose:
+
+- `direct_full_text` when every eligible canonical unit can be read in full inside the registered resource envelope;
+- `progressive_extraction` when direct full-text reading is infeasible.
+
+Do not use a universal size threshold. For progressive reading, follow `references/scalable-corpus-reading.md`: census every source unit, build traceable bounded representations, select through coverage-strata, user-anchor, lexical-novelty, probability-holdout and uncertainty-escalation channels, upgrade risky units to full text, and stop only under a registered holdout rule.
+
+The mode controls what can be claimed. `progressive_extraction` supports an uncertainty-bounded preview; it never becomes complete full-text review merely because the census is complete.
+
 ## Full-corpus accounting
 
-“Full corpus” means complete and auditable accounting of every source unit, not placing the whole corpus into one prompt. The reconnaissance is complete only when these equations hold:
+“Full corpus” first means complete and auditable census accounting of every source unit, not placing the whole corpus into one prompt. Keep census completion separate from semantic review depth:
 
 ```text
 source_unit_count = eligible_unit_count + excluded_unit_count
+profiled_source_unit_count = source_unit_count
+reviewed_unit_count = full_text_reviewed_unit_count
+                    + extracted_representation_reviewed_unit_count
 eligible_unit_count = reviewed_unit_count
                     + duplicate_inherited_unit_count
+                    + unreviewed_unit_count
                     + failed_unit_count
 failed_unit_count = 0
 ```
 
-Record the counts and exclusion basis in `theme-reconnaissance.json`. Every eligible unit must therefore be directly reviewed or be an exact duplicate whose interpretation is inherited from a reviewed canonical unit. Near duplicates cannot inherit review because small differences may change stance, actor, event, or theme.
+Record the counts and exclusion basis in `theme-reconnaissance.json`, and reconcile them with exactly one ledger row per globally unique source `unit_id`. An exact duplicate may inherit only from an existing semantically reviewed canonical row. Set `accounting_complete: true` only when row, unique-ID and depth counts reconcile. Set `full_text_review_complete: true` only when extracted-representation, unreviewed and failed counts are all zero. Near duplicates cannot inherit review because small differences may change stance, actor, event, or theme.
 
-Use stable unit IDs throughout. Preserve an audit link from every candidate theme to evidence IDs in `theme-candidate-audit.csv`. Do not claim full coverage from a sample, search result, topic keyword list, embedding neighborhood, or beginning-of-file scan.
+Use stable unit IDs throughout. Preserve an audit link from every candidate theme to evidence IDs in `theme-candidate-audit.csv`; each evidence ID must resolve to a ledger row reviewed as `full_text` or `extracted_representation`. Do not claim complete full-text coverage from selected evidence, a search result, topic keyword list, lexical sketch, embedding neighborhood, generated summary, or beginning-of-file scan.
 
-If a unit cannot be read or parsed, record it in `failed_unit_ids`, leave `coverage_complete: false`, and repair the failure before presenting the reconnaissance as complete. Do not silently omit malformed, very long, non-Chinese, or inconvenient records.
+If a unit cannot be read or parsed, record it in `failed_unit_ids`, leave `accounting_complete: false`, and repair the failure before presenting a valid preview. Do not silently omit malformed, very long, non-Chinese, or inconvenient records.
 
 ## Reading procedure
 
-Process the corpus in bounded batches while maintaining a cumulative codebook:
+Process the corpus lazily or in bounded batches while maintaining a cumulative codebook:
 
 1. Freeze source order, stable IDs, fingerprint, route, and exclusions.
-2. Review every eligible canonical unit once; inherit only verified exact duplicates.
-3. Assign one or more provisional candidate IDs and retain short evidence notes.
-4. After each batch, compare new evidence with the cumulative map; merge labels only when definitions and inclusion/exclusion rules agree.
-5. Preserve unresolved boundaries instead of forcing a premature decision.
-6. Audit theme coverage across sources, times, groups, or parent documents so one dense source cannot define the map alone.
-7. Separate substantive candidates from artifact candidates before estimating counts.
+2. Profile every source unit and write its ledger row without loading the whole corpus into the prompt.
+3. In `direct_full_text`, review every eligible canonical unit once; in `progressive_extraction`, execute every required selection channel and preserve the unreviewed denominator.
+4. Assign one or more provisional candidate IDs only to semantically reviewed evidence and retain short notes plus raw locators.
+5. After each batch, compare new evidence with the cumulative map; merge labels only when definitions and inclusion/exclusion rules agree.
+6. Preserve unresolved boundaries and escalate novel, ambiguous, contradictory or context-sensitive evidence to full text.
+7. Audit theme evidence across sources, times, groups, languages, document positions or parent documents so one dense source cannot define the map alone.
+8. In progressive mode, freeze the audit-round map and mark the untouched audit rows `final_independent`. Their count must match the plan and they cannot support the frozen map. If they change the map, relabel released evidence `development_released`, expand reading and draw a fresh final holdout. Record `stop_with_residual_risk` only with zero new candidates and `material_change_detected: false`.
+9. Separate substantive candidates from artifact candidates before estimating counts.
 
 Do not use generated labels as evidence. The evidence is the linked corpus text and its distribution across independent units or parent documents. Labels are editable summaries.
 
@@ -84,7 +102,8 @@ Populate one row per candidate in `theme-candidate-audit.csv`. Use permanent pro
 - independent support and evidence unit IDs;
 - source or parent-document spread;
 - duplicate or artifact risk;
-- uncertainty and later user disposition.
+- uncertainty and later user disposition;
+- `prevalence_claimed: false` and `claim_scope: semantic_evidence_only` so adaptive evidence cannot be mistaken for a corpus prevalence estimate.
 
 Candidate IDs in the coarse and fine estimates must resolve to rows in this table. Parent IDs must also resolve. Artifact candidates must be listed in `excluded_artifact_candidate_ids` and must not be counted in either substantive estimate.
 
@@ -108,40 +127,44 @@ The estimate is a navigation hypothesis. The later study contract may use it to 
 
 ### Network and short text
 
-Review exact-duplicate groups through a canonical unit and record `duplicate_inherited_unit_count`. Preserve multiplicity for prevalence analysis. Review every near duplicate independently or in a side-by-side group because a changed qualifier, target, link, or emoji can alter meaning. Keep platform artifacts as explicit artifact candidates so the user can see what was excluded.
+Review exact-duplicate groups through one canonical unit and record `duplicate_inherited_unit_count`. Inherited rows must match the canonical content hash, length and nonblank duplicate group. Preserve multiplicity only for a later, separately validated probability design. In progressive mode, rotate selection across source, time, language, group and duplicate-family strata; keep an independent probability holdout. Review every selected near duplicate independently or side by side because a changed qualifier, target, link, or emoji can alter meaning. Keep platform artifacts as explicit artifact candidates so the user can see what was excluded.
 
 ### Long documents
 
-Account for every eligible parent document under `parent_document_coverage`. Read natural sections or provisional semantic spans across the entire document, including appendices or references unless explicitly excluded. These reconnaissance spans are reading aids; they do not freeze the later `chunking_policy`. The final analysis unit remains a study-contract decision calibrated against encoder limits and thematic boundaries.
+Account for every eligible parent document under `parent_document_coverage`. In direct mode, read natural sections or provisional semantic spans across every document. In progressive mode, census every section path, select across parent/source/time/type/length and within-document-position strata, and build traceable cards from distributed spans rather than head-only truncation. Escalate relevant sections or full documents when local spans cannot establish stance or theme boundaries. These reconnaissance spans remain reading aids and do not freeze the later `chunking_policy`.
 
 ### Mixed corpora
 
-Complete both unit-level and parent-document accounting where applicable. Mark `route_subset` on every candidate. Present shared candidates and route-specific candidates separately before proposing any aligned taxonomy.
+Complete both unit-level and parent-document accounting where applicable. Every ledger row uses the concrete `network-short` or `long-document` subset, both subsets must be present, and distinct profiled/reviewed long-document parent IDs must match the declared counts. In progressive mode, each subset independently requires semantic review, all five selection channels and a final-independent holdout. Mark `route_subset` on every candidate. Present shared candidates and route-specific candidates separately before proposing any aligned taxonomy.
 
 ## User preview and authorization gate
 
 Present the reconnaissance before modeling in this order:
 
-1. corpus fingerprint, route, and coverage accounting;
-2. user's mainline and how it governed interpretation;
-3. coarse and fine count estimates with uncertainty;
-4. candidate hierarchy and relation to the mainline;
-5. emergent themes, excluded artifacts, and unresolved boundaries;
-6. strongest counter-evidence and limitations;
-7. the exact choices the user can accept, reject, merge, split, defer, or reframe.
+1. corpus fingerprint, route, reading mode and feasibility basis;
+2. full-corpus census accounting versus full-text, extracted-representation, inherited and unreviewed semantic counts;
+3. progressive selection channels, holdout result, stop evidence and residual risk when applicable;
+4. user's mainline and how it governed interpretation;
+5. coarse and fine count estimates with uncertainty;
+6. candidate hierarchy and relation to the mainline;
+7. emergent themes, excluded artifacts, and unresolved boundaries;
+8. strongest counter-evidence and limitations;
+9. the exact choices the user can accept, reject, merge, split, defer, or reframe.
 
-Create `modeling-authorization.json` with `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop. This is an intentional workflow pause. Do not create embeddings, fit a baseline, start structural candidates, or register a modeling run while the gate is waiting or under revision.
+Create `modeling-authorization.json` with `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop. A completed direct plan records `reconnaissance_state: complete_for_preview`, `termination_basis: complete_full_text_review` and `resource_budget_exhausted: false`; a completed progressive plan uses `termination_basis: local_holdout_rule_satisfied`. Resource exhaustion is `interim`, never completed stop evidence. Do not create embeddings, fit a baseline, start structural candidates, or register a modeling run while the gate is waiting or under revision.
 
 After the user responds, record every candidate disposition in `theme-candidate-audit.csv` and capture the instruction verbatim or faithfully in the authorization artifact. Modeling may start only when:
 
 - `gate_status` is `approved_for_modeling`;
 - `modeling_may_start` is `true`;
 - `authorization_id`, user instruction, decision timestamp, and all resolved candidate IDs are present;
-- the authorization fingerprint and reconnaissance ID match the approved artifacts;
+- the authorization's `pre_model_artifact_fingerprint` binds the current profile, reading plan, ledger, reconnaissance and disposed candidate map, and the reconnaissance ID matches;
 - every candidate has a disposition;
+- the authorization links the current `reading_plan_id` and `reading_mode`;
+- `progressive_reading_risk_acknowledged` is true when the mode is `progressive_extraction`;
 - the approval validator passes.
 
-Link the same `authorization_id` from every baseline, structural, representation, taxonomy, and mapping row in `experiment-registry.csv`. If the corpus fingerprint, route, research question, user-theme mode, or resolved candidate map changes, return to reconnaissance or authorization as appropriate; never reuse a stale approval.
+Link the same `authorization_id` and corpus fingerprint from every baseline, structural, representation, taxonomy, and mapping row in `experiment-registry.csv`; reject unknown run types. The study-contract route and research question must equal the approved reconnaissance. If the corpus fingerprint, route, research question, reading artifacts, user-theme mode, or resolved candidate map changes, return to reconnaissance or authorization as appropriate; never reuse a stale approval.
 
 ## Preview-versus-model audit
 
@@ -177,7 +200,11 @@ python scripts/validate_study_bundle.py <study-bundle-directory>
 
 ## Red flags
 
-- calling a sample or truncated scan “full-corpus”;
+- calling a selected set, generated summary or truncated scan complete full-text review;
+- omitting unreviewed units from the semantic-review denominator;
+- choosing progressive evidence from only frequent, early, mainline-matching or convenient records;
+- using a progressive preview without an independent holdout and registered stop rule;
+- approving progressive reading without explicit residual-risk acknowledgement;
 - inheriting review across near duplicates;
 - estimating one topic count without coarse/fine hierarchy or uncertainty;
 - treating the user's theme as a closed vocabulary or mandatory cluster;

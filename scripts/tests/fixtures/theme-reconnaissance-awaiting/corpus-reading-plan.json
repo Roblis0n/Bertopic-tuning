@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "reading_plan_id": "read-plan-awaiting-fixture",
+  "reconnaissance_id": "recon-20260721-a1",
+  "corpus_fingerprint": "sha256:corpus-test",
+  "mode": "direct_full_text",
+  "decision_basis": {
+    "estimated_unique_full_text_tokens": 1200,
+    "usable_reconnaissance_tokens": 4000,
+    "time_budget": "fixture budget",
+    "direct_full_text_feasible": true,
+    "reason": "all eligible canonical units fit the fixture budget"
+  },
+  "census": {
+    "ledger_artifact": "corpus-reading-ledger.csv",
+    "all_source_units_profiled": true,
+    "profile_fields": ["unit_id", "source", "time", "language", "length"],
+    "exact_duplicate_policy": "inherit only exact content",
+    "near_duplicate_policy": "review independently"
+  },
+  "extraction": {
+    "streaming_or_batched": true,
+    "raw_text_preserved": true,
+    "unit_card_fields": ["unit_id", "raw_text", "source", "time", "language"],
+    "registered_artifacts": [
+      {"artifact_path": "fixtures/raw/u1.txt", "artifact_sha256": "sha256:f8e8ce15334331a56c9f25940cc4fbe86f88148adcec974e80d8146fda53c533"},
+      {"artifact_path": "fixtures/raw/u2.txt", "artifact_sha256": "sha256:b3f6d5a123ac68f719f340e4c41ae055e6c17fc483c8b51dda733caf22740dbe"},
+      {"artifact_path": "fixtures/raw/u3.txt", "artifact_sha256": "sha256:54b96641e77357c6fffedfb3eb10b2a3225925e4e9949a6f884cbd38ceebe87a"},
+      {"artifact_path": "fixtures/raw/u4.txt", "artifact_sha256": "sha256:ee284270a6661cc94af40c6d40538190385911aa0a54268fbdec202792e393e2"},
+      {"artifact_path": "fixtures/raw/u5.txt", "artifact_sha256": "sha256:96238286c648e1ef2a422fbdcded96c5dcc7ab09702fa95495201968e1465a51"},
+      {"artifact_path": "fixtures/raw/u6.txt", "artifact_sha256": "sha256:d770f209e14e1f15176a4820d1008af17044b7cca22a55635aab5ea3371b3e6e"},
+      {"artifact_path": "fixtures/raw/u7.txt", "artifact_sha256": "sha256:8500c74e166ea0db53e61366a03fb64741655797d64f8d4a9706a812f2a2b5e3"},
+      {"artifact_path": "fixtures/raw/u8.txt", "artifact_sha256": "sha256:98d9b4fbd3254180361e1ddb43ce8edb4b978e210ee2715cacf0cc272f70bfd4"}
+    ],
+    "short_text_policy": "read complete canonical text",
+    "long_document_policy": "read every natural section with offsets",
+    "card_size_basis": "no truncation in direct mode"
+  },
+  "selection": {
+    "stratification_fields": ["source", "time", "language", "length"],
+    "selection_channels": ["complete_unique_content"],
+    "candidate_generation_rule": "read every eligible canonical unit",
+    "escalation_rule": "not applicable because all canonical units are read"
+  },
+  "stopping": {
+    "estimand": "complete eligible canonical-content review",
+    "rule": "stop when no eligible canonical unit remains unread",
+    "status": "satisfied",
+    "reconnaissance_state": "complete_for_preview",
+    "termination_basis": "complete_full_text_review",
+    "resource_budget_exhausted": false,
+    "holdout_audit_performed": false,
+    "holdout_unit_count": 0,
+    "new_candidate_theme_count": 0,
+    "material_change_detected": false,
+    "decision": "not_applicable_full_text",
+    "evidence": "full-text review complete"
+  },
+  "residual_risk": "ordinary interpretation uncertainty remains"
+}

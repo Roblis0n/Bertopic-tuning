@@ -12,9 +12,9 @@ Link the study contract and corpus profile.
 
 Explain the network-short, long-document or mixed route and the evidence supporting the unit/context/chunk policy.
 
-## Full-corpus theme reconnaissance and user direction
+## Corpus-scale theme reconnaissance and user direction
 
-Report the coverage ledger, coarse and fine topic-count estimates, user-mainline themes, supporting/contextual themes, recurrent emergent themes, uncertain boundaries and artifacts. Link `theme-reconnaissance.json`, `theme-candidate-audit.csv` and the approved `modeling-authorization.json`. State the user instruction and confirm that modeling began only after approval.
+State whether reading used `direct_full_text` or `progressive_extraction`. Report full-corpus census accounting separately from semantic review depth, including full-text, extracted-representation, unreviewed and exact-duplicate-inherited counts. Link `corpus-reading-plan.json`, `corpus-reading-ledger.csv`, `theme-reconnaissance.json`, `theme-candidate-audit.csv` and the approved `modeling-authorization.json`. For progressive reading, report selection channels, `final_independent` holdout count and isolation from candidate evidence, stopping evidence, residual risk and the user's recorded risk acknowledgement. Record the approved `pre_model_artifact_fingerprint`. Then report coarse/fine estimates, user-mainline themes, supporting/contextual themes, recurrent emergent themes, uncertain boundaries and artifacts, and confirm that modeling began only after approval.
 
 ## Preview-versus-model comparison
 

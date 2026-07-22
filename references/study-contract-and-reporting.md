@@ -3,7 +3,7 @@
 ## Contents
 
 - Contract-before-modeling rule
-- Full-corpus reconnaissance and authorization
+- Corpus-scale reconnaissance and authorization
 - Study-contract fields
 - Corpus fingerprint
 - Experiment registry
@@ -14,19 +14,21 @@
 
 ## Contract-before-modeling rule
 
-Create the study contract after the user has reviewed the full-corpus reconnaissance and before fitting candidates. The contract prevents silent changes in analysis unit, metric depth, threshold source, validation sample or selection priority after results are visible.
+Create the study contract after the user has reviewed the corpus-scale reconnaissance and its reading limits, and before fitting candidates. The contract prevents silent changes in analysis unit, reading mode, metric depth, threshold source, validation sample or selection priority after results are visible.
 
 Copy templates from `assets/` into a study-specific output directory. Preserve the templates in plain CSV/JSON/Markdown; do not add decorative formatting that obscures machine readability.
 
-## Full-corpus reconnaissance and authorization
+## Corpus-scale reconnaissance and authorization
 
-Before the study contract is frozen, complete and show these three artifacts to the user:
+Before the study contract is frozen, complete and show these five artifacts to the user:
 
-- `theme-reconnaissance.json`: corpus fingerprint, user-theme anchor, full accounting, parent-document coverage when applicable, coarse/fine estimates, uncertainty, artifact exclusions and counter-evidence;
+- `corpus-reading-plan.json`: direct/progressive mode, feasibility basis, extraction, selection, escalation, stopping, holdout and residual risk;
+- `corpus-reading-ledger.csv`: exactly one row per unique source unit with content hash/length, duplicate identity, review depth, holdout role, registered artifact, bounded locator and extraction hash;
+- `theme-reconnaissance.json`: corpus fingerprint, user-theme anchor, full-corpus census accounting, semantic-review depth, parent-document accounting when applicable, coarse/fine estimates, uncertainty, artifact exclusions and counter-evidence;
 - `theme-candidate-audit.csv`: evidence-linked candidate hierarchy, relation to the user's mainline and one disposition per candidate after review;
-- `modeling-authorization.json`: explicit gate state, user instruction, resolved candidate IDs and decision timestamp.
+- `modeling-authorization.json`: explicit gate state, user instruction, resolved candidate IDs, decision timestamp and the fingerprint binding all approved pre-model artifacts.
 
-The user theme mode is `coverage_and_interpretation_anchor`, with emergent themes open. The estimate is `pre_model_hypothesis_not_target_k`; it is not a forced BERTopic topic count. Full coverage requires exact accounting of reviewed, exact-duplicate-inherited, excluded and failed units. Long and mixed routes also require complete parent-document coverage.
+The user theme mode is `coverage_and_interpretation_anchor`, with emergent themes open. The estimate is `pre_model_hypothesis_not_target_k`; it is not a forced BERTopic topic count. Census accounting must reconcile profiled, full-text-reviewed, extracted-representation-reviewed, exact-duplicate-inherited, unreviewed, excluded and failed units. Long and mixed routes require analogous parent-document accounting. Only `direct_full_text` with zero extracted, unreviewed and failed units is complete full-text review.
 
 Set `gate_status: awaiting_user_direction` and `modeling_may_start: false` while the preview is with the user. Modeling begins only after the user direction is recorded, every candidate has a disposition, the gate becomes `approved_for_modeling`, and this command succeeds:
 
@@ -34,13 +36,13 @@ Set `gate_status: awaiting_user_direction` and `modeling_may_start: false` while
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 ```
 
-The approved `authorization_id` must appear in each modeling row of `experiment-registry.csv`. A changed corpus fingerprint, route, research question, user-theme policy or resolved candidate map invalidates stale authorization. See `references/corpus-theme-reconnaissance.md` for the complete method.
+For `progressive_extraction`, approval additionally requires `progressive_reading_risk_acknowledged: true` after the user sees the semantic-review denominator, final-independent holdout and residual risk. The approved `authorization_id` and corpus fingerprint must appear in each modeling row of `experiment-registry.csv`, whose `run_type` must be one of the registered types. A changed corpus fingerprint, route, research question, reading plan/ledger, user-theme policy or resolved candidate map invalidates stale authorization through `pre_model_artifact_fingerprint`. See `references/corpus-theme-reconnaissance.md` and `references/scalable-corpus-reading.md` for the complete method.
 
 ## Study-contract fields
 
 Complete `study-contract.json`.
 
-Keep `pre_model_reconnaissance.required` and `user_authorization_required` true. Its three artifact paths must point to the approved files, `user_theme_mode` must remain `coverage_and_interpretation_anchor`, and `allow_emergent_themes` must remain true unless the user explicitly changes the analytical scope and the authorization is renewed.
+Keep `pre_model_reconnaissance.required` and `user_authorization_required` true. Its five artifact paths must point to the approved files and its `authorization_id` must exactly match `modeling-authorization.json`. `user_theme_mode` must remain `coverage_and_interpretation_anchor`, and `allow_emergent_themes` must remain true unless the user explicitly changes the analytical scope and the authorization is renewed.
 
 ### Identity and scope
 
@@ -102,7 +104,7 @@ For `long-document`, record:
 - `aggregation_policy` from chunks to documents;
 - hierarchy levels being evaluated.
 
-For `mixed`, define `route_subsets` and whether taxonomies remain separate or are aligned.
+For `mixed`, define `route_subsets` and whether taxonomies remain separate or are aligned. Because a mixed corpus contains a long-document subset, it also requires `chunking_policy`, `parent_document_id_field`, `aggregation_policy`, overlap/tokenizer evidence and document-level resampling in `validation_groups`.
 
 ### Optional lexicon policy
 
@@ -142,7 +144,7 @@ Required content includes:
 - candidate and parent snapshot IDs;
 - approved `authorization_id` matching `modeling-authorization.json`;
 - corpus fingerprint and analysis unit;
-- run type: baseline, structural, representation, taxonomy or mapping;
+- run type: exactly one of baseline, structural, representation, taxonomy or mapping;
 - exact embedding model/revision and embedding cache ID;
 - complete UMAP/HDBSCAN/BERTopic configuration as canonical JSON;
 - vectorizer/c-TF-IDF/representation configuration;
@@ -225,7 +227,7 @@ Complete `decision-report.md` in this order:
 
 1. outcome and selected route;
 2. research question and corpus fingerprint;
-3. full-corpus reconnaissance, user-theme mainline and authorization decision;
+3. corpus-scale reconnaissance, reading mode/limits, user-theme mainline and authorization decision;
 4. preview-versus-model confirmation, merge, split, absence and emergence audit;
 5. analysis-unit decision;
 6. paper-derived mechanisms and local tests;
@@ -296,7 +298,7 @@ python scripts/validate_study_bundle.py <bundle-directory>
 Then verify manually:
 
 - every explicit research requirement maps to an artifact;
-- full-corpus and parent-document accounting pass, the user direction is recorded, and all modeling runs link the approved authorization ID;
+- full-corpus census and parent-document accounting pass, semantic-review depth and residual risk are disclosed, the user direction is recorded, and all modeling runs link the approved authorization ID;
 - preview-versus-model disagreements and emergent themes are reported rather than hidden;
 - all candidate comparisons use the same evaluation data and granularity rule;
 - every threshold has a local calibration source;

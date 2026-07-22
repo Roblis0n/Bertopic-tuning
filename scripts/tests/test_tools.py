@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import json
 import sys
 import tempfile
@@ -13,6 +14,9 @@ from align_snapshots import align_snapshots  # noqa: E402
 from evaluate_diversity import evaluate_topics  # noqa: E402
 from lexicon_tools import compile_lexicon_bundle  # noqa: E402
 from select_pareto import select_pareto  # noqa: E402
+from validate_theme_reconnaissance import (  # noqa: E402
+    compute_pre_model_artifact_fingerprint,
+)
 from validate_study_bundle import (  # noqa: E402
     validate_bundle,
     validate_lexicon_governance,
@@ -309,9 +313,12 @@ class StudyBundleValidationTests(unittest.TestCase):
                     "required": True,
                     "user_theme_mode": "coverage_and_interpretation_anchor",
                     "allow_emergent_themes": True,
+                    "reading_plan_artifact": "corpus-reading-plan.json",
+                    "reading_ledger_artifact": "corpus-reading-ledger.csv",
                     "reconnaissance_artifact": "theme-reconnaissance.json",
                     "candidate_audit_artifact": "theme-candidate-audit.csv",
                     "authorization_artifact": "modeling-authorization.json",
+                    "authorization_id": "auth-study-001",
                     "user_authorization_required": True,
                 },
             }
@@ -332,6 +339,7 @@ class StudyBundleValidationTests(unittest.TestCase):
             reconnaissance = {
                 "schema_version": 1,
                 "reconnaissance_id": "recon-study-001",
+                "reading_plan_id": "read-plan-study-001",
                 "corpus_fingerprint": "sha256:test",
                 "route": "network-short",
                 "created_at": "2026-07-21T12:00:00+08:00",
@@ -345,21 +353,32 @@ class StudyBundleValidationTests(unittest.TestCase):
                 },
                 "coverage": {
                     "source_unit_count": 100,
+                    "profiled_source_unit_count": 100,
                     "eligible_unit_count": 100,
                     "reviewed_unit_count": 100,
+                    "full_text_reviewed_unit_count": 100,
+                    "extracted_representation_reviewed_unit_count": 0,
                     "duplicate_inherited_unit_count": 0,
+                    "unreviewed_unit_count": 0,
                     "excluded_unit_count": 0,
                     "failed_unit_count": 0,
-                    "coverage_complete": True,
+                    "accounting_complete": True,
+                    "full_text_review_complete": True,
                     "failed_unit_ids": [],
                     "exclusion_basis": "no exclusions",
                 },
                 "parent_document_coverage": {
                     "applicable": False,
                     "eligible_parent_document_count": None,
+                    "profiled_parent_document_count": None,
                     "reviewed_parent_document_count": None,
+                    "full_text_reviewed_parent_document_count": None,
+                    "extracted_representation_reviewed_parent_document_count": None,
+                    "duplicate_inherited_parent_document_count": None,
+                    "unreviewed_parent_document_count": None,
                     "failed_parent_document_count": None,
-                    "coverage_complete": False,
+                    "accounting_complete": False,
+                    "full_text_review_complete": False,
                 },
                 "topic_count_estimate": {
                     "interpretation": "pre_model_hypothesis_not_target_k",
@@ -385,6 +404,162 @@ class StudyBundleValidationTests(unittest.TestCase):
             (root / "theme-reconnaissance.json").write_text(
                 json.dumps(reconnaissance, ensure_ascii=False), encoding="utf-8"
             )
+            raw_dir = root / "fixtures" / "raw"
+            raw_dir.mkdir(parents=True, exist_ok=True)
+            raw_payloads = {}
+            registered_artifacts = []
+            for index in range(1, 101):
+                raw_bytes = f"study-fixture-unit-{index}".ljust(100, "_").encode(
+                    "utf-8"
+                )
+                raw_payloads[index] = raw_bytes
+                artifact_path = f"fixtures/raw/u{index}.txt"
+                (root / artifact_path).write_bytes(raw_bytes)
+                registered_artifacts.append(
+                    {
+                        "artifact_path": artifact_path,
+                        "artifact_sha256": (
+                            "sha256:" + hashlib.sha256(raw_bytes).hexdigest()
+                        ),
+                    }
+                )
+            (root / "corpus-reading-plan.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "reading_plan_id": "read-plan-study-001",
+                        "reconnaissance_id": "recon-study-001",
+                        "corpus_fingerprint": "sha256:test",
+                        "mode": "direct_full_text",
+                        "decision_basis": {
+                            "estimated_unique_full_text_tokens": 1000,
+                            "usable_reconnaissance_tokens": 5000,
+                            "time_budget": "fixture budget",
+                            "direct_full_text_feasible": True,
+                            "reason": "the complete fixture fits the budget",
+                        },
+                        "census": {
+                            "ledger_artifact": "corpus-reading-ledger.csv",
+                            "all_source_units_profiled": True,
+                            "profile_fields": [
+                                "unit_id",
+                                "source",
+                                "time",
+                                "language",
+                                "length",
+                            ],
+                            "exact_duplicate_policy": "inherit only exact content",
+                            "near_duplicate_policy": "review independently",
+                        },
+                        "extraction": {
+                            "streaming_or_batched": True,
+                            "raw_text_preserved": True,
+                            "unit_card_fields": ["unit_id", "raw_text"],
+                            "registered_artifacts": registered_artifacts,
+                            "short_text_policy": "read complete text",
+                            "long_document_policy": "read all sections",
+                            "card_size_basis": "no truncation in direct mode",
+                        },
+                        "selection": {
+                            "stratification_fields": [
+                                "source",
+                                "time",
+                                "language",
+                                "length",
+                            ],
+                            "selection_channels": ["complete_unique_content"],
+                            "candidate_generation_rule": "read every eligible unit",
+                            "escalation_rule": "not applicable in complete review",
+                        },
+                        "stopping": {
+                            "estimand": "complete eligible-content review",
+                            "rule": "stop when every eligible unit is read",
+                            "status": "satisfied",
+                            "reconnaissance_state": "complete_for_preview",
+                            "termination_basis": "complete_full_text_review",
+                            "resource_budget_exhausted": False,
+                            "holdout_audit_performed": False,
+                            "holdout_unit_count": 0,
+                            "new_candidate_theme_count": 0,
+                            "material_change_detected": False,
+                            "decision": "not_applicable_full_text",
+                            "evidence": "all eligible units were read",
+                        },
+                        "residual_risk": "ordinary interpretation uncertainty",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            with (root / "corpus-reading-ledger.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as handle:
+                writer = csv.writer(handle)
+                writer.writerow(
+                    [
+                        "reading_plan_id",
+                        "unit_id",
+                        "parent_document_id",
+                        "route_subset",
+                        "source_group",
+                        "time_group",
+                        "language_group",
+                        "length_group",
+                        "duplicate_group_id",
+                        "content_sha256",
+                        "content_length",
+                        "canonical_unit_id",
+                        "selection_channels",
+                        "holdout_role",
+                        "review_depth",
+                        "extraction_artifact",
+                        "extraction_locator",
+                        "span_start",
+                        "span_end",
+                        "extraction_sha256",
+                        "audit_round_id",
+                        "sampling_frame_sha256",
+                        "candidate_map_freeze_sha256",
+                        "holdout_new_candidate_theme_ids",
+                        "holdout_material_change_detected",
+                        "candidate_theme_ids",
+                        "review_notes",
+                    ]
+                )
+                for index in range(1, 101):
+                    raw_bytes = raw_payloads[index]
+                    content_sha256 = "sha256:" + hashlib.sha256(raw_bytes).hexdigest()
+                    writer.writerow(
+                        [
+                            "read-plan-study-001",
+                            f"u{index}",
+                            "",
+                            "network-short",
+                            f"source-{index % 3}",
+                            "2026-Q3",
+                            "zh",
+                            "short",
+                            "",
+                            content_sha256,
+                            len(raw_bytes),
+                            "",
+                            "complete_unique_content",
+                            "none",
+                            "full_text",
+                            f"fixtures/raw/u{index}.txt",
+                            f"record://u{index}",
+                            0,
+                            len(raw_bytes),
+                            content_sha256,
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "PRE-C-001|PRE-F-001" if index <= 2 else "",
+                            "reviewed fixture evidence",
+                        ]
+                    )
             with (root / "theme-candidate-audit.csv").open(
                 "w", encoding="utf-8", newline=""
             ) as handle:
@@ -407,6 +582,8 @@ class StudyBundleValidationTests(unittest.TestCase):
                         "source_or_parent_spread",
                         "duplicate_or_artifact_risk",
                         "uncertainty",
+                        "prevalence_claimed",
+                        "claim_scope",
                         "user_disposition",
                         "user_instruction",
                     ]
@@ -430,6 +607,8 @@ class StudyBundleValidationTests(unittest.TestCase):
                             "source-a|source-b",
                             "low",
                             "compact fixture",
+                            "false",
+                            "semantic_evidence_only",
                             "accepted",
                             "按预估继续",
                         ],
@@ -450,6 +629,8 @@ class StudyBundleValidationTests(unittest.TestCase):
                             "source-a|source-b",
                             "low",
                             "possible split with more evidence",
+                            "false",
+                            "semantic_evidence_only",
                             "accepted",
                             "按预估继续",
                         ],
@@ -461,6 +642,12 @@ class StudyBundleValidationTests(unittest.TestCase):
                         "schema_version": 1,
                         "authorization_id": "auth-study-001",
                         "reconnaissance_id": "recon-study-001",
+                        "reading_plan_id": "read-plan-study-001",
+                        "reading_mode": "direct_full_text",
+                        "progressive_reading_risk_acknowledged": False,
+                        "pre_model_artifact_fingerprint": (
+                            compute_pre_model_artifact_fingerprint(root)
+                        ),
                         "corpus_fingerprint": "sha256:test",
                         "gate_status": "approved_for_modeling",
                         "modeling_may_start": True,
@@ -640,6 +827,61 @@ class StudyBundleValidationTests(unittest.TestCase):
                 result["errors"],
             )
 
+    def test_study_contract_must_bind_approved_authorization_id(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            contract_path = root / "study-contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["pre_model_reconnaissance"]["authorization_id"] = "auth-wrong"
+            contract_path.write_text(
+                json.dumps(contract, ensure_ascii=False), encoding="utf-8"
+            )
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any(
+                    "pre_model_reconnaissance.authorization_id does not match" in error
+                    for error in result["errors"]
+                ),
+                result["errors"],
+            )
+
+    def test_mixed_route_inherits_long_document_contract_requirements(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            contract_path = root / "study-contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["route"] = "mixed"
+            contract["route_subsets"] = {
+                "network-short": "posts",
+                "long-document": "reports",
+            }
+            contract_path.write_text(
+                json.dumps(contract, ensure_ascii=False), encoding="utf-8"
+            )
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any(
+                    "Long-document route requires study-contract.json field: chunking_policy"
+                    in error
+                    for error in result["errors"]
+                ),
+                result["errors"],
+            )
+
     def test_modeling_registry_rejects_missing_authorization(self):
         fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
         with tempfile.TemporaryDirectory() as tmp:
@@ -665,6 +907,82 @@ class StudyBundleValidationTests(unittest.TestCase):
             self.assertTrue(
                 any(
                     "modeling run lacks authorization_id" in error
+                    for error in result["errors"]
+                ),
+                result["errors"],
+            )
+
+    def test_modeling_registry_rejects_mismatched_corpus_fingerprint(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            registry = root / "experiment-registry.csv"
+            with registry.open("r", encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+                fieldnames = list(rows[0])
+            rows[0]["corpus_fingerprint"] = "sha256:wrong-corpus"
+            with registry.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any("corpus_fingerprint" in error for error in result["errors"]),
+                result["errors"],
+            )
+
+    def test_modeling_registry_rejects_unknown_run_type(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            registry = root / "experiment-registry.csv"
+            with registry.open("r", encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+                fieldnames = list(rows[0])
+            rows[0].update(run_type="mystery", authorization_id="")
+            with registry.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any("unknown run_type" in error for error in result["errors"]),
+                result["errors"],
+            )
+
+    def test_study_contract_must_match_approved_research_question(self):
+        fixture = Path(__file__).resolve().parent / "fixtures" / "lexicon-study-bundle"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for source in fixture.iterdir():
+                if source.is_file():
+                    (root / source.name).write_bytes(source.read_bytes())
+            contract_path = root / "study-contract.json"
+            contract = json.loads(contract_path.read_text(encoding="utf-8"))
+            contract["research_question"] = "changed after reconnaissance approval"
+            contract_path.write_text(
+                json.dumps(contract, ensure_ascii=False), encoding="utf-8"
+            )
+
+            result = validate_bundle(root)
+
+            self.assertFalse(result["valid"])
+            self.assertTrue(
+                any(
+                    "research_question does not match the approved reconnaissance"
+                    in error
                     for error in result["errors"]
                 ),
                 result["errors"],
@@ -1039,6 +1357,8 @@ class SkillInstructionTests(unittest.TestCase):
             "assets/synonyms.csv",
             "assets/stopwords.csv",
             "assets/custom-terms.csv",
+            "assets/corpus-reading-plan.json",
+            "assets/corpus-reading-ledger.csv",
             "assets/theme-reconnaissance.json",
             "assets/theme-candidate-audit.csv",
             "assets/modeling-authorization.json",
@@ -1059,8 +1379,50 @@ class SkillInstructionTests(unittest.TestCase):
         )
         self.assertTrue(reconnaissance["user_theme"]["allow_emergent_themes"])
         self.assertIn("coverage", reconnaissance)
+        self.assertIn("reading_plan_id", reconnaissance)
+        self.assertIn("profiled_source_unit_count", reconnaissance["coverage"])
+        self.assertIn("full_text_reviewed_unit_count", reconnaissance["coverage"])
+        self.assertIn(
+            "extracted_representation_reviewed_unit_count",
+            reconnaissance["coverage"],
+        )
+        self.assertIn("unreviewed_unit_count", reconnaissance["coverage"])
         self.assertIn("coarse", reconnaissance["topic_count_estimate"])
         self.assertIn("fine", reconnaissance["topic_count_estimate"])
+
+        reading_plan = json.loads(
+            (asset_root / "corpus-reading-plan.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(reading_plan["schema_version"], 1)
+        self.assertIn("mode", reading_plan)
+        self.assertIn("selection_channels", reading_plan["selection"])
+        self.assertIn("holdout_audit_performed", reading_plan["stopping"])
+        self.assertIn("material_change_detected", reading_plan["stopping"])
+        self.assertIn("reconnaissance_state", reading_plan["stopping"])
+        self.assertIn("termination_basis", reading_plan["stopping"])
+        self.assertIn("resource_budget_exhausted", reading_plan["stopping"])
+        self.assertIn("registered_artifacts", reading_plan["extraction"])
+
+        with (asset_root / "corpus-reading-ledger.csv").open(
+            "r", encoding="utf-8-sig", newline=""
+        ) as handle:
+            ledger_header = set(next(csv.reader(handle)))
+        self.assertTrue(
+            {
+                "reading_plan_id",
+                "unit_id",
+                "selection_channels",
+                "holdout_role",
+                "review_depth",
+                "content_sha256",
+                "content_length",
+                "extraction_artifact",
+                "extraction_locator",
+                "span_start",
+                "span_end",
+                "extraction_sha256",
+            }.issubset(ledger_header)
+        )
 
         with (asset_root / "theme-candidate-audit.csv").open(
             "r", encoding="utf-8-sig", newline=""
@@ -1083,6 +1445,8 @@ class SkillInstructionTests(unittest.TestCase):
             "source_or_parent_spread",
             "duplicate_or_artifact_risk",
             "uncertainty",
+            "prevalence_claimed",
+            "claim_scope",
             "user_disposition",
             "user_instruction",
         }
@@ -1093,6 +1457,10 @@ class SkillInstructionTests(unittest.TestCase):
         )
         self.assertEqual(authorization["gate_status"], "awaiting_user_direction")
         self.assertFalse(authorization["modeling_may_start"])
+        self.assertIn("reading_plan_id", authorization)
+        self.assertIn("reading_mode", authorization)
+        self.assertIn("pre_model_artifact_fingerprint", authorization)
+        self.assertFalse(authorization["progressive_reading_risk_acknowledged"])
         self.assertEqual(
             authorization["user_theme_mode"],
             "coverage_and_interpretation_anchor",
@@ -1107,6 +1475,13 @@ class SkillInstructionTests(unittest.TestCase):
         self.assertEqual(
             policy["authorization_artifact"], "modeling-authorization.json"
         )
+        self.assertEqual(
+            policy["reading_plan_artifact"], "corpus-reading-plan.json"
+        )
+        self.assertEqual(
+            policy["reading_ledger_artifact"], "corpus-reading-ledger.csv"
+        )
+        self.assertIn("authorization_id", policy)
 
         with (asset_root / "experiment-registry.csv").open(
             "r", encoding="utf-8-sig", newline=""
@@ -1114,20 +1489,21 @@ class SkillInstructionTests(unittest.TestCase):
             registry_header = set(next(csv.reader(handle)))
         self.assertIn("authorization_id", registry_header)
 
-    def test_full_corpus_reconnaissance_is_integrated_and_guarded(self):
+    def test_corpus_scale_reconnaissance_is_integrated_and_guarded(self):
         skill_root = Path(__file__).resolve().parents[2]
         required_text = {
             "SKILL.md": "awaiting_user_direction",
             "references/corpus-theme-reconnaissance.md": (
                 "coverage_and_interpretation_anchor"
             ),
+            "references/scalable-corpus-reading.md": "probability_holdout",
             "references/network-short-text.md": "duplicate_inherited_unit_count",
             "references/long-document.md": "parent_document_coverage",
             "references/study-contract-and-reporting.md": (
                 "modeling-authorization.json"
             ),
             "references/bertopic-implementation.md": "approved_for_modeling",
-            "agents/openai.yaml": "全量主题预侦察",
+            "agents/openai.yaml": "分层提取",
         }
         for relative, needle in required_text.items():
             path = skill_root / relative
@@ -1146,6 +1522,8 @@ class SkillInstructionTests(unittest.TestCase):
         baseline_position = skill_text.index("Establish an auditable baseline")
         self.assertLess(reconnaissance_position, baseline_position)
         self.assertIn("pre_model_hypothesis_not_target_k", skill_text)
+        self.assertIn("interim incomplete reconnaissance", skill_text)
+        self.assertIn("resource envelope alone is not a stopping rule", skill_text)
 
     def test_parameter_transfer_firewall_is_explicit(self):
         skill_root = Path(__file__).resolve().parents[2]

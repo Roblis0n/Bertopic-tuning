@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "reconnaissance_id": "recon-20260721-a1",
+  "reading_plan_id": "read-plan-awaiting-fixture",
   "corpus_fingerprint": "sha256:corpus-test",
   "route": "network-short",
   "created_at": "2026-07-21T12:00:00+08:00",
@@ -14,21 +15,32 @@
   },
   "coverage": {
     "source_unit_count": 12,
+    "profiled_source_unit_count": 12,
     "eligible_unit_count": 10,
     "reviewed_unit_count": 8,
+    "full_text_reviewed_unit_count": 8,
+    "extracted_representation_reviewed_unit_count": 0,
     "duplicate_inherited_unit_count": 2,
+    "unreviewed_unit_count": 0,
     "excluded_unit_count": 2,
     "failed_unit_count": 0,
-    "coverage_complete": true,
+    "accounting_complete": true,
+    "full_text_review_complete": true,
     "failed_unit_ids": [],
     "exclusion_basis": "two empty rows"
   },
   "parent_document_coverage": {
     "applicable": false,
     "eligible_parent_document_count": null,
+    "profiled_parent_document_count": null,
     "reviewed_parent_document_count": null,
+    "full_text_reviewed_parent_document_count": null,
+    "extracted_representation_reviewed_parent_document_count": null,
+    "duplicate_inherited_parent_document_count": null,
+    "unreviewed_parent_document_count": null,
     "failed_parent_document_count": null,
-    "coverage_complete": false
+    "accounting_complete": false,
+    "full_text_review_complete": false
   },
   "topic_count_estimate": {
     "interpretation": "pre_model_hypothesis_not_target_k",

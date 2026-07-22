@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "reading_plan_id": "",
+  "reconnaissance_id": "",
+  "corpus_fingerprint": "",
+  "mode": "",
+  "decision_basis": {
+    "estimated_unique_full_text_tokens": null,
+    "usable_reconnaissance_tokens": null,
+    "time_budget": "",
+    "direct_full_text_feasible": null,
+    "reason": ""
+  },
+  "census": {
+    "ledger_artifact": "corpus-reading-ledger.csv",
+    "all_source_units_profiled": false,
+    "profile_fields": [],
+    "exact_duplicate_policy": "",
+    "near_duplicate_policy": ""
+  },
+  "extraction": {
+    "streaming_or_batched": true,
+    "raw_text_preserved": true,
+    "unit_card_fields": [],
+    "registered_artifacts": [],
+    "short_text_policy": "",
+    "long_document_policy": "",
+    "card_size_basis": ""
+  },
+  "selection": {
+    "stratification_fields": [],
+    "selection_channels": [],
+    "candidate_generation_rule": "",
+    "escalation_rule": ""
+  },
+  "stopping": {
+    "estimand": "",
+    "rule": "",
+    "status": "pending_local_calibration",
+    "reconnaissance_state": "interim",
+    "termination_basis": "pending_local_calibration",
+    "resource_budget_exhausted": false,
+    "holdout_audit_performed": false,
+    "holdout_unit_count": null,
+    "new_candidate_theme_count": null,
+    "material_change_detected": null,
+    "holdout_audit_round_id": "",
+    "holdout_sampling_frame_sha256": "",
+    "candidate_map_freeze_sha256": "",
+    "decision": "",
+    "evidence": ""
+  },
+  "residual_risk": ""
+}

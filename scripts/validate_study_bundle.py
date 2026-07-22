@@ -26,6 +26,8 @@ REQUIRED_FILES = {
     "missing-theme-audit.csv",
     "evidence-log.csv",
     "decision-report.md",
+    "corpus-reading-plan.json",
+    "corpus-reading-ledger.csv",
     "theme-reconnaissance.json",
     "theme-candidate-audit.csv",
     "modeling-authorization.json",
@@ -508,6 +510,8 @@ def validate_bundle(root: Path) -> dict[str, Any]:
                 "required": True,
                 "user_theme_mode": "coverage_and_interpretation_anchor",
                 "allow_emergent_themes": True,
+                "reading_plan_artifact": "corpus-reading-plan.json",
+                "reading_ledger_artifact": "corpus-reading-ledger.csv",
                 "reconnaissance_artifact": "theme-reconnaissance.json",
                 "candidate_audit_artifact": "theme-candidate-audit.csv",
                 "authorization_artifact": "modeling-authorization.json",
@@ -523,11 +527,15 @@ def validate_bundle(root: Path) -> dict[str, Any]:
                         errors.append(
                             f"pre_model_reconnaissance.{field} must be {expected!r}"
                         )
+                if not str(reconnaissance_policy.get("authorization_id", "")).strip():
+                    errors.append(
+                        "pre_model_reconnaissance.authorization_id must not be blank"
+                    )
             errors.extend(validate_parameter_governance(contract))
             if not contract.get("minimum_meaningful_theme"):
                 errors.append("minimum_meaningful_theme must be justified before clustering")
 
-            if route == "long-document":
+            if route in {"long-document", "mixed"}:
                 for field in (
                     "chunking_policy",
                     "parent_document_id_field",
@@ -542,8 +550,34 @@ def validate_bundle(root: Path) -> dict[str, Any]:
                     errors.append(
                         "Long-document validation_groups must include document-level resampling"
                     )
-            if route == "mixed" and not contract.get("route_subsets"):
-                errors.append("Mixed route requires an explicit route_subsets mapping")
+            if route == "mixed":
+                route_subsets = contract.get("route_subsets")
+                expected_route_subsets = {"network-short", "long-document"}
+                if not isinstance(route_subsets, dict):
+                    errors.append("Mixed route requires an explicit route_subsets mapping")
+                else:
+                    actual_route_subsets = set(route_subsets)
+                    for missing_subset in sorted(
+                        expected_route_subsets.difference(actual_route_subsets)
+                    ):
+                        errors.append(
+                            f"Mixed route route_subsets is missing {missing_subset}"
+                        )
+                    for unexpected_subset in sorted(
+                        actual_route_subsets.difference(expected_route_subsets)
+                    ):
+                        errors.append(
+                            f"Mixed route route_subsets has unsupported key "
+                            f"{unexpected_subset}"
+                        )
+                    for subset in sorted(expected_route_subsets):
+                        if subset in route_subsets and not str(
+                            route_subsets.get(subset, "")
+                        ).strip():
+                            errors.append(
+                                f"Mixed route route_subsets.{subset} analysis unit "
+                                "must not be blank"
+                            )
         elif loaded is not None:
             errors.append("study-contract.json must contain a JSON object")
 
@@ -558,10 +592,12 @@ def validate_bundle(root: Path) -> dict[str, Any]:
         )
         errors.extend(f"Missing required file: {name}" for name in missing_lexicon)
 
+    profile: dict[str, Any] = {}
     profile_path = root / "corpus-profile.json"
     if profile_path.is_file():
         loaded = _read_json(profile_path, errors)
         if isinstance(loaded, dict):
+            profile = loaded
             missing_fields = sorted(CORPUS_PROFILE_FIELDS.difference(loaded))
             errors.extend(
                 f"corpus-profile.json lacks required field: {field}"
@@ -592,6 +628,31 @@ def validate_bundle(root: Path) -> dict[str, Any]:
     approved_authorization_id = str(
         reconnaissance_audit.get("authorization_id", "")
     ).strip()
+    if contract:
+        if str(contract.get("research_question", "")).strip() != str(
+            reconnaissance_audit.get("research_question", "")
+        ).strip():
+            errors.append(
+                "study-contract.json research_question does not match the approved "
+                "reconnaissance"
+            )
+        if str(contract.get("route", "")).strip() != str(
+            reconnaissance_audit.get("route", "")
+        ).strip():
+            errors.append(
+                "study-contract.json route does not match the approved reconnaissance"
+            )
+        reconnaissance_policy = contract.get("pre_model_reconnaissance")
+        contract_authorization_id = (
+            str(reconnaissance_policy.get("authorization_id", "")).strip()
+            if isinstance(reconnaissance_policy, dict)
+            else ""
+        )
+        if contract_authorization_id != approved_authorization_id:
+            errors.append(
+                "pre_model_reconnaissance.authorization_id does not match the "
+                "approved reconnaissance"
+            )
     modeling_run_types = {
         "baseline",
         "structural",
@@ -599,12 +660,18 @@ def validate_bundle(root: Path) -> dict[str, Any]:
         "taxonomy",
         "mapping",
     }
+    approved_corpus_fingerprint = str(
+        profile.get("corpus_fingerprint", "")
+    ).strip()
     for index, row in enumerate(
         tables.get("experiment-registry.csv", []), start=2
     ):
         run_type = str(row.get("run_type", "")).strip().casefold()
         if run_type not in modeling_run_types:
-            continue
+            errors.append(
+                f"experiment-registry.csv row {index} has unknown run_type "
+                f"{run_type or '<blank>'}"
+            )
         row_authorization_id = str(row.get("authorization_id", "")).strip()
         if not row_authorization_id:
             errors.append(
@@ -615,6 +682,12 @@ def validate_bundle(root: Path) -> dict[str, Any]:
             errors.append(
                 f"experiment-registry.csv row {index} authorization_id does "
                 "not match the approved reconnaissance"
+            )
+        row_corpus_fingerprint = str(row.get("corpus_fingerprint", "")).strip()
+        if row_corpus_fingerprint != approved_corpus_fingerprint:
+            errors.append(
+                f"experiment-registry.csv row {index} corpus_fingerprint does "
+                "not match the approved corpus"
             )
 
     lexicon_manifest: dict[str, Any] | None = None

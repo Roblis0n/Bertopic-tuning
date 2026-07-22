@@ -1,4 +1,4 @@
 interface:
   display_name: "BERTopic Tuning"
-  short_description: "先做全量主题预侦察与用户确认，再执行BERTopic调参与持续迭代"
-  default_prompt: "使用 $bertopic-tuning 先围绕我的研究主线完成全量主题预侦察，报告粗细粒度主题数量与类型并等待我的指示；获得授权后再执行以主题多样性为核心的 BERTopic 建模、调参与可复现迭代，并审核同义词、停用词和自定义词表。"
+  short_description: "全量核算语料，大数据分层提取后再做BERTopic调优"
+  default_prompt: "使用 $bertopic-tuning 全量核算我的语料；若全文阅读超出预算，就用可审计的分层提取、风险升级全文和留出复核，先报告实际阅读覆盖、残余风险及粗细主题预估，获得授权后再执行以主题多样性为核心的 BERTopic 调优与迭代，并审核同义词、停用词和自定义词。"

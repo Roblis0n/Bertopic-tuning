@@ -51,17 +51,18 @@ Do not automatically collapse:
 
 Record the deduplication rule and provide sensitivity results with and without duplicate weighting.
 
-## Pre-model full-corpus reconnaissance
+## Pre-model corpus-scale reconnaissance
 
-Before embeddings or BERTopic fitting, read and account for the complete short-text corpus using `references/corpus-theme-reconnaissance.md`.
+Before embeddings or BERTopic fitting, account for the complete short-text source frame using `references/corpus-theme-reconnaissance.md`. If all eligible canonical texts cannot be read directly inside the registered resource envelope, use `references/scalable-corpus-reading.md`.
 
-- Review one canonical unit for each verified exact-duplicate group and record every inherited member in `duplicate_inherited_unit_count`.
-- Do not inherit interpretation across near duplicates. Review their changed wording and context because stance, target, event or theme can differ.
+- Review one canonical unit for each verified exact-duplicate group and record every inherited member in `duplicate_inherited_unit_count`; every inherited ledger row must point to that existing semantically reviewed canonical ID.
+- In direct mode, review every eligible canonical unit. In progressive mode, keep the unreviewed denominator and select through coverage-strata, user-anchor, lexical-novelty, probability-holdout and uncertainty-escalation channels. Keep the current `final_independent` holdout out of candidate evidence; a previous holdout becomes `development_released` only after it changes the map and a fresh holdout is drawn.
+- Do not inherit interpretation across near duplicates. Review selected changed wording and context independently because stance, target, event or theme can differ; put unresolved near-duplicate families into the escalation queue.
 - Preserve account, thread, source, community and time spread in the candidate evidence so repeated activity from one group does not masquerade as independent thematic support.
 - Keep templates, URL patterns, platform markers, coordinated slogans and other artifacts as explicit artifact candidates; show their exclusion to the user instead of silently deleting them.
-- Link every substantive candidate to stable evidence unit IDs and classify its relationship to the user's mainline.
+- Link every substantive candidate only to stable IDs whose full text or traceable extracted representation was actually reviewed, and classify its relationship to the user's mainline.
 
-Present coarse and fine candidate maps, set the authorization gate to `awaiting_user_direction`, and stop before modeling. The reconnaissance estimate is a hypothesis for later coverage and missing-theme audits, not a target topic count.
+Present the reading mode, semantic-review denominator, progressive holdout and residual risk when applicable, then the coarse and fine candidate maps. Set the authorization gate to `awaiting_user_direction` and stop before modeling. The reconnaissance estimate is a hypothesis for later coverage and missing-theme audits, not a target topic count.
 
 ## Text views and Chinese handling
 

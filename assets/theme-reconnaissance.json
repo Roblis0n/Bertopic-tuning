@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "reconnaissance_id": "",
+  "reading_plan_id": "",
   "corpus_fingerprint": "",
   "route": "",
   "created_at": "",
@@ -14,21 +15,32 @@
   },
   "coverage": {
     "source_unit_count": null,
+    "profiled_source_unit_count": null,
     "eligible_unit_count": null,
     "reviewed_unit_count": null,
+    "full_text_reviewed_unit_count": null,
+    "extracted_representation_reviewed_unit_count": null,
     "duplicate_inherited_unit_count": null,
+    "unreviewed_unit_count": null,
     "excluded_unit_count": null,
     "failed_unit_count": null,
-    "coverage_complete": false,
+    "accounting_complete": false,
+    "full_text_review_complete": false,
     "failed_unit_ids": [],
     "exclusion_basis": ""
   },
   "parent_document_coverage": {
     "applicable": false,
     "eligible_parent_document_count": null,
+    "profiled_parent_document_count": null,
     "reviewed_parent_document_count": null,
+    "full_text_reviewed_parent_document_count": null,
+    "extracted_representation_reviewed_parent_document_count": null,
+    "duplicate_inherited_parent_document_count": null,
+    "unreviewed_parent_document_count": null,
     "failed_parent_document_count": null,
-    "coverage_complete": false
+    "accounting_complete": false,
+    "full_text_review_complete": false
   },
   "topic_count_estimate": {
     "interpretation": "pre_model_hypothesis_not_target_k",

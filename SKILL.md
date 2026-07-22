@@ -25,7 +25,7 @@ Translate papers into mechanisms and testable hypotheses. Never copy a paper's h
 10. Preserve raw text, corpus fingerprints, failed candidates, representative units, audit decisions and topic lineage.
 11. Do not invent operational numbers. This includes fixed/default grids, ratios around a substantive support value, universal seed/resample/reviewer/sample counts, similarity cutoffs, topic-count bands and metric weights. If target-corpus evidence is unavailable, record `pending_local_calibration` and specify the estimand, calibration data, candidate-generation rule and stop rule.
 12. Do not turn named models from papers, leaderboards or examples into a mandatory shortlist. Generate candidates from the task, language, context length, license, deployment and compute requirements; verify current availability when it matters.
-13. Do not fit a baseline or any BERTopic candidate before a complete full-corpus theme reconnaissance has been shown to the user and `modeling-authorization.json` records `approved_for_modeling`.
+13. Do not fit a baseline or any BERTopic candidate before corpus-scale theme reconnaissance has reconciled every source unit, disclosed semantic review depth and residual risk, been shown to the user, and `modeling-authorization.json` records `approved_for_modeling`.
 
 ## Route the corpus
 
@@ -51,29 +51,39 @@ Read when needed:
 - `references/iteration-and-lineage.md` for new data, retraining, merge/split or temporal comparison;
 - `references/bertopic-implementation.md` when implementing or reviewing Python/BERTopic code;
 - `references/lexicon-management-and-iteration.md` when adding synonyms, stopwords, custom/domain terms or iterating lexical representation from model results;
+- `references/scalable-corpus-reading.md` when direct reading of all eligible unique content exceeds the registered time/context budget, inputs span many files, or bounded extraction and adaptive evidence selection are needed;
 - `references/web-research-protocol.md` when a decision depends on current papers, package/API behavior, encoder availability, a cited source, or an evidence gap.
 
 ## Required workflow
 
-Track and finish this sequence. The full-corpus reconnaissance gate is the required intentional pause: show the preview, stop for user direction, and resume only after explicit modeling authorization. Outside that gate, do not stop after a parameter suggestion when the available data and tools permit execution.
+Track and finish this sequence. The corpus-scale reconnaissance gate is the required intentional pause: show the preview and its reading limits, stop for user direction, and resume only after explicit modeling authorization. Outside that gate, do not stop after a parameter suggestion when the available data and tools permit execution.
 
 ### 1. Inspect and fingerprint
 
 - Inspect the corpus, schema, current model, embeddings, topic exports and prior experiments.
 - Preserve raw text and create separate embedding, lexical and display views.
 - Record corpus size, length distribution, duplicate groups, languages, sources, dates, parent-document structure and missing fields.
+- Estimate eligible unique-content tokens after exact-duplicate registration and record the usable reconnaissance token/time budget; do not load a large table, folder or document collection into one prompt.
 - Hash the data snapshot and preprocessing configuration.
 - State whether BERTopic's hard primary assignment is compatible with the research claim. If mixed membership or covariate inference is essential, retain BERTopic for discovery only and add a suitable robustness model.
 
-### 2. Conduct full-corpus theme reconnaissance and pause
+### 2. Conduct corpus-scale theme reconnaissance and pause
 
-- Copy `assets/theme-reconnaissance.json`, `theme-candidate-audit.csv` and `modeling-authorization.json` into the study workspace.
+- Copy `assets/corpus-reading-plan.json`, `corpus-reading-ledger.csv`, `theme-reconnaissance.json`, `theme-candidate-audit.csv` and `modeling-authorization.json` into the study workspace.
 - Restate the user's theme as a `coverage_and_interpretation_anchor`; keep emergent themes open unless the user explicitly changes the analytical scope.
-- Account for every source unit. Directly review each eligible unit or inherit interpretation only from a verified exact duplicate. A sample, truncated scan or near-duplicate inheritance is not full-corpus coverage.
-- For long or mixed corpora, cover every eligible parent document using provisional reading sections without freezing the later chunking policy.
+- Choose `direct_full_text` only when all eligible canonical content fits the registered resource envelope. Otherwise choose `progressive_extraction`; never use a universal size or sample threshold.
+- In both modes, stream or batch the inputs, profile every source unit and write exactly one ledger row per globally unique `unit_id`. Record content SHA-256 and length. An inherited exact duplicate must share the nonblank duplicate group, hash and length of one existing semantically reviewed canonical unit; one hash cannot map to several canonicals. Keep full-corpus census accounting separate from semantic review coverage.
+- Register every raw/card artifact in the reading plan as an `artifact_path` plus its verified `artifact_sha256`. A semantically reviewed row must identify an existing in-bundle artifact, a scheme-qualified record/span locator, bounded start/end coordinates and the SHA-256 of the exact reviewed bytes. `full_text` must cover the complete source-unit length and its extraction hash must equal the content hash.
+- In `direct_full_text`, review every eligible canonical unit. In `progressive_extraction`, read traceable bounded representations through all five channels—`coverage_strata`, `user_anchor`, `lexical_novelty`, `probability_holdout` and `uncertainty_escalation`—and escalate novel, ambiguous, contradictory or context-sensitive evidence to full text.
+- For long or mixed corpora, census every eligible parent document and distribute extraction/selection across natural sections and document positions without freezing the later chunking policy or relying on head-only excerpts.
+- In a mixed ledger, every row uses the concrete `network-short` or `long-document` subset and both subsets must be present. Run semantic review, all five channels and an independent final holdout separately in each subset. Every long-document row keeps a parent ID; declared profiled and reviewed parent counts must equal the corresponding distinct ledger parent IDs.
+- Link candidate evidence only to units reviewed as `full_text` or `extracted_representation`. Keep unreviewed units in the denominator; selected evidence is not complete full-text coverage and cannot prove a theme absent.
+- Set every reconnaissance candidate to `prevalence_claimed: false` and `claim_scope: semantic_evidence_only`. Purposive or adaptive evidence cannot support corpus prevalence; any prevalence study requires a separate probability design and independently validated inclusion probabilities/weights outside this gate.
+- In progressive mode, freeze an audit-round candidate map, fingerprint both the frozen candidate file and the final holdout unit frame, bind those hashes plus `audit_round_id` to every untouched `final_independent` row, then inspect it. Expand reading when it changes the map. A released earlier holdout may become `development_released` evidence only after drawing a fresh final holdout; final-independent rows cannot support the frozen candidate map. The final holdout count and row-level outcomes must reconcile with the stopping record, and `stop_with_residual_risk` requires zero new candidate themes plus `material_change_detected: false` under the registered local rule.
+- A completed direct preview requires `reconnaissance_state: complete_for_preview`, `termination_basis: complete_full_text_review` and `resource_budget_exhausted: false`; a completed progressive preview requires the same state and resource flag with `termination_basis: local_holdout_rule_satisfied`. The resource envelope alone is not a stopping rule, and time, token or budget language cannot serve as stop evidence. If resources are exhausted first, issue an interim incomplete reconnaissance and do not request modeling approval or label it `stop_with_residual_risk`.
 - Produce an evidence-linked candidate hierarchy; classify each candidate as `mainline`, `supporting`, `contextual`, `emergent`, `artifact` or `uncertain`; and report artifact exclusions, unresolved boundaries, and coarse/fine lower-point-upper topic-count estimates.
 - Label the count estimate `pre_model_hypothesis_not_target_k`. Never turn it into a forced BERTopic topic count or clustering target.
-- Present the preview, set `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop before embeddings or model fitting.
+- Present the reading mode, census and semantic-review counts, selection/holdout evidence, residual risk and preview; set `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop before embeddings or model fitting.
 
 Validate the preview:
 
@@ -81,13 +91,13 @@ Validate the preview:
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory>
 ```
 
-After the user accepts, rejects, merges, splits, defers or reframes candidates, record every disposition and the user's instruction. Resume only when this passes:
+After the user accepts, rejects, merges, splits, defers or reframes candidates, record every disposition and the user's instruction. For `progressive_extraction`, also record `progressive_reading_risk_acknowledged: true`; this authorizes modeling under declared uncertainty but does not convert partial review into full-text coverage. Record a fresh `pre_model_artifact_fingerprint` binding the profile, reading plan, ledger, reconnaissance and disposed candidate map; any later change invalidates the approval. Resume only when this passes:
 
 ```text
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 ```
 
-Read `references/corpus-theme-reconnaissance.md` for the accounting equations, route-specific review method, reporting order and invalidation rules.
+Read `references/corpus-theme-reconnaissance.md` for the gate and accounting equations. Read `references/scalable-corpus-reading.md` for progressive extraction, evidence selection, escalation, holdout and stopping rules.
 
 ### 3. Create the study contract
 
@@ -103,7 +113,7 @@ Copy `assets/study-contract.json` into the analysis workspace and complete it be
 - model-selection policy (`pareto`);
 - outlier role (`diagnostic_guardrail_only`).
 
-Retain the mandatory `pre_model_reconnaissance` policy, link the approved reconnaissance and authorization artifacts, and store the approval's `authorization_id`. If the corpus fingerprint, route, research question or resolved preview changes, invalidate the old authorization before fitting.
+Retain the mandatory `pre_model_reconnaissance` policy, link the approved reading plan, ledger, reconnaissance and authorization artifacts, and store the approval's `authorization_id`. If the corpus fingerprint, route, research question, reading mode/plan or resolved preview changes, invalidate the old authorization before fitting.
 
 If a value cannot yet be justified, record `pending_local_calibration` plus the calibration experiment that will estimate it. Do not replace it with a paper's number, a conventional default, a fixed multiplier of a local quantity or an invented pilot grid.
 
@@ -187,7 +197,7 @@ python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json
 
 ### 10. Complete the research bundle
 
-Populate all core templates in `assets/`: corpus profile, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
+Populate all core templates in `assets/`: corpus profile, corpus reading plan and ledger, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
 
 Validate before claiming completion:
 
@@ -203,7 +213,7 @@ Fix every validation error. A header-only template, uncited decision, uncalibrat
 
 Lead with the selected route and substantive model decision. Report:
 
-1. the approved pre-model reconnaissance, full-corpus coverage accounting, user direction and authorization ID;
+1. the approved pre-model reconnaissance, reading mode and feasibility basis, full-corpus census accounting, semantic-review depth, progressive holdout/residual risk and acknowledgement when applicable, user direction and authorization ID;
 2. preview-versus-model confirmations, merges, splits, absences and emergent themes;
 3. what changed and which layer changed;
 4. which diversity dimensions improved, deteriorated or remain uncertain;

@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "reconnaissance_id": "recon-lexicon-fixture",
+  "reading_plan_id": "read-plan-lexicon-fixture",
   "corpus_fingerprint": "sha256:lexicon-fixture",
   "route": "network-short",
   "created_at": "2026-07-21T12:00:00+08:00",
@@ -14,21 +15,32 @@
   },
   "coverage": {
     "source_unit_count": 3,
+    "profiled_source_unit_count": 3,
     "eligible_unit_count": 3,
     "reviewed_unit_count": 3,
+    "full_text_reviewed_unit_count": 3,
+    "extracted_representation_reviewed_unit_count": 0,
     "duplicate_inherited_unit_count": 0,
+    "unreviewed_unit_count": 0,
     "excluded_unit_count": 0,
     "failed_unit_count": 0,
-    "coverage_complete": true,
+    "accounting_complete": true,
+    "full_text_review_complete": true,
     "failed_unit_ids": [],
     "exclusion_basis": "no exclusions"
   },
   "parent_document_coverage": {
     "applicable": false,
     "eligible_parent_document_count": null,
+    "profiled_parent_document_count": null,
     "reviewed_parent_document_count": null,
+    "full_text_reviewed_parent_document_count": null,
+    "extracted_representation_reviewed_parent_document_count": null,
+    "duplicate_inherited_parent_document_count": null,
+    "unreviewed_parent_document_count": null,
     "failed_parent_document_count": null,
-    "coverage_complete": false
+    "accounting_complete": false,
+    "full_text_review_complete": false
   },
   "topic_count_estimate": {
     "interpretation": "pre_model_hypothesis_not_target_k",
