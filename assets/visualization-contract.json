@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "study_id": "",
+  "snapshot_id": "",
+  "route": "",
+  "field_map": {
+    "unit_id": "",
+    "topic_id": "",
+    "topic_uid": "",
+    "topic_label": "",
+    "parent_document_id": "",
+    "time": "",
+    "group": "",
+    "latitude": "",
+    "longitude": ""
+  },
+  "data_artifacts": {
+    "topic_terms": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_catalog": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_color_map": {
+      "path": "",
+      "sha256": ""
+    },
+    "document_topics": {
+      "path": "",
+      "sha256": ""
+    },
+    "document_coordinates": {
+      "path": "",
+      "sha256": ""
+    },
+    "document_projection_parameters": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_coordinates": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_projection_parameters": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_similarity": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_hierarchy": {
+      "path": "",
+      "sha256": ""
+    },
+    "candidate_metrics": {
+      "path": "",
+      "sha256": ""
+    },
+    "stability_metrics": {
+      "path": "",
+      "sha256": ""
+    },
+    "outlier_diagnostics": {
+      "path": "",
+      "sha256": ""
+    },
+    "coverage_diagnostics": {
+      "path": "",
+      "sha256": ""
+    },
+    "short_text_artifacts": {
+      "path": "",
+      "sha256": ""
+    },
+    "parent_document_topics": {
+      "path": "",
+      "sha256": ""
+    },
+    "topics_over_time": {
+      "path": "",
+      "sha256": ""
+    },
+    "topics_by_group": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_geography": {
+      "path": "",
+      "sha256": ""
+    },
+    "topic_lineage": {
+      "path": "",
+      "sha256": ""
+    },
+    "document_topic_distributions": {
+      "path": "",
+      "sha256": ""
+    }
+  },
+  "document_projection": {
+    "basis": "document_embeddings",
+    "coordinate_artifact_id": "document_coordinates",
+    "method": "",
+    "parameters_artifact_id": "document_projection_parameters",
+    "seed_or_determinism": ""
+  },
+  "relation_spaces": {
+    "topic_map": {
+      "basis": "",
+      "relation_artifact_id": "topic_coordinates",
+      "parameters_artifact_id": "topic_projection_parameters"
+    },
+    "taxonomy": {
+      "basis": "",
+      "relation_artifact_id": "topic_similarity",
+      "hierarchy_artifact_id": "topic_hierarchy"
+    }
+  },
+  "conditional_modules": {
+    "time": {
+      "enabled": false,
+      "field_map_keys": [
+        "time"
+      ],
+      "data_artifact_ids": [
+        "topics_over_time"
+      ]
+    },
+    "group": {
+      "enabled": false,
+      "field_map_keys": [
+        "group"
+      ],
+      "data_artifact_ids": [
+        "topics_by_group"
+      ]
+    },
+    "geography": {
+      "enabled": false,
+      "field_map_keys": [
+        "latitude",
+        "longitude"
+      ],
+      "data_artifact_ids": [
+        "topic_geography"
+      ]
+    },
+    "lineage": {
+      "enabled": false,
+      "field_map_keys": [],
+      "data_artifact_ids": [
+        "topic_lineage"
+      ]
+    },
+    "document_distribution": {
+      "enabled": false,
+      "field_map_keys": [],
+      "data_artifact_ids": [
+        "document_topic_distributions"
+      ]
+    }
+  },
+  "topic_color_map_artifact_id": "topic_color_map",
+  "outlier_topic_id": "-1",
+  "export_policy": {
+    "self_contained_html": true,
+    "static_vector": true,
+    "static_raster_png": true,
+    "source_data": true,
+    "caption": true,
+    "alt_text": true,
+    "sha256": true,
+    "static_title_location": "caption",
+    "colorblind_safe": true
+  }
+}

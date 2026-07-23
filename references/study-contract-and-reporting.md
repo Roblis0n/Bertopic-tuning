@@ -8,6 +8,7 @@
 - Corpus fingerprint
 - Experiment registry
 - Topic catalog and human audit
+- Layered research visualization
 - Decision report
 - Reproducibility bundle
 - Completion audit
@@ -119,6 +120,22 @@ When synonym, stopword or custom-term resources are enabled, complete `lexicon_p
 
 Applying the same resources to embedding text is outside this policy and requires a structural candidate.
 
+### Visualization policy
+
+Keep `visualization_policy.required: true` in the reusable study contract. Its artifact links must be exactly:
+
+- `visualization-contract.json`;
+- generated `visualization-plan.json`;
+- completed `visualization-manifest.json`.
+
+Retain the layer order `structure`, `representation`, `taxonomy`, `governance`; require shared document coordinates; and keep `topic_minus_one_visible: true`. The validation command is:
+
+```text
+python scripts/validate_visualization_bundle.py <study-bundle-directory>
+```
+
+The policy defines research and artifact completeness. It does not prescribe a plotting library, topic count, display threshold, or manuscript figure number.
+
 ## Corpus fingerprint
 
 Create `corpus-profile.json` or an equivalent immutable record containing:
@@ -221,6 +238,23 @@ Use `selected-model.json`. Record:
 
 If no candidate clears the floors, select none and retain the current snapshot. A scheduled iteration does not require a new model.
 
+## Layered research visualization
+
+Create the figure artifacts after candidate selection and before the release decision. Copy `assets/visualization-contract.json`, map the study's real generic fields, and register frozen source paths plus hashes for assignments, topic terms, coordinates, relation matrices, hierarchy, colors and governance diagnostics.
+
+Generate `visualization-plan.json` with `scripts/build_visualization_plan.py`. Missing core inputs must remain visible as `blocked_missing_inputs`; they cannot be removed from the plan. Render all ready core, route and enabled conditional figures, then populate `visualization-manifest.json`.
+
+The minimum core covers:
+
+- structure: interactive/static document map and intertopic map;
+- representation: c-TF-IDF topic-term bars and term-score decline;
+- taxonomy: similarity heatmap and hierarchy from one relation artifact;
+- governance: prevalence including Topic `-1`, Pareto candidates, stability, outlier diagnostics and coverage/leakage.
+
+`network-short` adds the short-text duplicate/source/template artifact audit. `long-document` adds the parent-document topic profile. `mixed` adds both. Time, group, geography, lineage and document-distribution figures require explicit module activation and source artifacts.
+
+Every required figure retains self-contained HTML, SVG or PDF, PNG, figure-specific source data, caption, alt text, render parameters and SHA-256 values. See `references/research-grade-visualization.md`.
+
 ## Decision report
 
 Complete `decision-report.md` in this order:
@@ -234,11 +268,12 @@ Complete `decision-report.md` in this order:
 7. structural, representation and taxonomy experiments;
 8. diversity scorecard and matched-granularity comparison;
 9. Pareto frontier and selection rationale;
-10. human audit and missing themes;
-11. stability and uncertainty;
-12. outlier composition as diagnostic;
-13. lineage and release decision;
-14. limitations, counter-evidence and reproducibility instructions.
+10. layered research figure inventory, relation bases, Topic `-1`, route/conditional figures and visualization validation;
+11. human audit and missing themes;
+12. stability and uncertainty;
+13. outlier composition as diagnostic;
+14. lineage and release decision;
+15. limitations, counter-evidence and reproducibility instructions.
 
 Lead with the result, not a chronological tool diary.
 
@@ -261,6 +296,9 @@ human-topic-audit.csv
 topic-pair-audit.csv
 missing-theme-audit.csv
 evidence-log.csv
+visualization-contract.json
+visualization-plan.json
+visualization-manifest.json
 decision-report.md
 ```
 
@@ -272,6 +310,7 @@ Also retain when permitted:
 - assignment and probability/distance tables;
 - representative/random/boundary unit exports;
 - seed/resample alignment results;
+- the figure HTML/vector/PNG exports, source data, captions and alt text registered in `visualization-manifest.json`;
 - environment lock or package report;
 - human/LLM prompts and raw audit outputs;
 - previous production snapshot and rollback instructions.
@@ -293,6 +332,7 @@ Run:
 ```text
 python scripts/validate_theme_reconnaissance.py <bundle-directory> --require-approval
 python scripts/validate_study_bundle.py <bundle-directory>
+python scripts/validate_visualization_bundle.py <bundle-directory>
 ```
 
 Then verify manually:
@@ -305,6 +345,8 @@ Then verify manually:
 - no paper parameter was copied as a default;
 - representation-only changes are labeled correctly;
 - enabled lexicon resources have no unresolved conflicts, all candidates have dispositions and assignment fingerprints match;
+- all core and route-required figures are rendered, enabled metadata figures are complete, disabled ones are recorded as not applicable, and the visualization validator passes;
+- document HTML/vector/PNG share frozen coordinates, heatmap/hierarchy share one declared relation basis, and Topic `-1` is visible in document, prevalence and outlier reporting;
 - nearest-topic pairs and missing themes were audited;
 - long-text bootstrap uses parent documents;
 - network-text bootstrap respects duplicate/source dependence;

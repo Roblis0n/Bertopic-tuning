@@ -1,6 +1,6 @@
 ---
 name: bertopic-tuning
-description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity optimization, synonym or stopword management, custom/domain dictionaries, lexical representation iteration, short web or social-text modeling, long-document topic discovery, model comparison, topic stability, topic lineage, new-corpus updates, Chinese-corpus analysis, or academically reproducible BERTopic reporting.
+description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity optimization, research-grade BERTopic visualization, synonym or stopword management, custom/domain dictionaries, lexical representation iteration, short web or social-text modeling, long-document topic discovery, model comparison, topic stability, topic lineage, new-corpus updates, Chinese-corpus analysis, or academically reproducible BERTopic reporting.
 ---
 
 # BERTopic Tuning
@@ -26,6 +26,7 @@ Translate papers into mechanisms and testable hypotheses. Never copy a paper's h
 11. Do not invent operational numbers. This includes fixed/default grids, ratios around a substantive support value, universal seed/resample/reviewer/sample counts, similarity cutoffs, topic-count bands and metric weights. If target-corpus evidence is unavailable, record `pending_local_calibration` and specify the estimand, calibration data, candidate-generation rule and stop rule.
 12. Do not turn named models from papers, leaderboards or examples into a mandatory shortlist. Generate candidates from the task, language, context length, license, deployment and compute requirements; verify current availability when it matters.
 13. Do not fit a baseline or any BERTopic candidate before corpus-scale theme reconnaissance has reconciled every source unit, disclosed semantic review depth and residual risk, been shown to the user, and `modeling-authorization.json` records `approved_for_modeling`.
+14. Do not treat default plotting output or screenshots as a completed visualization bundle. Generate and validate the layered plan, declare every lexical/semantic relation basis, reuse frozen document coordinates, show Topic `-1`, and retain HTML, vector, PNG, source data, caption, alt text and hashes.
 
 ## Route the corpus
 
@@ -44,6 +45,7 @@ Always read:
 - `references/corpus-theme-reconnaissance.md` for the mandatory pre-model preview and authorization gate;
 - `references/diversity-evaluation.md` for metrics, calibration and selection;
 - `references/study-contract-and-reporting.md` for artifacts and reporting;
+- `references/research-grade-visualization.md` for the mandatory structure, representation, taxonomy and governance figure system;
 - `references/academic-evidence.md` before making literature-backed claims.
 
 Read when needed:
@@ -180,7 +182,26 @@ python scripts/select_pareto.py --input <candidate-metrics.csv> --output <pareto
 
 Inspect every finalist's representative, random and boundary units. Record why the chosen Pareto point fits the research purpose; do not automatically choose the model with the most topics.
 
-### 9. Iterate without losing history
+### 9. Build and validate the layered research visualization
+
+- Copy `assets/visualization-contract.json` and `visualization-manifest.json` into the study workspace. Map the actual generic unit/topic/metadata fields and register hashes for the selected snapshot's terms, assignments, coordinates, relation matrices, hierarchy and governance evidence.
+- Generate `visualization-plan.json` with `scripts/build_visualization_plan.py`. Do not delete a core or route figure because its input is missing; resolve every `blocked_missing_inputs` state before completion.
+- Render all four layers—structure, representation, taxonomy and governance. The core set includes topic-term bars, one interactive/static document map, topic map, similarity heatmap, hierarchy, term-score decline, prevalence, Pareto candidates, stability, Topic `-1` diagnostics and coverage/leakage.
+- For `network-short`, add the duplicate/source/template artifact audit. For `long-document`, add the parent-document topic profile. A `mixed` study requires both. Enable time, group, geography, lineage or document-distribution figures only from their registered contract modules.
+- Reuse one frozen `document_coordinates` artifact for interactive HTML and the publication datamap. Make the heatmap and hierarchy share one topic relation artifact and basis. State `ctfidf_lexical`, `semantic_topic_embeddings` or `document_topic_centroids` explicitly where applicable.
+- Keep Topic `-1` visible in the document map, prevalence and outlier diagnostics. Use one frozen topic-color map and permanent topic UIDs across figures.
+- Export each required figure as self-contained HTML, SVG or PDF, PNG, figure-specific source data, caption and alt text; record render parameters and SHA-256 values. Put the publication title in the caption rather than inside the static plot.
+
+Run:
+
+```text
+python scripts/build_visualization_plan.py --contract <study-bundle-directory>/visualization-contract.json --output <study-bundle-directory>/visualization-plan.json --require-ready
+python scripts/validate_visualization_bundle.py <study-bundle-directory>
+```
+
+Read `references/research-grade-visualization.md` completely for figure questions, native BERTopic method mapping, export rules and interpretation limits.
+
+### 10. Iterate without losing history
 
 - Distinguish representation refresh, structural refit, taxonomy edit and new-data mapping.
 - Keep lexicon bundle lineage separate from topic lineage. A synonym, stopword or custom-term edit creates a representation candidate, not a new structural model.
@@ -195,15 +216,16 @@ python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json
 - Treat one-to-many and many-to-one results as split/merge candidates requiring evidence and human review.
 - For temporal analysis, prefer one global taxonomy plus topics-over-time. Do not compare independently fitted period-specific topic numbers.
 
-### 10. Complete the research bundle
+### 11. Complete the research bundle
 
-Populate all core templates in `assets/`: corpus profile, corpus reading plan and ledger, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
+Populate all core templates in `assets/`: corpus profile, corpus reading plan and ledger, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log, visualization contract/plan/manifest and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
 
 Validate before claiming completion:
 
 ```text
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 python scripts/validate_study_bundle.py <study-bundle-directory>
+python scripts/validate_visualization_bundle.py <study-bundle-directory>
 python -m unittest discover -s scripts/tests -v
 ```
 
@@ -222,6 +244,7 @@ Lead with the selected route and substantive model decision. Report:
 7. strongest counter-evidence and failure modes;
 8. topic merges, splits, new themes and retirements;
 9. lexicon bundle changes, frozen-assignment evidence and unresolved term decisions when enabled;
-10. reproducible artifact paths and validation results.
+10. the layered figure inventory, lexical/semantic relation bases, Topic `-1` treatment, conditional omissions, shared-coordinate evidence and visualization-bundle validation;
+11. reproducible artifact paths and validation results.
 
 Do not present paper-derived numbers as universal recommendations. Do not describe a representation-only refresh as a new structural model. Do not claim that low outlier rate proves high-quality topic diversity.

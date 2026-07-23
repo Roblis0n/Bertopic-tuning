@@ -48,6 +48,10 @@ Report lexical, semantic, coverage, stability and interpretability dimensions at
 
 List constraints, calibration sources, eligible frontier, uncertainty and the substantive reason for the operating point.
 
+## Layered research visualization
+
+Link `visualization-contract.json`, generated `visualization-plan.json` and completed `visualization-manifest.json`. Report the structure, representation, taxonomy and governance figure inventory; the seven mandatory BERTopic/base views; all route and metadata-conditional figures; blocked or not-applicable entries; the lexical or semantic relation basis; shared document-coordinate and taxonomy-relation evidence; Topic `-1` treatment; static/vector/HTML/source/caption/alt-text exports; and `validate_visualization_bundle.py` output.
+
 ## Human audit and missing themes
 
 Report representative, random, boundary, nearest-topic pair and missing-theme results, including reviewer agreement.

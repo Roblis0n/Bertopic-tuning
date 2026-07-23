@@ -203,6 +203,24 @@ NONEMPTY_TABLES = {
     "evidence-log.csv",
 }
 
+EXPECTED_VISUALIZATION_POLICY = {
+    "required": True,
+    "contract_artifact": "visualization-contract.json",
+    "plan_artifact": "visualization-plan.json",
+    "manifest_artifact": "visualization-manifest.json",
+    "validation_command": (
+        "python scripts/validate_visualization_bundle.py <study-bundle-directory>"
+    ),
+    "layer_model": [
+        "structure",
+        "representation",
+        "taxonomy",
+        "governance",
+    ],
+    "shared_document_coordinates_required": True,
+    "topic_minus_one_visible": True,
+}
+
 
 def _read_json(path: Path, errors: list[str]) -> Any:
     try:
@@ -220,6 +238,17 @@ def _read_table(path: Path, errors: list[str]) -> tuple[list[str], list[dict[str
     except (OSError, csv.Error) as exc:
         errors.append(f"Cannot read CSV {path.name}: {exc}")
         return [], []
+
+
+def validate_visualization_policy(policy: Any) -> list[str]:
+    """Validate links to the standalone layered-visualization contract."""
+    if not isinstance(policy, dict):
+        return ["visualization_policy must be an object"]
+    errors: list[str] = []
+    for field, expected in EXPECTED_VISUALIZATION_POLICY.items():
+        if policy.get(field) != expected:
+            errors.append(f"visualization_policy.{field} must be {expected!r}")
+    return errors
 
 
 def validate_parameter_governance(contract: dict[str, Any]) -> list[str]:
@@ -532,6 +561,10 @@ def validate_bundle(root: Path) -> dict[str, Any]:
                         "pre_model_reconnaissance.authorization_id must not be blank"
                     )
             errors.extend(validate_parameter_governance(contract))
+            if "visualization_policy" in contract:
+                errors.extend(
+                    validate_visualization_policy(contract["visualization_policy"])
+                )
             if not contract.get("minimum_meaningful_theme"):
                 errors.append("minimum_meaningful_theme must be justified before clustering")
 

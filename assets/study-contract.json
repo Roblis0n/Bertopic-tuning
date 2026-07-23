@@ -86,6 +86,21 @@
     "assignment_invariant_required": true,
     "human_review_required": true
   },
+  "visualization_policy": {
+    "required": true,
+    "contract_artifact": "visualization-contract.json",
+    "plan_artifact": "visualization-plan.json",
+    "manifest_artifact": "visualization-manifest.json",
+    "validation_command": "python scripts/validate_visualization_bundle.py <study-bundle-directory>",
+    "layer_model": [
+      "structure",
+      "representation",
+      "taxonomy",
+      "governance"
+    ],
+    "shared_document_coordinates_required": true,
+    "topic_minus_one_visible": true
+  },
   "selection_policy": "pareto",
   "outlier_role": "diagnostic_guardrail_only",
   "metric_contract": {

@@ -1,6 +1,6 @@
 # BERTopic Tuning
 
-A diversity-first Codex skill for academically defensible BERTopic tuning, evaluation, and continuous model iteration across **short network texts** and **long documents**.
+A diversity-first Codex skill for academically defensible BERTopic tuning, evaluation, layered research-grade visualization, and continuous model iteration across **short network texts** and **long documents**.
 
 The central objective is **effective thematic diversity**: distinct, well-covered, stable, and interpretable themes at a substantively meaningful granularity. Raw topic count and outlier rate are reported, but neither is treated as the optimization target.
 
@@ -13,6 +13,7 @@ The central objective is **effective thematic diversity**: distinct, well-covere
 - A clear separation between structural clustering, topic representation, taxonomy editing, and model governance.
 - Corpus-derived tuning decisions instead of universal parameter grids copied from papers or examples.
 - Pareto-based model selection with explicit quality constraints.
+- A four-layer research figure system covering structure, representation, taxonomy, and governance, with the required BERTopic views paired with publication and audit artifacts.
 - Topic alignment and lineage tracking across corpus or model updates.
 - User-managed synonym, stopword and custom/domain-term bundles with frozen-assignment representation iteration.
 - Portable command-line tools, study templates, tests, and research-oriented reporting guidance.
@@ -69,6 +70,30 @@ No single metric defines a good topic model. Candidate models are evaluated as a
 Coherence and labelability act as quality floors. Topic count is compared only at matched counts, within a declared count band, or at equivalent hierarchy levels. The outlier fraction is a **diagnostic guardrail** used to investigate missing themes, artifacts, and genuine noise—not a score to minimize blindly.
 
 For metric definitions and calibration rules, see [references/diversity-evaluation.md](references/diversity-evaluation.md).
+
+## Layered research-grade visualization
+
+The skill converts a selected snapshot into an auditable figure bundle instead of stopping at default BERTopic HTML. The mandatory core catalog contains:
+
+| Layer | Core figures |
+|---|---|
+| Structure | Interactive/static document map from one frozen coordinate artifact; intertopic map with a declared relation basis |
+| Representation | Per-topic c-TF-IDF bars; ranked c-TF-IDF term-score decline |
+| Taxonomy | Topic similarity heatmap and hierarchy from one registered relation artifact |
+| Governance | Topic prevalence including `-1`; candidate Pareto frontier; topic stability; outlier composition; coverage/leakage audit |
+
+Seven baseline views remain explicit: `visualize_barchart.html`, `visualize_documents.html`, a publication document datamap, `visualize_topics.html`, `visualize_heatmap.html`, `visualize_hierarchy.html`, and a c-TF-IDF term-score-decline figure. The reusable contract does not hard-code corpus fields, language, topic count, or manuscript figure numbering.
+
+Every required figure has self-contained HTML, SVG or PDF, PNG, figure-specific source data, a caption, alternative text, render parameters, and SHA-256 evidence. Interactive and static document maps share the same coordinates; heatmap and hierarchy share the same topic relation space; lexical and semantic geometries are labeled explicitly; Topic `-1` remains visible in document, prevalence, and outlier reporting.
+
+Route-specific and metadata-specific figures are activated from the study contract:
+
+- short-text artifact audits for `network-short`;
+- parent-document topic profiles for `long-document`;
+- both for `mixed`;
+- time, group, geography, lineage, and document-distribution figures only when their fields and source artifacts are registered.
+
+See [references/research-grade-visualization.md](references/research-grade-visualization.md) for the complete method.
 
 ## Installation
 
@@ -138,8 +163,9 @@ plan for future corpus updates.
 7. **Tune representation** while assignments remain fixed: tokenization, phrases, user-managed lexicon bundles, c-TF-IDF variants, frequent-term suppression, MMR, and grounded labels.
 8. **Audit the taxonomy** before any merge or split, using nearest-topic pairs and representative evidence.
 9. **Select on a Pareto frontier** under explicit coherence, coverage, stability, and labelability constraints.
-10. **Track iteration and lineage** with permanent topic UIDs and calibrated snapshot alignment.
-11. **Complete and validate the study bundle** so every decision, failure, threshold, and topic change remains reproducible.
+10. **Build the layered research visualization** from a deterministic contract and plan, then validate the rendered HTML/vector/PNG/source/caption/alt-text manifest.
+11. **Track iteration and lineage** with permanent topic UIDs and calibrated snapshot alignment.
+12. **Complete and validate the study bundle** so every decision, failure, threshold, topic change, and research figure remains reproducible.
 
 The detailed operating procedure is in [SKILL.md](SKILL.md).
 
@@ -156,6 +182,8 @@ The portable command-line tools use only the Python standard library. The reconn
 | `scripts/validate_study_bundle.py` | Checks whether the required research artifacts and decisions are complete |
 | `scripts/build_lexicon_bundle.py` | Validates editable synonym, stopword and custom-term tables and compiles a content-addressed manifest |
 | `scripts/evaluate_representation_update.py` | Proves assignments stayed frozen and compares surface/concept lexical evidence before and after a lexicon refresh |
+| `scripts/build_visualization_plan.py` | Generates the deterministic core, route, and metadata-conditional figure registry from a generic visualization contract |
+| `scripts/validate_visualization_bundle.py` | Verifies the contract-plan-manifest chain, shared geometry, declared relation bases, Topic `-1`, offline HTML, vector/PNG signatures, source data, captions, alt text, safe paths, and hashes |
 
 ### Evaluate diversity
 
@@ -235,6 +263,33 @@ The coarse/fine estimate is explicitly `pre_model_hypothesis_not_target_k`; it s
 python scripts/validate_study_bundle.py <study-bundle-directory>
 ```
 
+### Plan and validate the research figures
+
+Copy `visualization-contract.json` and `visualization-manifest.json` from `assets/`. Register the selected snapshot, generic field map, frozen input artifacts, document projection, topic relation spaces, conditional modules and output policy. Build the figure plan:
+
+```bash
+python scripts/build_visualization_plan.py \
+  --contract study/visualization-contract.json \
+  --output study/visualization-plan.json
+```
+
+The plan preserves missing core figures as `blocked_missing_inputs`. Require a complete input registry before rendering:
+
+```bash
+python scripts/build_visualization_plan.py \
+  --contract study/visualization-contract.json \
+  --output study/visualization-plan.json \
+  --require-ready
+```
+
+After producing all six output forms per ready figure and populating the manifest, run:
+
+```bash
+python scripts/validate_visualization_bundle.py study
+```
+
+The planner and validator use only the Python standard library. Rendering remains in the fitted BERTopic/Plotly environment and follows [references/research-grade-visualization.md](references/research-grade-visualization.md).
+
 ### Compile and iterate user lexicons
 
 Copy `lexicon-config.json`, `synonyms.csv`, `stopwords.csv` and `custom-terms.csv` from `assets/`, edit ordinary UTF-8 CSV/JSON files, then compile them:
@@ -287,6 +342,7 @@ The `assets/` directory contains reusable artifacts for a reproducible study:
 - `topic-lineage.csv`
 - `evidence-log.csv`
 - `decision-report.md`
+- `visualization-contract.json`, generated `visualization-plan.json`, and `visualization-manifest.json`
 - `lexicon-config.json`, `synonyms.csv`, `stopwords.csv`, `custom-terms.csv`
 - `lexicon-candidate-audit.csv`, `lexicon-lineage.csv`, `representation-iteration.csv`
 
@@ -314,6 +370,7 @@ The repository translates literature into mechanisms and testable hypotheses; it
 - [references/academic-evidence.md](references/academic-evidence.md) for the evidence map and source-to-decision boundaries;
 - [references/web-research-protocol.md](references/web-research-protocol.md) when claims depend on current papers, APIs, package behavior, or model availability;
 - [references/study-contract-and-reporting.md](references/study-contract-and-reporting.md) for required artifacts and reporting standards;
+- [references/research-grade-visualization.md](references/research-grade-visualization.md) for the layered core/conditional figure system and artifact contract;
 - [references/bertopic-implementation.md](references/bertopic-implementation.md) when implementing or reviewing BERTopic code.
 
 ## Repository structure
@@ -333,6 +390,7 @@ bertopic-tuning/
 │   ├── network-short-text.md
 │   ├── long-document.md
 │   ├── diversity-evaluation.md
+│   ├── research-grade-visualization.md
 │   ├── lexicon-management-and-iteration.md
 │   ├── iteration-and-lineage.md
 │   └── research, implementation, and reporting guidance
@@ -343,6 +401,8 @@ bertopic-tuning/
     ├── evaluate_representation_update.py
     ├── select_pareto.py
     ├── align_snapshots.py
+    ├── build_visualization_plan.py
+    ├── validate_visualization_bundle.py
     ├── validate_study_bundle.py
     └── tests/
 ```
@@ -355,11 +415,11 @@ Run the complete test suite from the repository root:
 python -m unittest discover -s scripts/tests -v
 ```
 
-The suite covers pre-model reconnaissance and authorization, diversity evaluation, Pareto selection, snapshot alignment, lexicon iteration, and completed study-bundle validation.
+The suite covers pre-model reconnaissance and authorization, diversity evaluation, Pareto selection, snapshot alignment, lexicon iteration, deterministic visualization planning, rendered artifact validation, and completed study-bundle validation.
 
 ## Scope
 
-This repository is a research and decision framework plus portable evaluation tooling. It estimates a provisional coarse/fine theme range from audited target-corpus evidence and asks for user direction before modeling. For large corpora it reports the exact semantic-review denominator and residual risk instead of pretending that selected evidence is complete full-text coverage. It intentionally does not prescribe one embedding model, one target topic count, one HDBSCAN setting, one reading sample size, or one universal threshold. Final choices must be generated and justified from the target corpus, research question, validation design, user authorization, and compute constraints.
+This repository is a research and decision framework plus portable evaluation and visualization-governance tooling. It estimates a provisional coarse/fine theme range from audited target-corpus evidence and asks for user direction before modeling. For large corpora it reports the exact semantic-review denominator and residual risk instead of pretending that selected evidence is complete full-text coverage. It defines a generic layered figure contract but does not install or pin a plotting stack. It intentionally does not prescribe one embedding model, one target topic count, one HDBSCAN setting, one reading sample size, one manuscript figure order, or one universal threshold. Final choices must be generated and justified from the target corpus, research question, validation design, user authorization, and compute constraints.
 
 ## License
 

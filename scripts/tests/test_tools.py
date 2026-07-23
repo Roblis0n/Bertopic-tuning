@@ -22,6 +22,7 @@ from validate_study_bundle import (  # noqa: E402
     validate_lexicon_governance,
     validate_lexicon_sources,
     validate_parameter_governance,
+    validate_visualization_policy,
 )
 
 
@@ -268,6 +269,51 @@ class SnapshotAlignmentTests(unittest.TestCase):
 
 
 class StudyBundleValidationTests(unittest.TestCase):
+    def test_visualization_policy_accepts_the_layered_research_contract(self):
+        policy = {
+            "required": True,
+            "contract_artifact": "visualization-contract.json",
+            "plan_artifact": "visualization-plan.json",
+            "manifest_artifact": "visualization-manifest.json",
+            "validation_command": (
+                "python scripts/validate_visualization_bundle.py "
+                "<study-bundle-directory>"
+            ),
+            "layer_model": [
+                "structure",
+                "representation",
+                "taxonomy",
+                "governance",
+            ],
+            "shared_document_coordinates_required": True,
+            "topic_minus_one_visible": True,
+        }
+
+        self.assertEqual(validate_visualization_policy(policy), [])
+
+    def test_visualization_policy_rejects_missing_layers_or_hidden_outliers(self):
+        policy = {
+            "required": True,
+            "contract_artifact": "visualization-contract.json",
+            "plan_artifact": "visualization-plan.json",
+            "manifest_artifact": "visualization-manifest.json",
+            "validation_command": (
+                "python scripts/validate_visualization_bundle.py "
+                "<study-bundle-directory>"
+            ),
+            "layer_model": ["structure", "representation", "taxonomy"],
+            "shared_document_coordinates_required": False,
+            "topic_minus_one_visible": False,
+        }
+
+        errors = validate_visualization_policy(policy)
+
+        self.assertTrue(any("layer_model" in error for error in errors))
+        self.assertTrue(
+            any("shared_document_coordinates_required" in error for error in errors)
+        )
+        self.assertTrue(any("topic_minus_one_visible" in error for error in errors))
+
     def test_parameter_governance_rejects_parameter_copying(self):
         contract = {
             "paper_transfer_policy": "copy-paper-parameters",
@@ -1362,6 +1408,8 @@ class SkillInstructionTests(unittest.TestCase):
             "assets/theme-reconnaissance.json",
             "assets/theme-candidate-audit.csv",
             "assets/modeling-authorization.json",
+            "assets/visualization-contract.json",
+            "assets/visualization-manifest.json",
         ):
             self.assertNotIn(b"\r\n", (skill_root / relative).read_bytes(), relative)
 

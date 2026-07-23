@@ -189,6 +189,12 @@ Emphasize:
 
 Report outlier fraction and its composition. Investigate whether outliers contain a stable missing theme, but never reward a candidate simply for assigning more units.
 
+### Route visualization
+
+Register and render `short-text-artifact-audit` in the layered visualization plan. Build it from the same duplicate, source, account, thread, time, template and platform-token evidence used in validation. Show whether topic concentration survives independent-evidence grouping and whether Topic `-1` contains missing themes or artifacts.
+
+Do not infer substantive prevalence from repeated posts, large duplicate families or one high-volume source. Use the frozen topic color map and permanent topic UIDs, and link every plotted aggregate to the source artifact. See `references/research-grade-visualization.md`.
+
 ## New data and iteration
 
 Use the frozen taxonomy to map new units first. Maintain a novelty pool containing low-confidence, semantically distant or repeatedly unrepresented material. Trigger a shadow structural refit when the pool contains locally calibrated evidence of stable new themes, when existing themes become semantically redundant, or when group-aware stability degrades—not merely because a calendar interval elapsed.
@@ -208,6 +214,7 @@ Iterate lexical resources through `references/lexicon-management-and-iteration.m
 - rare-theme survival table;
 - nearest-topic semantic/lexical audit;
 - time/source/account-stratified scorecard;
+- layered core figures plus the required `short-text-artifact-audit`;
 - compiled lexicon bundle, candidate audit and frozen-assignment comparison when lexical resources are enabled;
 - novelty-pool summary and snapshot lineage.
 

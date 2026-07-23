@@ -199,6 +199,12 @@ For each topic, sample:
 
 Ask reviewers to write a definition, inclusion rule, exclusion rule and nearest-topic distinction. Audit sampled documents against headings/abstracts or an independent summary to locate missing themes.
 
+### Route visualization
+
+Register and render `parent-document-topic-profile` in the layered visualization plan. Build it from the declared segment-to-document aggregation artifact, preserve parent IDs and segment/section evidence, distinguish segment prevalence from document prevalence, and show Topic `-1` explicitly.
+
+Use a composition, distribution or contribution design that retains multiple topics per parent document. Do not replace the profile with one hard document label, and do not let documents with many chunks dominate without the registered weighting policy. Link the figure to the same taxonomy, permanent topic UIDs and color map used by the core figures. See `references/research-grade-visualization.md`.
+
 ## New data and iteration
 
 Map new documents using the identical chunking and aggregation policy. A chunk-policy change is a structural data change and requires a new corpus fingerprint plus back-comparison.
@@ -225,6 +231,7 @@ Maintain lexicon bundle lineage when terminology changes. A lexical refresh does
 - parent-theme hierarchy and level-specific metrics;
 - document-topic distribution with evidence links;
 - document-level bootstrap stability;
+- layered core figures plus the required `parent-document-topic-profile`;
 - compiled lexicon bundle, parent-document-stratified candidate audit and frozen-assignment comparison when enabled;
 - missing-theme audit;
 - snapshot and chunk-policy lineage.
