@@ -355,10 +355,12 @@ def validate_visualization_bundle(root: Path) -> dict[str, Any]:
                 f"Required figure {figure['figure_id']} is blocked by missing "
                 f"input artifacts: {missing}"
             )
-    ready_figures = [
-        figure for figure in planned_figures if figure["status"] == "ready"
+    required_ready_figures = [
+        figure
+        for figure in planned_figures
+        if figure["status"] == "ready"
+        and figure.get("assurance_requirement", "required") == "required"
     ]
-    _validate_input_artifacts(root, contract, ready_figures, errors)
 
     identity_pairs = (
         ("study_id", expected_plan["study_id"]),
@@ -402,15 +404,32 @@ def validate_visualization_bundle(root: Path) -> dict[str, Any]:
         planned = planned_by_id.get(figure_id)
         if planned and planned["status"] == "not_applicable":
             errors.append(f"Figure {figure_id} is rendered but the plan marks it not_applicable")
+        if planned and planned["status"] == "optional_missing_inputs":
+            errors.append(
+                f"Figure {figure_id} is rendered without its registered input artifacts"
+            )
 
     used_paths: dict[Path, str] = {}
-    for planned in ready_figures:
+    figures_to_validate = list(required_ready_figures)
+    required_ids = {figure["figure_id"] for figure in required_ready_figures}
+    for figure_id in rows_by_id:
+        planned = planned_by_id.get(figure_id)
+        if (
+            planned
+            and planned["status"] == "ready"
+            and figure_id not in required_ids
+        ):
+            figures_to_validate.append(planned)
+    _validate_input_artifacts(root, contract, figures_to_validate, errors)
+
+    for planned in figures_to_validate:
         figure_id = planned["figure_id"]
         row = rows_by_id.get(figure_id)
-        if row is None:
+        if row is None and figure_id in required_ids:
             errors.append(f"Missing rendered figure: {figure_id}")
             continue
-        _validate_manifest_figure(root, row, planned, used_paths, errors)
+        if row is not None:
+            _validate_manifest_figure(root, row, planned, used_paths, errors)
 
     document_row = rows_by_id.get("document-map")
     projection_id = str(

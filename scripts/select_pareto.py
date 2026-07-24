@@ -21,6 +21,9 @@ CONSTRAINT_PATTERN = re.compile(
     r"^\s*([A-Za-z_][A-Za-z0-9_.-]*)\s*(<=|>=|==|<|>)\s*"
     r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)\s*$"
 )
+REQUIRED_FIELD_PATTERN = re.compile(
+    r"^\s*([A-Za-z_][A-Za-z0-9_.-]*)\s*=\s*(\S(?:.*\S)?)\s*$"
+)
 
 
 def _number(row: dict[str, Any], field: str, candidate_id: str) -> float:
@@ -45,6 +48,19 @@ def _parse_constraint(specification: str) -> tuple[str, str, float]:
         )
     field, operator, threshold = match.groups()
     return field, operator, float(threshold)
+
+
+def parse_required_field(specification: str) -> tuple[str, str]:
+    """Parse an exact categorical eligibility requirement."""
+
+    match = REQUIRED_FIELD_PATTERN.match(specification)
+    if not match:
+        raise ValueError(
+            f"Invalid required field {specification!r}; expected "
+            "semantic_review_status=pass"
+        )
+    field, expected = match.groups()
+    return field, expected
 
 
 def _passes(value: float, operator: str, threshold: float) -> bool:
@@ -72,11 +88,46 @@ def _dominates(
     return no_worse and strictly_better
 
 
+def compare_to_champion(
+    rows: list[dict[str, Any]],
+    *,
+    champion_id: str,
+    objectives: dict[str, str],
+    id_field: str = "candidate_id",
+) -> dict[str, dict[str, float]]:
+    """Return objective deltas without producing a promotion decision."""
+
+    indexed: dict[str, dict[str, Any]] = {}
+    for index, row in enumerate(rows):
+        candidate_id = str(row.get(id_field, "")).strip()
+        if not candidate_id:
+            raise ValueError(f"Row {index + 1} lacks identifier field '{id_field}'")
+        if candidate_id in indexed:
+            raise ValueError(f"Duplicate candidate identifier: {candidate_id}")
+        indexed[candidate_id] = row
+    if champion_id not in indexed:
+        raise ValueError(f"Champion candidate is absent: {champion_id}")
+    champion = {
+        field: _number(indexed[champion_id], field, champion_id)
+        for field in objectives
+    }
+    return {
+        candidate_id: {
+            field: _number(row, field, candidate_id) - champion[field]
+            for field in objectives
+        }
+        for candidate_id, row in indexed.items()
+        if candidate_id != champion_id
+    }
+
+
 def select_pareto(
     rows: list[dict[str, Any]],
     *,
     objectives: dict[str, str],
     constraints: list[str] | None = None,
+    required_fields: dict[str, str] | None = None,
+    champion_id: str | None = None,
     id_field: str = "candidate_id",
 ) -> dict[str, Any]:
     """Filter candidates by explicit floors/ceilings, then find non-dominated rows."""
@@ -98,7 +149,15 @@ def select_pareto(
     ineligible_ids: list[str] = []
     ineligible_reasons: dict[str, list[str]] = {}
 
-    required_fields = set(objectives).union(field for field, _, _ in parsed_constraints)
+    categorical_requirements = dict(required_fields or {})
+    if any(not str(field).strip() for field in categorical_requirements):
+        raise ValueError("Categorical required field names must not be blank")
+    if any(not str(value).strip() for value in categorical_requirements.values()):
+        raise ValueError("Categorical required field values must not be blank")
+
+    numeric_fields = set(objectives).union(
+        field for field, _, _ in parsed_constraints
+    )
     for index, row in enumerate(rows):
         candidate_id = str(row.get(id_field, "")).strip()
         if not candidate_id:
@@ -106,13 +165,20 @@ def select_pareto(
         if candidate_id in identifiers:
             raise ValueError(f"Duplicate candidate identifier: {candidate_id}")
         identifiers.add(candidate_id)
-        values = {field: _number(row, field, candidate_id) for field in required_fields}
+        values = {
+            field: _number(row, field, candidate_id) for field in numeric_fields
+        }
 
         failures = [
             f"{field}{operator}{threshold:g}"
             for field, operator, threshold in parsed_constraints
             if not _passes(values[field], operator, threshold)
         ]
+        failures.extend(
+            f"{field}={expected}"
+            for field, expected in categorical_requirements.items()
+            if str(row.get(field, "")).strip() != expected
+        )
         if failures:
             ineligible_ids.append(candidate_id)
             ineligible_reasons[candidate_id] = failures
@@ -136,10 +202,21 @@ def select_pareto(
         else:
             frontier.append(candidate)
 
+    deltas = (
+        compare_to_champion(
+            rows,
+            champion_id=champion_id,
+            objectives=objectives,
+            id_field=id_field,
+        )
+        if champion_id
+        else {}
+    )
     return {
         "id_field": id_field,
         "objectives": objectives,
         "constraints": constraints or [],
+        "required_fields": categorical_requirements,
         "eligible_count": len(normalized),
         "frontier_ids": [candidate_id for candidate_id, _, _ in frontier],
         "dominated_ids": dominated_ids,
@@ -147,6 +224,9 @@ def select_pareto(
         "dominated_by": dominated_by,
         "ineligible_reasons": ineligible_reasons,
         "frontier": [row for _, row, _ in frontier],
+        "champion_id": champion_id or "",
+        "deltas_from_champion": deltas,
+        "promotion_decision_produced": False,
     }
 
 
@@ -165,6 +245,16 @@ def _parse_args() -> argparse.Namespace:
         default=[],
         help="Validation-derived gate such as coherence>=0.4",
     )
+    parser.add_argument(
+        "--require-field",
+        action="append",
+        default=[],
+        help="Exact semantic eligibility gate such as semantic_review_status=pass",
+    )
+    parser.add_argument(
+        "--champion-id",
+        help="Current champion used only for objective deltas",
+    )
     return parser.parse_args()
 
 
@@ -180,12 +270,23 @@ def main() -> int:
             raise ValueError(f"Objective listed in both directions: {field}")
         objectives[field] = "min"
 
+    required_fields: dict[str, str] = {}
+    for specification in args.require_field:
+        field, expected = parse_required_field(specification)
+        if field in required_fields and required_fields[field] != expected:
+            raise ValueError(
+                f"Required field {field!r} has conflicting expected values"
+            )
+        required_fields[field] = expected
+
     with args.input.open("r", encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     result = select_pareto(
         rows,
         objectives=objectives,
         constraints=args.constraint,
+        required_fields=required_fields,
+        champion_id=args.champion_id,
         id_field=args.id_field,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)

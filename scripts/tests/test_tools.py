@@ -1518,8 +1518,20 @@ class SkillInstructionTests(unittest.TestCase):
             (asset_root / "study-contract.json").read_text(encoding="utf-8")
         )
         policy = contract["pre_model_reconnaissance"]
-        self.assertTrue(policy["required"])
-        self.assertTrue(policy["user_authorization_required"])
+        self.assertEqual(policy["requirement_basis"], "assurance_level")
+        self.assertFalse(policy["required_by_level"]["exploratory"])
+        self.assertEqual(
+            policy["required_by_level"]["research"],
+            "when_claim_depends_on_progressive_coverage",
+        )
+        self.assertTrue(policy["required_by_level"]["publication_release"])
+        self.assertEqual(
+            policy["authorization_by_level"]["exploratory"], "user_request"
+        )
+        self.assertEqual(
+            policy["authorization_by_level"]["publication_release"],
+            "explicit_preview_approval",
+        )
         self.assertEqual(
             policy["authorization_artifact"], "modeling-authorization.json"
         )
@@ -1540,9 +1552,10 @@ class SkillInstructionTests(unittest.TestCase):
     def test_corpus_scale_reconnaissance_is_integrated_and_guarded(self):
         skill_root = Path(__file__).resolve().parents[2]
         required_text = {
-            "SKILL.md": "awaiting_user_direction",
+            "SKILL.md": "references/publication-release-workflow.md",
+            "references/publication-release-workflow.md": "awaiting_user_direction",
             "references/corpus-theme-reconnaissance.md": (
-                "coverage_and_interpretation_anchor"
+                "Assurance routing"
             ),
             "references/scalable-corpus-reading.md": "probability_holdout",
             "references/network-short-text.md": "duplicate_inherited_unit_count",
@@ -1551,7 +1564,7 @@ class SkillInstructionTests(unittest.TestCase):
                 "modeling-authorization.json"
             ),
             "references/bertopic-implementation.md": "approved_for_modeling",
-            "agents/openai.yaml": "分层提取",
+            "agents/openai.yaml": "语义优先",
         }
         for relative, needle in required_text.items():
             path = skill_root / relative
@@ -1566,12 +1579,15 @@ class SkillInstructionTests(unittest.TestCase):
             )
 
         skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
-        reconnaissance_position = skill_text.index("awaiting_user_direction")
-        baseline_position = skill_text.index("Establish an auditable baseline")
-        self.assertLess(reconnaissance_position, baseline_position)
-        self.assertIn("pre_model_hypothesis_not_target_k", skill_text)
-        self.assertIn("interim incomplete reconnaissance", skill_text)
-        self.assertIn("resource envelope alone is not a stopping rule", skill_text)
+        assurance_position = skill_text.index("Choose the assurance level")
+        baseline_position = skill_text.index("Establish the baseline champion")
+        self.assertLess(assurance_position, baseline_position)
+        self.assertIn("do not impose a second approval ritual", skill_text)
+        self.assertIn("explicit preview", skill_text)
+        self.assertNotIn(
+            "Do not fit a baseline or any BERTopic candidate before corpus-scale",
+            skill_text,
+        )
 
     def test_parameter_transfer_firewall_is_explicit(self):
         skill_root = Path(__file__).resolve().parents[2]
@@ -1588,9 +1604,7 @@ class SkillInstructionTests(unittest.TestCase):
         self.assertIn("Do not emit a fixed multiplier grid", short_text)
         self.assertIn("not a mandatory shortlist", short_text)
         self.assertIn("Do not prescribe a universal reviewer count", diversity_text)
-        self.assertIn(
-            "--keyword-rbo-p <registered-p-when-keyword-gate-is-used>", skill_text
-        )
+        self.assertIn("one parameter family", skill_text)
         self.assertNotIn("probe below, at and above", skill_text)
 
     def test_lexicon_iteration_workflow_is_discoverable_and_guarded(self):
@@ -1601,10 +1615,10 @@ class SkillInstructionTests(unittest.TestCase):
         self.assertIn("synonym", skill_text.split("---", 2)[1].casefold())
         self.assertIn("stopword", skill_text.split("---", 2)[1].casefold())
         self.assertIn("references/lexicon-management-and-iteration.md", skill_text)
-        self.assertIn("scripts/build_lexicon_bundle.py", skill_text)
-        self.assertIn("scripts/evaluate_representation_update.py", skill_text)
         self.assertTrue(lexicon_reference.is_file())
         reference_text = lexicon_reference.read_text(encoding="utf-8")
+        self.assertIn("scripts/build_lexicon_bundle.py", reference_text)
+        self.assertIn("scripts/evaluate_representation_update.py", reference_text)
         self.assertIn("phrase protection", reference_text)
         self.assertIn("synonym canonicalization", reference_text)
         self.assertIn("stopword filtering", reference_text)

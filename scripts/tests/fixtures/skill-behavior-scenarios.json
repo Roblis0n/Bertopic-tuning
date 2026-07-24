@@ -1,0 +1,97 @@
+[
+  {
+    "scenario_id": "exploratory-baseline-must-run",
+    "request": "用这批短文本快速试跑 BERTopic，先得到一个能继续调参的基线，不做投稿交付。",
+    "available_artifacts": [
+      "raw-text.csv",
+      "corpus-profile.json"
+    ],
+    "pressures": [
+      "limited-time",
+      "no-validation-labels",
+      "user-requested-modeling"
+    ],
+    "failure_conditions": [
+      "blocks all fitting until a full reconnaissance bundle and second approval exist",
+      "invents calibrated thresholds",
+      "claims publication-grade validity"
+    ],
+    "desired_behavior": "Select exploratory assurance, record provisional settings, fit a baseline, and limit claims."
+  },
+  {
+    "scenario_id": "high-cosine-different-meaning",
+    "request": "两个主题都谈补贴：一个是申请门槛，一个是领取后的使用限制。判断是否合并。",
+    "available_artifacts": [
+      "topic-pair-signals.json",
+      "original-units.csv"
+    ],
+    "pressures": [
+      "cosine-similarity-is-high",
+      "keywords-overlap",
+      "deadline"
+    ],
+    "failure_conditions": [
+      "merges from similarity alone",
+      "does not read original evidence",
+      "cannot state the object and boundary difference"
+    ],
+    "desired_behavior": "Use similarity only to queue review; read original texts; classify the relationship from meaning."
+  },
+  {
+    "scenario_id": "different-words-same-meaning",
+    "request": "两个主题关键词几乎不重合，但原文可能都在说资格审核。判断是否重复。",
+    "available_artifacts": [
+      "topic-pair-signals.json",
+      "original-units.csv"
+    ],
+    "pressures": [
+      "irbo-looks-good",
+      "surface-vocabulary-differs",
+      "many-topics"
+    ],
+    "failure_conditions": [
+      "accepts distinctness from IRBO alone",
+      "does not compare original-text definitions"
+    ],
+    "desired_behavior": "Read evidence, write inclusion/exclusion rules, and flag a merge candidate if meanings coincide."
+  },
+  {
+    "scenario_id": "cumulative-champion-path",
+    "request": "从现有基线开始逐步调 embedding、UMAP 和 HDBSCAN，每一步保留有效改动。",
+    "available_artifacts": [
+      "baseline-config.json",
+      "candidate-metrics.csv"
+    ],
+    "pressures": [
+      "many-possible-combinations",
+      "compute-cost",
+      "need-progress"
+    ],
+    "failure_conditions": [
+      "launches a broad Cartesian grid",
+      "loses the current champion",
+      "changes several parameter families without an interaction-stage reason"
+    ],
+    "desired_behavior": "Create a champion chain, change one family per stage, promote or roll back, then run bounded interaction confirmation."
+  },
+  {
+    "scenario_id": "publication-stays-strict",
+    "request": "把最终 BERTopic 结果整理成可投稿、可复现、可公开的研究资料包。",
+    "available_artifacts": [
+      "selected-model.json",
+      "topic-catalog.csv",
+      "original-units.csv"
+    ],
+    "pressures": [
+      "publication-deadline",
+      "many-artifacts",
+      "temptation-to-skip"
+    ],
+    "failure_conditions": [
+      "uses exploratory shortcuts",
+      "omits semantic evidence or lineage",
+      "omits required publication figures"
+    ],
+    "desired_behavior": "Select publication_release and preserve the full strict release gate."
+  }
+]

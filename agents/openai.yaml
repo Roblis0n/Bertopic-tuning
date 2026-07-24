@@ -1,4 +1,4 @@
 interface:
   display_name: "BERTopic Tuning"
-  short_description: "全量核算语料，完成BERTopic调优与分层研究级图谱"
-  default_prompt: "使用 $bertopic-tuning 全量核算我的语料；若全文阅读超出预算，就用可审计的分层提取、风险升级全文和留出复核，先报告实际阅读覆盖、残余风险及粗细主题预估，获得授权后再执行以主题多样性为核心的 BERTopic 调优与迭代，审核同义词、停用词和自定义词，并输出结构、表征、分类与治理四层的分层研究级图谱及可复现图件清单。"
+  short_description: "语义优先的BERTopic主题解释、模型比较、调参与词表治理"
+  default_prompt: "使用 $bertopic-tuning 对我的语料进行与用途相匹配的 BERTopic 建模、语义复核、模型比较、同义词/停用词/自定义词治理或研究交付。"

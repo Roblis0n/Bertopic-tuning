@@ -1,0 +1,30 @@
+{
+  "study_id": "research-fixture",
+  "assurance_level": "research",
+  "claim_scope": "research",
+  "authorization_basis": "user_request",
+  "provisional_defaults": {
+    "used": false,
+    "provenance": [],
+    "permitted_for_final_selection": false
+  },
+  "semantic_review_policy": {
+    "algorithmic_metrics_role": "triage_only",
+    "original_text_required": true,
+    "review_stage_winners": true,
+    "review_all_finalists": true
+  },
+  "cumulative_tuning_policy": {
+    "one_parameter_family_per_main_stage": true,
+    "carry_forward_champion": true,
+    "rollback_rejected_change": true,
+    "bounded_interaction_confirmation": true
+  },
+  "research_question": "Does a domain encoder clarify eligibility themes?",
+  "route": "network-short",
+  "analysis_unit": "post",
+  "progressive_coverage_claim": false,
+  "visualization_policy": {
+    "required": false
+  }
+}

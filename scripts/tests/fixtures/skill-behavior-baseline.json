@@ -1,0 +1,64 @@
+[
+  {
+    "scenario_id": "exploratory-baseline-must-run",
+    "capture_method": "static_instruction_replay",
+    "agent_output": "先完成逐单元语料侦察、向用户展示预览并记录 approved_for_modeling；在此之前不得建立任何 BERTopic 基线。",
+    "observed_failures": [
+      "blocks all fitting until a full reconnaissance bundle and second approval exist",
+      "applies publication-style evidence collection to a non-release trial"
+    ],
+    "verbatim_rationalizations": [
+      "Do not fit a baseline or any BERTopic candidate before corpus-scale theme reconnaissance ... has been shown to the user, and modeling-authorization.json records approved_for_modeling."
+    ]
+  },
+  {
+    "scenario_id": "high-cosine-different-meaning",
+    "capture_method": "static_instruction_replay",
+    "agent_output": "把高相似主题列入最近主题对审计，但当前流程没有规定必须先从原文分别写出对象、功能、语境和边界，再判断是否合并。",
+    "observed_failures": [
+      "does not make original-text meaning fields the authority",
+      "does not provide an executable distinct-versus-overlap relationship decision"
+    ],
+    "verbatim_rationalizations": [
+      "Generate nearest-topic pairs from representative-unit topic embeddings and ranked-word overlap.",
+      "Audit the most similar pairs before merging."
+    ]
+  },
+  {
+    "scenario_id": "different-words-same-meaning",
+    "capture_method": "static_instruction_replay",
+    "agent_output": "按词汇重合、主题多样性和语义最近邻检查候选；当前流程没有要求对低词汇重合主题逐一形成原文定义和纳入排除规则。",
+    "observed_failures": [
+      "does not compare original-text definitions",
+      "can miss semantically duplicate topics whose surface words differ"
+    ],
+    "verbatim_rationalizations": [
+      "Include TD as a descriptive screen, rank-aware lexical overlap, nearest-topic semantic similarity, theme coverage, stability, coherence and labelability floors."
+    ]
+  },
+  {
+    "scenario_id": "cumulative-champion-path",
+    "capture_method": "static_instruction_replay",
+    "agent_output": "依次运行 embedding、UMAP、HDBSCAN、representation 和 taxonomy 循环，并在候选之间做 Pareto 选择。",
+    "observed_failures": [
+      "does not identify one current champion at every stage",
+      "does not require every challenger to descend from the retained champion",
+      "does not machine-check rollback after rejection",
+      "does not bound a final multi-family interaction confirmation"
+    ],
+    "verbatim_rationalizations": [
+      "Run the structural loop",
+      "Select non-dominated candidates with declared objectives and constraints."
+    ]
+  },
+  {
+    "scenario_id": "publication-stays-strict",
+    "capture_method": "static_instruction_replay",
+    "agent_output": "必须完成全量侦察授权、研究资料包、主题审计、谱系和分层可视化导出后才能交付。",
+    "observed_failures": [],
+    "verbatim_rationalizations": [
+      "Build and validate the layered research visualization",
+      "Complete the research bundle"
+    ]
+  }
+]

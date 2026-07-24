@@ -1,69 +1,56 @@
 # BERTopic Study Decision
 
-## Outcome and selected route
+Assurance level: `<exploratory|research|publication_release>`
 
-State the model/taxonomy decision first, including “retain current snapshot” when no candidate qualifies.
+## Final champion and route
 
-## Research question and corpus fingerprint
+State the route, final champion, claim scope, and substantive decision first.
+If no challenger qualifies, state that the current champion was retained.
 
-Link the study contract and corpus profile.
+## Stage decisions
 
-## Analysis-unit decision
+List each attempted or skipped stage in order. For every attempted stage,
+record the champion before, one-family challengers, semantic evidence, promote /
+retain / defer decision, champion after, and rollback reason.
 
-Explain the network-short, long-document or mixed route and the evidence supporting the unit/context/chunk policy.
+## Topic meanings and boundaries
 
-## Corpus-scale theme reconnaissance and user direction
+Summarize what the original texts show. Report topic objects, functions,
+contexts, perspectives, inclusion/exclusion boundaries, artifacts, merges,
+splits, and unresolved meanings. Link `semantic-review.json`.
 
-State whether reading used `direct_full_text` or `progressive_extraction`. Report full-corpus census accounting separately from semantic review depth, including full-text, extracted-representation, unreviewed and exact-duplicate-inherited counts. Link `corpus-reading-plan.json`, `corpus-reading-ledger.csv`, `theme-reconnaissance.json`, `theme-candidate-audit.csv` and the approved `modeling-authorization.json`. For progressive reading, report selection channels, `final_independent` holdout count and isolation from candidate evidence, stopping evidence, residual risk and the user's recorded risk acknowledgement. Record the approved `pre_model_artifact_fingerprint`. Then report coarse/fine estimates, user-mainline themes, supporting/contextual themes, recurrent emergent themes, uncertain boundaries and artifacts, and confirm that modeling began only after approval.
+## Interaction confirmation
 
-## Preview-versus-model comparison
+State the diagnostic trigger, allowed parameter families, bounded candidate
+rule, result, and rollback point. If no interaction check was needed, say why.
 
-Compare the selected model with the approved preview: covered candidate themes, missing themes, unexpected themes, merges, splits and preview assumptions rejected by model or human evidence. Do not treat the preview count as a target K.
+## Finalist validity
 
-## Academic mechanisms and local tests
+Report grouped stability, missing-theme coverage, Topic `-1`, dependence-group
+handling, counter-evidence, and remaining uncertainty at the level required by
+the assurance claim.
 
-Map each paper-derived idea to its transfer conditions, target-corpus experiment and result. Do not list copied parameters.
+## Supporting diagnostics
 
-## Structural experiments
+Only after the semantic decision, report lexical/semantic diversity,
+coherence, coverage, stability, outlier behavior, hard constraints, Pareto
+trade-offs, and deltas from the prior champion. State that diagnostics did not
+produce the semantic verdict.
 
-Summarize embedding, UMAP and clustering hypotheses, controlled comparisons and failed candidates.
+## Reproducibility and required delivery
 
-## Representation experiments
+List the artifacts required by the selected assurance level and their validator
+results. Do not leave publication-only sections empty.
 
-Summarize lexical/c-TF-IDF/keyword/label changes and confirm whether assignments remained unchanged.
+When lexical resources are enabled, add:
 
 ## Lexicon resources and representation iteration
 
-Link the compiled lexicon bundle, list accepted/rejected/deferred synonym, stopword and custom-term candidates, report the frozen assignment fingerprint, compare surface and concept-normalized lexical metrics, and state the stop rule and rollback decision.
+Report the frozen lexicon bundle, synonym/stopword/custom-term decisions,
+assignment-invariance evidence, representation comparison, rollback, and
+lexicon lineage.
 
-## Taxonomy experiments
-
-Report hierarchy, merge and split candidates with nearest-topic evidence and human decisions.
-
-## Diversity scorecard
-
-Report lexical, semantic, coverage, stability and interpretability dimensions at matched granularity. Report outlier composition as a diagnostic only.
-
-## Pareto frontier and selection
-
-List constraints, calibration sources, eligible frontier, uncertainty and the substantive reason for the operating point.
-
-## Layered research visualization
-
-Link `visualization-contract.json`, generated `visualization-plan.json` and completed `visualization-manifest.json`. Report the structure, representation, taxonomy and governance figure inventory; the seven mandatory BERTopic/base views; all route and metadata-conditional figures; blocked or not-applicable entries; the lexical or semantic relation basis; shared document-coordinate and taxonomy-relation evidence; Topic `-1` treatment; static/vector/HTML/source/caption/alt-text exports; and `validate_visualization_bundle.py` output.
-
-## Human audit and missing themes
-
-Report representative, random, boundary, nearest-topic pair and missing-theme results, including reviewer agreement.
-
-## Iteration and lineage
-
-Record retained, drifted, renamed, split, merged, new, retired and complex events with permanent topic IDs.
-
-## Counter-evidence and limitations
-
-State the strongest contradictory result, unmeasured dimension, data limitation and generalization boundary.
-
-## Reproducibility and validation
-
-List artifact paths, software/model revisions, reconstruction or save/reload evidence, and study-bundle validator output.
+For a `publication_release` report, add the applicable detailed sections from
+`references/publication-decision-report-sections.md`, including full
+reconnaissance, approval, lineage, evidence, visualization exports, hashes, and
+release limitations.

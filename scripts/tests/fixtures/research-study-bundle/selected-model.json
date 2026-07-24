@@ -1,0 +1,14 @@
+{
+  "candidate_id": "research-embedding",
+  "assurance_level": "research",
+  "tuning_trace_artifact": "tuning-trace.json",
+  "semantic_review_artifact": "semantic-review.json",
+  "selection_objectives": {},
+  "selection_constraints": [],
+  "semantic_required_fields": {
+    "semantic_review_status": "pass"
+  },
+  "eligible_pareto_frontier": [],
+  "decision_basis": "Original-text review found clearer and more stable topic boundaries.",
+  "release_status": "research_selected"
+}

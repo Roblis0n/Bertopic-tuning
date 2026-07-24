@@ -1,5 +1,14 @@
 {
   "candidate_id": "R-LEX",
+  "assurance_level": "publication_release",
+  "tuning_trace_artifact": "tuning-trace.json",
+  "semantic_review_artifact": "semantic-review.json",
+  "selection_objectives": {},
+  "selection_constraints": [],
+  "semantic_required_fields": {
+    "semantic_review_status": "pass"
+  },
+  "eligible_pareto_frontier": [],
   "structure_snapshot_id": "structure-fixture",
   "representation_snapshot_id": "representation-lexicon-fixture",
   "taxonomy_snapshot_id": "taxonomy-fixture",

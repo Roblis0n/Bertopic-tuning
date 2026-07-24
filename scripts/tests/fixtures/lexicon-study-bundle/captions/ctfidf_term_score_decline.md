@@ -1,0 +1,1 @@
+Figure caption for ctfidf-term-score-decline. Data and relation basis are registered.

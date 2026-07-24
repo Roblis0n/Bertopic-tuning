@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "study_id": "study-generic-fixture",
+  "snapshot_id": "snapshot-generic-fixture",
+  "plan_id": "visualization-plan-3c91297ad398cd1c",
+  "figures": [
+    {
+      "figure_id": "topic-term-barchart",
+      "layer": "representation",
+      "status": "rendered",
+      "research_question": "Which ranked c-TF-IDF terms represent each topic, and how concentrated is the lexical evidence within topics?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "topic_terms",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "ctfidf_lexical",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_terms",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_term_barchart.html",
+          "sha256": "sha256:7007e8515e1eb27a6920c05b7f0178febf4796f11ae1f2b6e8c6ba06782bb0dc",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_term_barchart.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_term_barchart.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_term_barchart.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_term_barchart.md",
+          "sha256": "sha256:32b5126f2cbab43dc8f31cfe75955f1704bedcbe4d515fab3da1fbadb92de375"
+        },
+        "alt_text": {
+          "path": "captions/topic_term_barchart.txt",
+          "sha256": "sha256:84437beee732e3975d50db3c1b832ac89d489c68a029b6bfd1d127f32c1dfa90"
+        }
+      }
+    },
+    {
+      "figure_id": "document-map",
+      "layer": "structure",
+      "status": "rendered",
+      "research_question": "How are modeled units arranged in the frozen document-embedding projection, including Topic -1 and topic boundaries?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "document_topics",
+        "document_coordinates",
+        "document_projection_parameters",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "document_embeddings",
+      "coordinate_artifact_id": "document_coordinates",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/document_map.html",
+          "sha256": "sha256:821ac4aa11fa3aea6cc8570fdd169c1631afb5093a8e2333d6cd9b460d3eab92",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/document_map.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/document_map.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/document_map.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/document_map.md",
+          "sha256": "sha256:c04c036342c2634c1fe14875b37d23d0bca04674da230ca92d0c9ac82d81cb8a"
+        },
+        "alt_text": {
+          "path": "captions/document_map.txt",
+          "sha256": "sha256:5c551e1645cea71873f23d3f803f6c747e7392b139dd27539d6c635c12321873"
+        }
+      }
+    },
+    {
+      "figure_id": "topic-map",
+      "layer": "structure",
+      "status": "rendered",
+      "research_question": "How are topics positioned in the registered topic relation space, and which relations require closer evidence review?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "topic_coordinates",
+        "topic_projection_parameters",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "topic_coordinates",
+      "relation_artifact_id": "topic_coordinates",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_map.html",
+          "sha256": "sha256:b0e2d29502652b46440ed3af24e97f5195d2af1b1a8e4322d8deb52bd1c3b582",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_map.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_map.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_map.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_map.md",
+          "sha256": "sha256:56fa24733924f66d408263ee3f15a0f700c22fec250bebcef12164a3a6ec65c1"
+        },
+        "alt_text": {
+          "path": "captions/topic_map.txt",
+          "sha256": "sha256:a4d63f6360dc33ac8b79f625513386e4e1ad737cd37130c194cd10e0d6a4fe13"
+        }
+      }
+    },
+    {
+      "figure_id": "topic-similarity-heatmap",
+      "layer": "taxonomy",
+      "status": "rendered",
+      "research_question": "Which topic pairs are most similar in the registered taxonomy relation space at the selected hierarchy level?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "topic_similarity",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_similarity",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_similarity_heatmap.html",
+          "sha256": "sha256:9854c8fd68b3364acffb16b1b69c25c0615a61ee7d98c42330a4bf5283476ceb",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_similarity_heatmap.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_similarity_heatmap.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_similarity_heatmap.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_similarity_heatmap.md",
+          "sha256": "sha256:0f53b71382e37756204303a2c5fe9fec4534a5a428b0ac669d0eb10027a7f7e2"
+        },
+        "alt_text": {
+          "path": "captions/topic_similarity_heatmap.txt",
+          "sha256": "sha256:f3c4c36d6a3b826ce3013e32ece4188bfde3fee4af7c8f76369d7c9897d9212c"
+        }
+      }
+    },
+    {
+      "figure_id": "topic-hierarchy",
+      "layer": "taxonomy",
+      "status": "rendered",
+      "research_question": "Which evidence-linked topic merges form a defensible coarser taxonomy, and at what relation distances?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "topic_similarity",
+        "topic_hierarchy",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_similarity",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_hierarchy.html",
+          "sha256": "sha256:d0b505a784c9804d1d47e2f2f186a16c0892d620c1b31e6431fc608b6a9d51df",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_hierarchy.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_hierarchy.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_hierarchy.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_hierarchy.md",
+          "sha256": "sha256:2fb6e08b0a1a13c13c7df872e13492c81b783b99d3063fc98cb89af47e620255"
+        },
+        "alt_text": {
+          "path": "captions/topic_hierarchy.txt",
+          "sha256": "sha256:162ce048a8478a40ab75a169e6580ebe25fdb464e590a3683a5bf4073a499946"
+        }
+      }
+    },
+    {
+      "figure_id": "ctfidf-term-score-decline",
+      "layer": "representation",
+      "status": "rendered",
+      "research_question": "How quickly does ranked c-TF-IDF evidence decline within each topic, and where do additional terms stop adding much distinction?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "topic_terms",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "ctfidf_lexical",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_terms",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/ctfidf_term_score_decline.html",
+          "sha256": "sha256:7e78a3083a3ce06feb37bee3323f5ca0b63b4ff32094cc43366462a74279ff37",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/ctfidf_term_score_decline.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/ctfidf_term_score_decline.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/ctfidf_term_score_decline.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/ctfidf_term_score_decline.md",
+          "sha256": "sha256:df2efb6caebf2e72be45585e4c572237665caa3ddc7caf3f51a99cf6deb9a209"
+        },
+        "alt_text": {
+          "path": "captions/ctfidf_term_score_decline.txt",
+          "sha256": "sha256:811412a4d21f43da879dba5195347f7fe7377c89a7610517a7d36a1e2701bb3a"
+        }
+      }
+    },
+    {
+      "figure_id": "topic-prevalence",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "What counts and shares do all assigned topics have, including Topic -1, at the declared analysis unit?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "document_topics",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "not_applicable",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_prevalence.html",
+          "sha256": "sha256:54b8c8d8b6664cda1e73e5f9255cf83c6f88b8961c90e667711f09ec85a65c92",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_prevalence.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_prevalence.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_prevalence.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_prevalence.md",
+          "sha256": "sha256:50d94eb7f369d08b27f478a7ea72e25225a26cfe31306e8ac5b62bd6ddc24cbe"
+        },
+        "alt_text": {
+          "path": "captions/topic_prevalence.txt",
+          "sha256": "sha256:d5084dbe831ec87c5fd44f3452db3220cd1970582f1a52ea1b93ac5ce44d49ff"
+        }
+      }
+    },
+    {
+      "figure_id": "candidate-pareto",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "Which candidate models remain non-dominated after declared quality constraints, and what trade-offs distinguish them?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "candidate_metrics"
+      ],
+      "relation_basis": "not_applicable",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "",
+      "outlier_policy": "reported_guardrail_not_objective",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/candidate_pareto.html",
+          "sha256": "sha256:5f03593905447ed0f2107c47566e621487081d4924b0e0ba74aab1341cad3057",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/candidate_pareto.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/candidate_pareto.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/candidate_pareto.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/candidate_pareto.md",
+          "sha256": "sha256:1f31f9051afbd980102eeecbd50d34c6f3f59ebb54db29b5b9b587ff2accb3d8"
+        },
+        "alt_text": {
+          "path": "captions/candidate_pareto.txt",
+          "sha256": "sha256:ef96e9da998e0ce36badb32e3b0239ba3426a57012bc0f2ae92522b9dd88673a"
+        }
+      }
+    },
+    {
+      "figure_id": "topic-stability",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "Which substantive topics survive the registered seeds, group-aware resamples, or snapshot perturbations, and with what uncertainty?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "stability_metrics",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "relation_basis": "registered_stability_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "reported_separately",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/topic_stability.html",
+          "sha256": "sha256:3c2f86752234f39727f2520f757d44958f2124d43c024aaea36068e733b56739",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/topic_stability.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/topic_stability.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/topic_stability.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/topic_stability.md",
+          "sha256": "sha256:7b7489c97ee8b39c1c635241dc49559b092eb0ee6ba4f316824543dfe9f94c98"
+        },
+        "alt_text": {
+          "path": "captions/topic_stability.txt",
+          "sha256": "sha256:710afc52e53014693c73f92abf7a417935c7ce79aa1022c9f702bdd2f3214418"
+        }
+      }
+    },
+    {
+      "figure_id": "outlier-diagnostics",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "What composes Topic -1, which registered groups or artifacts contribute to it, and which topics are its nearest alternatives?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "document_topics",
+        "outlier_diagnostics",
+        "topic_color_map"
+      ],
+      "relation_basis": "registered_outlier_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/outlier_diagnostics.html",
+          "sha256": "sha256:613b6fc413b1586c4011e1403a5dfed4b9889805d12933d9af0afa39fcaa7fc4",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/outlier_diagnostics.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/outlier_diagnostics.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/outlier_diagnostics.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/outlier_diagnostics.md",
+          "sha256": "sha256:22079cab71b6c60cb51fac40233a78307b36ee5387815221009ea95d46db0bd4"
+        },
+        "alt_text": {
+          "path": "captions/outlier_diagnostics.txt",
+          "sha256": "sha256:84440877107c35858ebdb6f8e7fa3d2d29d060d61db50111cdf039c29854a447"
+        }
+      }
+    },
+    {
+      "figure_id": "coverage-leakage-audit",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "Which reference themes and validation groups are covered, and where does source or group leakage threaten interpretation?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "candidate_metrics",
+        "coverage_diagnostics"
+      ],
+      "relation_basis": "registered_coverage_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "",
+      "outlier_policy": "reported_as_coverage_evidence",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/coverage_leakage_audit.html",
+          "sha256": "sha256:0ee008c06e934c9b90039c555a50f8edccd4a7042e9b9558d2b3feb2a47a343f",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/coverage_leakage_audit.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/coverage_leakage_audit.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/coverage_leakage_audit.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/coverage_leakage_audit.md",
+          "sha256": "sha256:d5b803c726a62e4ba915a1acb1fd1019a646b73aa79a8c8819d256cddd74c30c"
+        },
+        "alt_text": {
+          "path": "captions/coverage_leakage_audit.txt",
+          "sha256": "sha256:9557659200e1c4a12e660390c8d878f16c935fba825ec2a978375bac960cdf59"
+        }
+      }
+    },
+    {
+      "figure_id": "short-text-artifact-audit",
+      "layer": "governance",
+      "status": "rendered",
+      "research_question": "Are short-text topics driven by substantive content rather than duplicate families, sources, accounts, templates, or platform tokens?",
+      "interpretation": "Interpretation is limited to the registered snapshot, inputs, relation basis, and analysis unit.",
+      "limitations": "The figure is descriptive and does not replace held-out, stability, coverage, or human-audit evidence.",
+      "input_artifact_ids": [
+        "short_text_artifacts",
+        "topic_color_map"
+      ],
+      "relation_basis": "registered_short_text_artifact_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "title_location": "caption",
+      "render_parameters": {
+        "source": "registered-local-study-parameters"
+      },
+      "outputs": {
+        "interactive_html": {
+          "path": "figures/short_text_artifact_audit.html",
+          "sha256": "sha256:be417ccc9d85ff342a3b7a5ca33a93c94ddb519b6949491f5895b563120443f3",
+          "self_contained": true
+        },
+        "static_vector": {
+          "path": "figures/short_text_artifact_audit.svg",
+          "sha256": "sha256:bf97a997d443e60167c00240f2756821451e105747e1b9870d241d4881981d90"
+        },
+        "static_raster": {
+          "path": "figures/short_text_artifact_audit.png",
+          "sha256": "sha256:431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+        },
+        "source_data": {
+          "path": "figure-data/short_text_artifact_audit.csv",
+          "sha256": "sha256:83106e79dfe1a3b48afcd38ae88ecf5e953502475cd223f64bf078f7ec15439a"
+        },
+        "caption": {
+          "path": "captions/short_text_artifact_audit.md",
+          "sha256": "sha256:b812f70662861888f8f0d49cf1d31e9fa570c6c757389da71f73f7ee30447b5e"
+        },
+        "alt_text": {
+          "path": "captions/short_text_artifact_audit.txt",
+          "sha256": "sha256:66e7536fa79e6a002794ea2a6b04a83d42a46088700be47486a3457ef743b7cc"
+        }
+      }
+    }
+  ]
+}

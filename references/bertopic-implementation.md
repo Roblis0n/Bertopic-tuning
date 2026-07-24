@@ -1,7 +1,30 @@
 # BERTopic Implementation Guide
 
+## Cumulative champion loop
+
+Read `semantic-review-and-cumulative-tuning.md` before implementing a
+comparison. Carry one current champion and change one parameter family per main
+stage:
+
+```text
+analysis_unit → embedding → umap
+→ hdbscan_min_cluster_size → hdbscan_min_samples
+→ hdbscan_selection_method → representation → taxonomy
+```
+
+Every challenger records its champion parent. Calculate diagnostics, build the
+original-text review queue, review meaning, then promote exactly one challenger
+or retain the champion. A rejected candidate is a rollback endpoint, not the
+next parent. Permit multi-family changes only in a bounded, evidence-triggered
+`interaction_confirmation`.
+
+The pre-fit reconnaissance guard below is assurance-aware: compact inspection
+for exploratory, concise mapping for research, and the complete approval gate
+for publication/release.
+
 ## Contents
 
+- Cumulative champion loop
 - Environment and version checks
 - Pre-fit reconnaissance guard
 - Config-driven pipeline
@@ -29,31 +52,61 @@ Record exact package, encoder and tokenizer revisions. Do not silently install o
 
 ## Pre-fit reconnaissance guard
 
-Place the authorization check at the entry point that can create embeddings or call `BERTopic.fit`, not only in a notebook note or UI message. The check must run before expensive or irreversible modeling actions.
+Place an assurance-aware entry check at the point that can create embeddings or
+call `BERTopic.fit`, not only in a notebook note or UI message. Exploratory and
+ordinary research work must not call the publication-only approval validator.
 
 ```python
 import json
 from pathlib import Path
 
-from scripts.validate_theme_reconnaissance import validate_theme_reconnaissance
+from scripts.validate_theme_reconnaissance import (
+    validate_reconnaissance_for_level,
+)
+from scripts.workflow_policy import resolve_assurance_level
 
 
-def require_modeling_authorization(bundle_dir):
+def check_modeling_entry(bundle_dir):
     bundle = Path(bundle_dir)
-    result = validate_theme_reconnaissance(bundle, require_approval=True)
+    contract = json.loads(
+        (bundle / "study-contract.json").read_text(encoding="utf-8")
+    )
+    level = resolve_assurance_level(contract)["assurance_level"]
+    result = validate_reconnaissance_for_level(
+        bundle,
+        level,
+        progressive_coverage_claim=(
+            contract.get("progressive_coverage_claim") is True
+        ),
+    )
     if not result["valid"]:
         details = "; ".join(result["errors"])
         raise RuntimeError(f"Pre-model reconnaissance gate failed: {details}")
+
+    if level != "publication_release":
+        return {
+            "assurance_level": level,
+            "authorization_basis": contract["authorization_basis"],
+            "authorization_id": "",
+        }
 
     authorization = json.loads(
         (bundle / "modeling-authorization.json").read_text(encoding="utf-8")
     )
     if authorization["gate_status"] != "approved_for_modeling":
         raise RuntimeError("Modeling is not authorized")
-    return authorization["authorization_id"]
+    return {
+        "assurance_level": level,
+        "authorization_basis": "explicit_preview_approval",
+        "authorization_id": authorization["authorization_id"],
+    }
 ```
 
-Call `require_modeling_authorization()` before loading or computing embeddings, then write its returned ID into the `authorization_id` column of every modeling registry row. Never bypass the guard with a separate boolean or reuse an authorization whose corpus fingerprint no longer matches.
+Call `check_modeling_entry()` before loading or computing embeddings. Record
+the returned assurance and authorization basis. For publication/release, also
+write its `authorization_id` into every modeling registry row. Never bypass the
+publication guard with a separate boolean or reuse an authorization whose
+corpus fingerprint no longer matches.
 
 ## Config-driven pipeline
 

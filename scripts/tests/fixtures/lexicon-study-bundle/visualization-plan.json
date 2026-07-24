@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "plan_id": "visualization-plan-3c91297ad398cd1c",
+  "contract_sha256": "sha256:3c91297ad398cd1c5865db25386f58940a753f01de8e1b6efaa55deb9153468a",
+  "study_id": "study-generic-fixture",
+  "snapshot_id": "snapshot-generic-fixture",
+  "assurance_level": "publication_release",
+  "route": "network-short",
+  "field_map": {
+    "unit_id": "record_key",
+    "topic_id": "cluster_code",
+    "topic_uid": "stable_topic_key",
+    "topic_label": "topic_title",
+    "parent_document_id": "container_key",
+    "time": "event_period",
+    "group": "comparison_cohort",
+    "latitude": "northing_value",
+    "longitude": "easting_value"
+  },
+  "outlier_topic_id": "-1",
+  "contract_errors": [],
+  "summary": {
+    "figure_count": 18,
+    "required_figure_count": 12,
+    "ready_required_count": 12,
+    "blocked_required_count": 0,
+    "not_applicable_count": 6,
+    "optional_figure_count": 0
+  },
+  "figures": [
+    {
+      "figure_id": "topic-term-barchart",
+      "layer": "representation",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which ranked c-TF-IDF terms represent each topic, and how concentrated is the lexical evidence within topics?",
+      "input_artifact_ids": [
+        "topic_terms",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "ctfidf_lexical",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_terms",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_barchart.html",
+        "static_vector": "figure_topic_term_barchart.svg",
+        "static_raster": "figure_topic_term_barchart.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "document-map",
+      "layer": "structure",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "How are modeled units arranged in the frozen document-embedding projection, including Topic -1 and topic boundaries?",
+      "input_artifact_ids": [
+        "document_topics",
+        "document_coordinates",
+        "document_projection_parameters",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "document_embeddings",
+      "coordinate_artifact_id": "document_coordinates",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_documents.html",
+        "static_vector": "figure_bertopic_datamap.svg",
+        "static_raster": "figure_bertopic_datamap.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-map",
+      "layer": "structure",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "How are topics positioned in the registered topic relation space, and which relations require closer evidence review?",
+      "input_artifact_ids": [
+        "topic_coordinates",
+        "topic_projection_parameters",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "topic_coordinates",
+      "relation_artifact_id": "topic_coordinates",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topics.html",
+        "static_vector": "visualize_topics.svg",
+        "static_raster": "visualize_topics.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-similarity-heatmap",
+      "layer": "taxonomy",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which topic pairs are most similar in the registered taxonomy relation space at the selected hierarchy level?",
+      "input_artifact_ids": [
+        "topic_similarity",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_similarity",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_heatmap.html",
+        "static_vector": "visualize_heatmap.svg",
+        "static_raster": "visualize_heatmap.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-hierarchy",
+      "layer": "taxonomy",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which evidence-linked topic merges form a defensible coarser taxonomy, and at what relation distances?",
+      "input_artifact_ids": [
+        "topic_similarity",
+        "topic_hierarchy",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "semantic_topic_embeddings",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_similarity",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_hierarchy.html",
+        "static_vector": "visualize_hierarchy.svg",
+        "static_raster": "visualize_hierarchy.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "ctfidf-term-score-decline",
+      "layer": "representation",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "How quickly does ranked c-TF-IDF evidence decline within each topic, and where do additional terms stop adding much distinction?",
+      "input_artifact_ids": [
+        "topic_terms",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "ctfidf_lexical",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "topic_terms",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "exclude_with_declared_scope",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_term_rank.html",
+        "static_vector": "figure_ctfidf_term_score_decline.svg",
+        "static_raster": "figure_ctfidf_term_score_decline.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-prevalence",
+      "layer": "governance",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "What counts and shares do all assigned topics have, including Topic -1, at the declared analysis unit?",
+      "input_artifact_ids": [
+        "document_topics",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "not_applicable",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topic_prevalence.html",
+        "static_vector": "figure_topic_prevalence.svg",
+        "static_raster": "figure_topic_prevalence.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "candidate-pareto",
+      "layer": "governance",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which candidate models remain non-dominated after declared quality constraints, and what trade-offs distinguish them?",
+      "input_artifact_ids": [
+        "candidate_metrics"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "not_applicable",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "",
+      "outlier_policy": "reported_guardrail_not_objective",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_candidate_pareto.html",
+        "static_vector": "figure_candidate_pareto.svg",
+        "static_raster": "figure_candidate_pareto.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-stability",
+      "layer": "governance",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which substantive topics survive the registered seeds, group-aware resamples, or snapshot perturbations, and with what uncertainty?",
+      "input_artifact_ids": [
+        "stability_metrics",
+        "topic_catalog",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_stability_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "reported_separately",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topic_stability.html",
+        "static_vector": "figure_topic_stability.svg",
+        "static_raster": "figure_topic_stability.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "outlier-diagnostics",
+      "layer": "governance",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "What composes Topic -1, which registered groups or artifacts contribute to it, and which topics are its nearest alternatives?",
+      "input_artifact_ids": [
+        "document_topics",
+        "outlier_diagnostics",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_outlier_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_outlier_diagnostics.html",
+        "static_vector": "figure_outlier_diagnostics.svg",
+        "static_raster": "figure_outlier_diagnostics.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "coverage-leakage-audit",
+      "layer": "governance",
+      "requirement": "core",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "mandatory_core_figure",
+      "research_question": "Which reference themes and validation groups are covered, and where does source or group leakage threaten interpretation?",
+      "input_artifact_ids": [
+        "candidate_metrics",
+        "coverage_diagnostics"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_coverage_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "",
+      "outlier_policy": "reported_as_coverage_evidence",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_coverage_leakage.html",
+        "static_vector": "figure_coverage_leakage.svg",
+        "static_raster": "figure_coverage_leakage.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "short-text-artifact-audit",
+      "layer": "governance",
+      "requirement": "route",
+      "assurance_requirement": "required",
+      "status": "ready",
+      "activation_reason": "route=network-short",
+      "research_question": "Are short-text topics driven by substantive content rather than duplicate families, sources, accounts, templates, or platform tokens?",
+      "input_artifact_ids": [
+        "short_text_artifacts",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_short_text_artifact_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_short_text_artifacts.html",
+        "static_vector": "figure_short_text_artifacts.svg",
+        "static_raster": "figure_short_text_artifacts.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "parent-document-topic-profile",
+      "layer": "governance",
+      "requirement": "route",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "not_applicable_for_route=network-short",
+      "research_question": "How do segment-level topics contribute to parent-document profiles without collapsing multi-topic documents to one hard label?",
+      "input_artifact_ids": [
+        "parent_document_topics",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_parent_document_aggregation",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "include_topic_minus_one",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_parent_document_topics.html",
+        "static_vector": "figure_parent_document_topics.svg",
+        "static_raster": "figure_parent_document_topics.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topics-over-time",
+      "layer": "governance",
+      "requirement": "conditional",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "conditional_module=time:disabled",
+      "research_question": "How does prevalence within the frozen global taxonomy change across the registered time field?",
+      "input_artifact_ids": [
+        "topics_over_time",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_time_topic_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "report_explicitly_or_exclude_with_reason",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topics_over_time.html",
+        "static_vector": "figure_topics_over_time.svg",
+        "static_raster": "figure_topics_over_time.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topics-by-group",
+      "layer": "governance",
+      "requirement": "conditional",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "conditional_module=group:disabled",
+      "research_question": "How do topic prevalences differ across the registered substantive groups under one shared taxonomy?",
+      "input_artifact_ids": [
+        "topics_by_group",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_group_topic_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "report_explicitly_or_exclude_with_reason",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topics_by_group.html",
+        "static_vector": "figure_topics_by_group.svg",
+        "static_raster": "figure_topics_by_group.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-geography",
+      "layer": "governance",
+      "requirement": "conditional",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "conditional_module=geography:disabled",
+      "research_question": "How are topic prevalences distributed across the registered geographic units without confusing location density with theme strength?",
+      "input_artifact_ids": [
+        "topic_geography",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_geographic_topic_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "report_explicitly_or_exclude_with_reason",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topic_geography.html",
+        "static_vector": "figure_topic_geography.svg",
+        "static_raster": "figure_topic_geography.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "topic-lineage",
+      "layer": "governance",
+      "requirement": "conditional",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "conditional_module=lineage:disabled",
+      "research_question": "Which permanent topics continue, split, merge, emerge, or retire across registered snapshots?",
+      "input_artifact_ids": [
+        "topic_lineage",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_lineage_evidence",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "reported_separately",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_topic_lineage.html",
+        "static_vector": "figure_topic_lineage.svg",
+        "static_raster": "figure_topic_lineage.png"
+      },
+      "static_title_location": "caption"
+    },
+    {
+      "figure_id": "document-topic-distribution",
+      "layer": "governance",
+      "requirement": "conditional",
+      "assurance_requirement": "required",
+      "status": "not_applicable",
+      "activation_reason": "conditional_module=document_distribution:disabled",
+      "research_question": "Which selected documents have concentrated or mixed topic evidence under the registered distribution method?",
+      "input_artifact_ids": [
+        "document_topic_distributions",
+        "topic_color_map"
+      ],
+      "missing_artifact_ids": [],
+      "relation_basis": "registered_document_topic_distribution",
+      "coordinate_artifact_id": "",
+      "relation_artifact_id": "",
+      "color_map_artifact_id": "topic_color_map",
+      "outlier_policy": "report_explicitly_or_exclude_with_reason",
+      "required_outputs": [
+        "interactive_html",
+        "static_vector",
+        "static_raster",
+        "source_data",
+        "caption",
+        "alt_text"
+      ],
+      "preferred_outputs": {
+        "interactive_html": "visualize_document_topic_distribution.html",
+        "static_vector": "figure_document_topic_distribution.svg",
+        "static_raster": "figure_document_topic_distribution.png"
+      },
+      "static_title_location": "caption"
+    }
+  ]
+}

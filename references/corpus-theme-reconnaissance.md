@@ -1,7 +1,25 @@
 # Corpus-Scale Theme Reconnaissance
 
+## Assurance routing
+
+Scale reconnaissance to the claim:
+
+- `exploratory`: profile the corpus and read enough traceable original evidence
+  to understand obvious themes, artifacts, and limitations; do not impose a
+  universal pause or second approval before a requested baseline;
+- `research`: create a concise theme map and limitations statement; require the
+  full plan/ledger only when the claim depends on progressive coverage, and
+  pause only for a scope-changing ambiguity;
+- `publication_release`: use the complete census, ledger, holdout,
+  residual-risk, preview, disposition, fingerprint, and explicit approval gate
+  specified in the remainder of this reference.
+
+The detailed full-corpus protocol below is therefore conditional, not a
+universal prerequisite for every fit.
+
 ## Contents
 
+- Assurance routing
 - Purpose and boundary
 - User-theme brief
 - Reading-mode decision
@@ -17,7 +35,14 @@
 
 ## Purpose and boundary
 
-Run a corpus-scale theme reconnaissance after fingerprinting and before any embedding, dimensionality reduction, clustering, topic reduction, or BERTopic fit. Its purpose is to give the user an evidence-linked provisional map of what the reviewed corpus evidence appears to contain, estimate a defensible coarse and fine topic-count range, and obtain explicit direction for the modeling study.
+For `publication_release`, run the complete corpus-scale reconnaissance after
+fingerprinting and before any embedding, dimensionality reduction, clustering,
+topic reduction, or BERTopic fit. For `research`, use the concise form unless a
+progressive coverage claim activates the complete reading evidence. For
+`exploratory`, perform compact inspection and proceed under the user's modeling
+request. The purpose is to give the user an evidence-linked provisional map of
+what the reviewed corpus evidence appears to contain without making the same
+audit burden universal.
 
 This stage is qualitative reconnaissance, not a topic model. Its estimate must be recorded as `pre_model_hypothesis_not_target_k`. It must not be copied into `nr_topics`, HDBSCAN parameters, a forced cluster count, or a model-selection target. Later modeling may confirm, merge, split, reject, or add themes.
 
@@ -137,7 +162,7 @@ Account for every eligible parent document under `parent_document_coverage`. In 
 
 Complete both unit-level and parent-document accounting where applicable. Every ledger row uses the concrete `network-short` or `long-document` subset, both subsets must be present, and distinct profiled/reviewed long-document parent IDs must match the declared counts. In progressive mode, each subset independently requires semantic review, all five selection channels and a final-independent holdout. Mark `route_subset` on every candidate. Present shared candidates and route-specific candidates separately before proposing any aligned taxonomy.
 
-## User preview and authorization gate
+## Publication/release preview and authorization gate
 
 Present the reconnaissance before modeling in this order:
 

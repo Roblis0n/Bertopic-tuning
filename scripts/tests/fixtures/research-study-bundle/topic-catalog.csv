@@ -1,0 +1,2 @@
+snapshot_id,topic_uid,local_topic_id,label,definition,inclusion,exclusion,size,representative_units,nearest_topic_uid,nearest_similarity,status
+research-embedding,R-T001,0,Eligibility review,Checks before program entry,Qualification checks,Post-receipt restrictions,5,r-1|r-2|r-3,,0.20,active

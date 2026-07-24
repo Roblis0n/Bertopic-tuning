@@ -1,0 +1,1 @@
+Figure caption for topic-term-barchart. Data and relation basis are registered.

@@ -206,6 +206,9 @@ def evaluate_topics(
     pairwise_semantic.sort(key=lambda row: row["cosine_similarity"], reverse=True)
 
     result = {
+        "decision_role": "diagnostic_triage_only",
+        "semantic_verdict_produced": False,
+        "requires_original_text_review": True,
         "topic_count": len(topics),
         "top_k": top_k,
         "rbo_p": rbo_p,

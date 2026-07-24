@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "study_id": "research-fixture",
+  "research_question": "Does a domain encoder clarify eligibility themes?",
+  "route": "network-short",
+  "review_scope": "concise_research_theme_map",
+  "candidate_themes": [
+    {
+      "candidate_id": "eligibility",
+      "definition": "Checks before entry to the benefit program.",
+      "evidence_unit_ids": [
+        "r-1",
+        "r-2"
+      ]
+    }
+  ],
+  "limitations": [
+    "No corpus-prevalence inference is made from purposive semantic evidence."
+  ]
+}

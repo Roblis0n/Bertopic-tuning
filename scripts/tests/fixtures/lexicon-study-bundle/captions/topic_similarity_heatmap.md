@@ -1,0 +1,1 @@
+Figure caption for topic-similarity-heatmap. Data and relation basis are registered.

@@ -433,6 +433,36 @@ ALLOWED_RELATION_BASES = {
     "ctfidf_lexical",
 }
 
+ASSURANCE_LEVELS = {
+    "exploratory",
+    "research",
+    "publication_release",
+}
+
+
+def figure_requirement(
+    figure_id: str,
+    *,
+    assurance_level: str,
+    enabled_modules: set[str],
+) -> str:
+    """Return the evidence obligation for one planned figure.
+
+    A blank level is legacy strict behavior, so existing contracts cannot
+    silently downgrade their visualization obligations.
+    """
+
+    level = assurance_level or "publication_release"
+    if level not in ASSURANCE_LEVELS:
+        raise ValueError(
+            "assurance_level must be exploratory, research, or publication_release"
+        )
+    if level == "exploratory":
+        return "optional"
+    if level == "research":
+        return "required" if figure_id in enabled_modules else "optional"
+    return "required"
+
 
 def _canonical_bytes(payload: dict[str, Any]) -> bytes:
     return json.dumps(
@@ -672,6 +702,7 @@ def _materialize_figure(
     contract: dict[str, Any],
     *,
     requirement: str,
+    assurance_requirement: str,
     active: bool,
     activation_reason: str,
 ) -> dict[str, Any]:
@@ -685,7 +716,11 @@ def _materialize_figure(
         status = "not_applicable"
         missing = []
     elif missing:
-        status = "blocked_missing_inputs"
+        status = (
+            "blocked_missing_inputs"
+            if assurance_requirement == "required"
+            else "optional_missing_inputs"
+        )
     else:
         status = "ready"
     basis, coordinate_id, relation_id = _basis_links(definition, contract)
@@ -698,6 +733,7 @@ def _materialize_figure(
         "figure_id": definition["figure_id"],
         "layer": definition["layer"],
         "requirement": requirement,
+        "assurance_requirement": assurance_requirement,
         "status": status,
         "activation_reason": activation_reason,
         "research_question": definition["research_question"],
@@ -721,12 +757,36 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
     contract_digest = (
         "sha256:" + hashlib.sha256(_canonical_bytes(contract)).hexdigest()
     )
+    assurance_level = str(
+        contract.get("assurance_level", "publication_release")
+    ).strip() or "publication_release"
+    configured_figures = contract.get("decision_relevant_figure_ids", [])
+    if not isinstance(configured_figures, list):
+        configured_figures = []
+    enabled_figure_ids = {
+        str(figure_id).strip()
+        for figure_id in configured_figures
+        if _nonblank(figure_id)
+    }
+    modules = contract.get("conditional_modules")
+    if not isinstance(modules, dict):
+        modules = {}
+    for definition in CONDITIONAL_FIGURES:
+        module = modules.get(definition["module"])
+        if isinstance(module, dict) and module.get("enabled") is True:
+            enabled_figure_ids.add(definition["figure_id"])
+
     figures: list[dict[str, Any]] = []
     figures.extend(
         _materialize_figure(
             definition,
             contract,
             requirement="core",
+            assurance_requirement=figure_requirement(
+                definition["figure_id"],
+                assurance_level=assurance_level,
+                enabled_modules=enabled_figure_ids,
+            ),
             active=True,
             activation_reason="mandatory_core_figure",
         )
@@ -741,6 +801,11 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
                 definition,
                 contract,
                 requirement="route",
+                assurance_requirement=figure_requirement(
+                    definition["figure_id"],
+                    assurance_level=assurance_level,
+                    enabled_modules=enabled_figure_ids,
+                ),
                 active=active,
                 activation_reason=(
                     f"route={route}"
@@ -750,9 +815,6 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
             )
         )
 
-    modules = contract.get("conditional_modules")
-    if not isinstance(modules, dict):
-        modules = {}
     for definition in CONDITIONAL_FIGURES:
         module_name = definition["module"]
         module = modules.get(module_name)
@@ -762,6 +824,11 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
                 definition,
                 contract,
                 requirement="conditional",
+                assurance_requirement=figure_requirement(
+                    definition["figure_id"],
+                    assurance_level=assurance_level,
+                    enabled_modules=enabled_figure_ids,
+                ),
                 active=active,
                 activation_reason=(
                     f"conditional_module={module_name}:enabled"
@@ -772,7 +839,10 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
         )
 
     required_figures = [
-        figure for figure in figures if figure["status"] != "not_applicable"
+        figure
+        for figure in figures
+        if figure["status"] != "not_applicable"
+        and figure["assurance_requirement"] == "required"
     ]
     summary = {
         "figure_count": len(figures),
@@ -787,6 +857,11 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
         "not_applicable_count": sum(
             figure["status"] == "not_applicable" for figure in figures
         ),
+        "optional_figure_count": sum(
+            figure["status"] != "not_applicable"
+            and figure["assurance_requirement"] == "optional"
+            for figure in figures
+        ),
     }
     return {
         "schema_version": 1,
@@ -794,6 +869,7 @@ def build_plan(contract: dict[str, Any]) -> dict[str, Any]:
         "contract_sha256": contract_digest,
         "study_id": contract.get("study_id", ""),
         "snapshot_id": contract.get("snapshot_id", ""),
+        "assurance_level": assurance_level,
         "route": route,
         "field_map": deepcopy_json(contract.get("field_map", {})),
         "outlier_topic_id": contract.get("outlier_topic_id", ""),

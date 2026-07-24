@@ -1,0 +1,12 @@
+{
+  "corpus_fingerprint": "sha256:research-fixture",
+  "unit_count": 8,
+  "length_profile": {
+    "unit": "characters",
+    "distribution": "fixture"
+  },
+  "group_fields": [
+    "source_id",
+    "duplicate_group_id"
+  ]
+}

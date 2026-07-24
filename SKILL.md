@@ -1,250 +1,264 @@
 ---
 name: bertopic-tuning
-description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity optimization, research-grade BERTopic visualization, synonym or stopword management, custom/domain dictionaries, lexical representation iteration, short web or social-text modeling, long-document topic discovery, model comparison, topic stability, topic lineage, new-corpus updates, Chinese-corpus analysis, or academically reproducible BERTopic reporting.
+description: Use when a user requests BERTopic tuning, 主题建模调参, topic-diversity evaluation, semantic topic interpretation, short-text or long-document topic modeling, model comparison, topic stability or lineage, synonyms, stopwords, custom/domain lexicons, research visualization, or reproducible BERTopic reporting.
 ---
 
 # BERTopic Tuning
 
 ## Core principle
 
-Optimize **effective thematic diversity**, not raw topic count, simple Topic Diversity, or outlier rate. Treat diversity as a vector of lexical distinctiveness, semantic distinctiveness, theme coverage, stability, and human interpretability. Keep coherence as a floor and outlier behavior as a diagnostic guardrail.
+Understand topic meanings from original text, improve one current champion, and
+scale evidence to the claim. Original text is authoritative for topic identity,
+boundaries, labels, merges, splits, and promotion decisions. Algorithmic output
+is diagnostic triage only: it decides what deserves reading, not what a topic
+means.
 
-Translate papers into mechanisms and testable hypotheses. Never copy a paper's hyperparameters, thresholds, sample sizes, or metric weights into a new corpus unless reproducing that paper.
+Keep four layers separate:
 
-## Non-negotiable rules
+- **structure** changes assignments through analysis units, embeddings, UMAP, or
+  HDBSCAN;
+- **representation** changes words and labels while assignments stay frozen;
+- **taxonomy** records reviewed merges, splits, and hierarchy;
+- **governance** records evidence, decisions, stability, lineage, and release
+  obligations.
 
-1. Route the corpus before proposing a model.
-2. Derive numerical choices from the research question, corpus profile, smallest meaningful theme, tokenizer/model limits, validation labels, historical distributions, or a pre-registered sensitivity design.
-3. Separate four layers: structure, representation, taxonomy, and governance.
-4. Do not claim that `update_topics()`, MMR, or label generation changed the clusters.
-5. Do not force long multi-topic documents into one input unit.
-6. Do not use random chunk-level resampling when chunks share a parent document.
-7. Do not select a model with one scalar metric. Use explicit constraints plus a Pareto frontier.
-8. Do not optimize away `-1`. Inspect it for missing themes, source artifacts and genuine noise after evaluating the taxonomy.
-9. Compare diversity at matched topic counts, a declared topic-count band, or equivalent hierarchy levels.
-10. Preserve raw text, corpus fingerprints, failed candidates, representative units, audit decisions and topic lineage.
-11. Do not invent operational numbers. This includes fixed/default grids, ratios around a substantive support value, universal seed/resample/reviewer/sample counts, similarity cutoffs, topic-count bands and metric weights. If target-corpus evidence is unavailable, record `pending_local_calibration` and specify the estimand, calibration data, candidate-generation rule and stop rule.
-12. Do not turn named models from papers, leaderboards or examples into a mandatory shortlist. Generate candidates from the task, language, context length, license, deployment and compute requirements; verify current availability when it matters.
-13. Do not fit a baseline or any BERTopic candidate before corpus-scale theme reconnaissance has reconciled every source unit, disclosed semantic review depth and residual risk, been shown to the user, and `modeling-authorization.json` records `approved_for_modeling`.
-14. Do not treat default plotting output or screenshots as a completed visualization bundle. Generate and validate the layered plan, declare every lexical/semantic relation basis, reuse frozen document coordinates, show Topic `-1`, and retain HTML, vector, PNG, source data, caption, alt text and hashes.
+Optimize effective thematic diversity rather than raw topic count, Topic
+Diversity alone, coherence alone, or a low Topic `-1` rate.
+
+## Choose the assurance level
+
+Choose the level from the requested outcome before collecting artifacts.
+
+| Level | Use it when | Modeling authorization | Semantic review | Delivery |
+|---|---|---|---|---|
+| `exploratory` | The user asks to try, inspect feasibility, establish a baseline, or tune quickly without a research/release claim | The modeling request itself is sufficient | Read the current champion and risky topics/pairs; mark provisional choices `exploratory_only` | Compact contract, profile, registry, metrics, `tuning-trace.json`, `semantic-review.json`, decision report |
+| `research` | The user needs a defensible comparison or substantive topic interpretation | Record the modeling request; pause only if reconnaissance reveals a scope-changing ambiguity | Read every promoted stage winner and all finalists; validate grouped stability and missing themes on finalists | Exploratory set plus selected model, topic catalog, concise reconnaissance, missing-theme evidence |
+| `publication_release` | The result will be submitted, published, released, or used as a production taxonomy | Complete the preview and explicit approval gate | Complete topic, pair, coverage, outlier, lineage, and reviewer audit | Full reproducibility and visualization bundle |
+
+If an existing contract has no `assurance_level`, treat it as legacy
+`publication_release` and emit a migration warning. Never silently downgrade an
+old bundle.
+
+Provisional defaults are allowed only for exploratory work. Record their
+provenance, keep `permitted_for_final_selection: false`, and never use them to
+justify a research or publication result.
 
 ## Route the corpus
 
-Choose from content structure, not source label alone.
+Choose from content structure, not the source label.
 
-| Route | Observable condition | Required reference |
+| Route | Observable condition | Read completely |
 |---|---|---|
-| `network-short` | Units are short, sparse, conversational, platform-shaped, highly duplicated or context-dependent | Read `references/network-short-text.md` completely |
-| `long-document` | Units can contain several themes, exceed useful embedding context, or require section-to-document interpretation | Read `references/long-document.md` completely |
-| `mixed` | The corpus contains both conditions | Partition by analysis unit, apply both routes, then align taxonomies only if the research question requires a shared space |
+| `network-short` | Short, sparse, conversational, duplicated, platform-shaped, or context-dependent units | `references/network-short-text.md` |
+| `long-document` | Units contain several themes, exceed useful context, or require section-to-document interpretation | `references/long-document.md` |
+| `mixed` | Both conditions occur | Read both route references and preserve route-specific evidence |
 
-A long online article follows the long-document route. A concise formal response may follow the short-text route. If one corpus contains coherent natural sections, prefer the long-document route even when total length is moderate.
+For every modeling or comparison task, read
+`references/semantic-review-and-cumulative-tuning.md` completely. Also read:
 
-Always read:
+- `references/diversity-evaluation.md` for diagnostics and eligible comparison;
+- `references/study-contract-and-reporting.md` for assurance-specific artifacts;
+- `references/bertopic-implementation.md` when fitting or reviewing code.
 
-- `references/corpus-theme-reconnaissance.md` for the mandatory pre-model preview and authorization gate;
-- `references/diversity-evaluation.md` for metrics, calibration and selection;
-- `references/study-contract-and-reporting.md` for artifacts and reporting;
-- `references/research-grade-visualization.md` for the mandatory structure, representation, taxonomy and governance figure system;
-- `references/academic-evidence.md` before making literature-backed claims.
+Read conditionally:
 
-Read when needed:
+- `references/corpus-theme-reconnaissance.md` for research reconnaissance and
+  the complete publication preview;
+- `references/research-grade-visualization.md` when figures are requested or
+  required;
+- `references/lexicon-management-and-iteration.md` for synonyms, stopwords,
+  custom terms, or domain dictionaries;
+- `references/iteration-and-lineage.md` for later snapshots or new corpora;
+- `references/scalable-corpus-reading.md` for bounded extraction from corpora
+  too large for direct reading;
+- `references/academic-evidence.md` and `references/web-research-protocol.md`
+  when claims depend on current papers, packages, or model availability.
 
-- `references/iteration-and-lineage.md` for new data, retraining, merge/split or temporal comparison;
-- `references/bertopic-implementation.md` when implementing or reviewing Python/BERTopic code;
-- `references/lexicon-management-and-iteration.md` when adding synonyms, stopwords, custom/domain terms or iterating lexical representation from model results;
-- `references/scalable-corpus-reading.md` when direct reading of all eligible unique content exceeds the registered time/context budget, inputs span many files, or bounded extraction and adaptive evidence selection are needed;
-- `references/web-research-protocol.md` when a decision depends on current papers, package/API behavior, encoder availability, a cited source, or an evidence gap.
+## Establish the baseline champion
 
-## Required workflow
+1. Preserve raw text, stable unit IDs, parent-document IDs, duplicate/source
+   groups, and separate embedding, lexical, and display text.
+2. Complete the evidence gate required by the assurance level:
+   - exploratory: profile the corpus and inspect enough original evidence to
+     identify obvious themes, artifacts, and limitations; do not impose a second approval ritual;
+   - research: create a concise theme map; use a full reading ledger only when
+     the claim depends on progressive coverage;
+   - publication/release: follow
+     `references/publication-release-workflow.md` and require explicit preview
+     approval before fitting.
+3. Copy `assets/study-contract.json`, select the assurance level, define the
+   route, claim scope, analysis unit, smallest meaningful theme, grouping
+   rules, calibration plan, and provisional-setting provenance.
+4. Fit one transparent baseline when authorized. Export assignments,
+   probabilities when available, topic words, representative/random/boundary
+   units, topic embeddings, and Topic `-1` evidence.
+5. Register it as `baseline_candidate_id` and `current_champion_id` in
+   `tuning-trace.json`.
 
-Track and finish this sequence. The corpus-scale reconnaissance gate is the required intentional pause: show the preview and its reading limits, stop for user direction, and resume only after explicit modeling authorization. Outside that gate, do not stop after a parameter suggestion when the available data and tools permit execution.
+Do not invent operational numbers. Do not import parameters, thresholds,
+candidate counts, seed counts, sample
+sizes, reviewer counts, or metric weights from another paper or corpus. When
+target-corpus evidence is unavailable, record `pending_local_calibration`, the unresolved estimand,
+candidate-generation rule, calibration evidence, and stop rule.
 
-### 1. Inspect and fingerprint
+## Run cumulative stages
 
-- Inspect the corpus, schema, current model, embeddings, topic exports and prior experiments.
-- Preserve raw text and create separate embedding, lexical and display views.
-- Record corpus size, length distribution, duplicate groups, languages, sources, dates, parent-document structure and missing fields.
-- Estimate eligible unique-content tokens after exact-duplicate registration and record the usable reconnaissance token/time budget; do not load a large table, folder or document collection into one prompt.
-- Hash the data snapshot and preprocessing configuration.
-- State whether BERTopic's hard primary assignment is compatible with the research claim. If mixed membership or covariate inference is essential, retain BERTopic for discovery only and add a suitable robustness model.
-
-### 2. Conduct corpus-scale theme reconnaissance and pause
-
-- Copy `assets/corpus-reading-plan.json`, `corpus-reading-ledger.csv`, `theme-reconnaissance.json`, `theme-candidate-audit.csv` and `modeling-authorization.json` into the study workspace.
-- Restate the user's theme as a `coverage_and_interpretation_anchor`; keep emergent themes open unless the user explicitly changes the analytical scope.
-- Choose `direct_full_text` only when all eligible canonical content fits the registered resource envelope. Otherwise choose `progressive_extraction`; never use a universal size or sample threshold.
-- In both modes, stream or batch the inputs, profile every source unit and write exactly one ledger row per globally unique `unit_id`. Record content SHA-256 and length. An inherited exact duplicate must share the nonblank duplicate group, hash and length of one existing semantically reviewed canonical unit; one hash cannot map to several canonicals. Keep full-corpus census accounting separate from semantic review coverage.
-- Register every raw/card artifact in the reading plan as an `artifact_path` plus its verified `artifact_sha256`. A semantically reviewed row must identify an existing in-bundle artifact, a scheme-qualified record/span locator, bounded start/end coordinates and the SHA-256 of the exact reviewed bytes. `full_text` must cover the complete source-unit length and its extraction hash must equal the content hash.
-- In `direct_full_text`, review every eligible canonical unit. In `progressive_extraction`, read traceable bounded representations through all five channels—`coverage_strata`, `user_anchor`, `lexical_novelty`, `probability_holdout` and `uncertainty_escalation`—and escalate novel, ambiguous, contradictory or context-sensitive evidence to full text.
-- For long or mixed corpora, census every eligible parent document and distribute extraction/selection across natural sections and document positions without freezing the later chunking policy or relying on head-only excerpts.
-- In a mixed ledger, every row uses the concrete `network-short` or `long-document` subset and both subsets must be present. Run semantic review, all five channels and an independent final holdout separately in each subset. Every long-document row keeps a parent ID; declared profiled and reviewed parent counts must equal the corresponding distinct ledger parent IDs.
-- Link candidate evidence only to units reviewed as `full_text` or `extracted_representation`. Keep unreviewed units in the denominator; selected evidence is not complete full-text coverage and cannot prove a theme absent.
-- Set every reconnaissance candidate to `prevalence_claimed: false` and `claim_scope: semantic_evidence_only`. Purposive or adaptive evidence cannot support corpus prevalence; any prevalence study requires a separate probability design and independently validated inclusion probabilities/weights outside this gate.
-- In progressive mode, freeze an audit-round candidate map, fingerprint both the frozen candidate file and the final holdout unit frame, bind those hashes plus `audit_round_id` to every untouched `final_independent` row, then inspect it. Expand reading when it changes the map. A released earlier holdout may become `development_released` evidence only after drawing a fresh final holdout; final-independent rows cannot support the frozen candidate map. The final holdout count and row-level outcomes must reconcile with the stopping record, and `stop_with_residual_risk` requires zero new candidate themes plus `material_change_detected: false` under the registered local rule.
-- A completed direct preview requires `reconnaissance_state: complete_for_preview`, `termination_basis: complete_full_text_review` and `resource_budget_exhausted: false`; a completed progressive preview requires the same state and resource flag with `termination_basis: local_holdout_rule_satisfied`. The resource envelope alone is not a stopping rule, and time, token or budget language cannot serve as stop evidence. If resources are exhausted first, issue an interim incomplete reconnaissance and do not request modeling approval or label it `stop_with_residual_risk`.
-- Produce an evidence-linked candidate hierarchy; classify each candidate as `mainline`, `supporting`, `contextual`, `emergent`, `artifact` or `uncertain`; and report artifact exclusions, unresolved boundaries, and coarse/fine lower-point-upper topic-count estimates.
-- Label the count estimate `pre_model_hypothesis_not_target_k`. Never turn it into a forced BERTopic topic count or clustering target.
-- Present the reading mode, census and semantic-review counts, selection/holdout evidence, residual risk and preview; set `gate_status: awaiting_user_direction` and `modeling_may_start: false`, then stop before embeddings or model fitting.
-
-Validate the preview:
+Carry exactly one current champion through this main-stage order:
 
 ```text
-python scripts/validate_theme_reconnaissance.py <study-bundle-directory>
+analysis_unit
+→ embedding
+→ umap
+→ hdbscan_min_cluster_size
+→ hdbscan_min_samples
+→ hdbscan_selection_method
+→ representation
+→ taxonomy
 ```
 
-After the user accepts, rejects, merges, splits, defers or reframes candidates, record every disposition and the user's instruction. For `progressive_extraction`, also record `progressive_reading_risk_acknowledged: true`; this authorizes modeling under declared uncertainty but does not convert partial review into full-text coverage. Record a fresh `pre_model_artifact_fingerprint` binding the profile, reading plan, ledger, reconnaissance and disposed candidate map; any later change invalidates the approval. Resume only when this passes:
+At each stage, change one parameter family:
+
+1. Load the current champion.
+2. Generate challengers from unresolved evidence.
+3. Set every challenger’s `champion_parent_id` to that current champion.
+4. Change only the stage’s parameter family.
+5. Reuse compatible cached embeddings, neighbor graphs, or assignments.
+6. Calculate algorithmic diagnostics.
+7. Build the original-text review queue.
+8. Read the evidence and record the semantic decision.
+9. Promote exactly one eligible challenger, retain the champion, or defer.
+10. Carry only `champion_after` into the next stage.
+
+A rejected challenger never becomes the next champion parent. Record a
+substantive `skip_reason` when evidence does not justify a stage experiment.
+
+For `representation`, prove that assignment and topic-identity fingerprints are
+unchanged. If assignments change, reclassify the candidate as structural.
+
+Validate the chain:
 
 ```text
-python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
+python scripts/validate_tuning_trace.py <tuning-trace.json> <experiment-registry.csv>
 ```
 
-Read `references/corpus-theme-reconnaissance.md` for the gate and accounting equations. Read `references/scalable-corpus-reading.md` for progressive extraction, evidence selection, escalation, holdout and stopping rules.
+## Read original text before deciding meaning
 
-### 3. Create the study contract
+Use `evaluate_diversity.py`, lexical overlap, semantic nearest neighbors,
+confidence, Topic `-1`, and stability failures to create a review queue. Never
+let them emit a merge, split, label, artifact classification, or promotion
+verdict.
 
-Copy `assets/study-contract.json` into the analysis workspace and complete it before fitting candidates. Define:
-
-- research question and inferential scope;
-- route and analysis unit;
-- smallest substantively meaningful theme and its evidence basis;
-- diversity dimensions and coherence/labelability floors;
-- group-aware validation and bootstrap units;
-- calibration method for every threshold;
-- operational topic-count band or hierarchy level;
-- model-selection policy (`pareto`);
-- outlier role (`diagnostic_guardrail_only`).
-
-Retain the mandatory `pre_model_reconnaissance` policy, link the approved reading plan, ledger, reconnaissance and authorization artifacts, and store the approval's `authorization_id`. If the corpus fingerprint, route, research question, reading mode/plan or resolved preview changes, invalidate the old authorization before fitting.
-
-If a value cannot yet be justified, record `pending_local_calibration` plus the calibration experiment that will estimate it. Do not replace it with a paper's number, a conventional default, a fixed multiplier of a local quantity or an invented pilot grid.
-
-When academic claims, current software behavior or model availability matter, run the conditional search protocol before freezing the contract. Log verified sources, mechanisms, transfer conditions and limitations in `evidence-log.csv`.
-
-### 4. Establish an auditable baseline
-
-- Cache embeddings so structural candidates use identical vectors when the encoder is fixed.
-- Fit a transparent baseline and export assignments, probabilities when available, topic words, representative/random/boundary units and topic embeddings.
-- Keep the evaluation corpus and sampling rules fixed across candidates.
-- Register every candidate, including failures, in `experiment-registry.csv`, and link its approved `authorization_id`.
-
-### 5. Run the structural loop
-
-Change assignments only through structural experiments:
-
-1. Generate embedding candidates from corpus and operating requirements, then compare them on domain same-topic, confusing-different and clearly-different pairs.
-2. Vary UMAP hypotheses from local-niche preservation to global-structure preservation; generate numerical candidates from the empirical neighbor graph and unresolved regions of the sensitivity curve.
-3. Anchor HDBSCAN minimum support to the declared smallest meaningful theme. Use an adaptive pilot: add a candidate only where theme survival, fragmentation or merging remains unresolved, and stop when the pre-registered decision boundary or uncertainty target is resolved. Do not expand the anchor into a fixed ratio grid.
-4. Perturb `min_samples` independently from `min_cluster_size`, again using an explicit candidate-generation and stopping rule rather than a reusable grid.
-5. Compare `eom` and `leaf` as granularity hypotheses, not defaults.
-6. Run seed and group-aware resample checks on finalists; determine repetitions from the target precision, stability plateau and compute stop rule rather than a universal count.
-
-Keep representation fixed during this loop so structural effects remain identifiable.
-
-### 6. Run the representation loop
-
-Freeze assignments, then compare tokenization, domain dictionaries, phrase vocabulary, document-frequency pruning, c-TF-IDF variants, frequent-term suppression, MMR/KeyBERTInspired and grounded labels. Use `update_topics()` for this layer. Recompute representation metrics, but retain the structural scorecard unchanged.
-
-For user-managed lexical resources:
-
-1. Copy `assets/lexicon-config.json`, `synonyms.csv`, `stopwords.csv` and `custom-terms.csv` into the study workspace.
-2. Record the tokenizer name and revision, keep source tables inside the lexicon bundle directory, then compile and validate them with `scripts/build_lexicon_bundle.py`; do not apply a bundle containing conflicts.
-3. Apply custom phrase protection, tokenization, synonym canonicalization and stopword filtering to `lexical_text` only.
-4. Refresh the representation with `update_topics()` and prove that unit assignments plus permanent and local topic IDs did not change.
-5. Run `scripts/evaluate_representation_update.py`, review every generated lexicon candidate, and record accepted, rejected or deferred decisions.
-6. Create a new content-addressed lexicon and representation snapshot only after the audit. Do not use generic `v1`/`v2` names.
-
-Treat custom terms as tokenizer/domain-phrase instructions. Do not pass them as a closed `CountVectorizer(vocabulary=...)` allowlist unless the study explicitly requires and validates a closed vocabulary as a separate analytical policy.
-
-### 7. Run the taxonomy loop
-
-- Generate nearest-topic pairs from representative-unit topic embeddings and ranked-word overlap.
-- Audit the most similar pairs before merging.
-- Prefer post-hoc, evidence-backed agglomeration over coarsening the entire clustering merely to reduce topic count.
-- Split a broad topic only when subthemes are distinct, recur across resamples and admit non-overlapping inclusion/exclusion rules.
-- Evaluate diversity and coherence again at each intended hierarchy level.
-
-### 8. Evaluate and select
-
-Create one scorecard per candidate using `references/diversity-evaluation.md`. Include TD as a descriptive screen, rank-aware lexical overlap, nearest-topic semantic similarity, theme coverage, stability, coherence and labelability floors, group leakage checks, and outlier fraction as a reported guardrail.
-
-Run:
+Build a portable queue:
 
 ```text
-python scripts/evaluate_diversity.py --input <topics.json> --output <scorecard.json> --top-k <registered-k> --rbo-p <registered-p> [--semantic-redundancy-threshold <calibrated-value>] [--lexicon-manifest <frozen-manifest.json>]
+python scripts/build_semantic_review_queue.py \
+  --topics <topics.json> \
+  --units <units.csv> \
+  --assignments <assignments.csv> \
+  --scorecard <scorecard.json> \
+  --candidate-id <candidate-id> \
+  --route <network-short|long-document|mixed> \
+  --output <semantic-review-queue.json>
 ```
 
-Select non-dominated candidates with declared objectives and constraints:
+For every topic card, read the registered original/display text and write:
+
+- object;
+- claim, action, or function;
+- context;
+- stance or perspective;
+- definition and label;
+- inclusion and exclusion rules;
+- counter-evidence;
+- boundary clarity and artifact status.
+
+For every queued pair, compare both sides’ original evidence and choose only
+after writing the meaning difference. Allowed relationships are `distinct`,
+`overlapping`, `parent_child`, `merge_candidate`, `split_signal`, `artifact`,
+and `uncertain`.
+
+High cosine can still mean different objects, stages, or functions. Low lexical
+overlap can still express the same meaning. When algorithmic and semantic
+evidence disagree, retain the champion and resolve the meaning uncertainty.
+
+## Compare eligible candidates
+
+Apply this order:
 
 ```text
-python scripts/select_pareto.py --input <candidate-metrics.csv> --output <pareto.json> --maximize <metric> --maximize <metric> --constraint <metric>=<calibrated-floor>
+semantic eligibility
+→ locally justified hard constraints
+→ Pareto or champion-relative diagnostics
+→ original-text promotion decision
 ```
 
-Inspect every finalist's representative, random and boundary units. Record why the chosen Pareto point fits the research purpose; do not automatically choose the model with the most topics.
-
-### 9. Build and validate the layered research visualization
-
-- Copy `assets/visualization-contract.json` and `visualization-manifest.json` into the study workspace. Map the actual generic unit/topic/metadata fields and register hashes for the selected snapshot's terms, assignments, coordinates, relation matrices, hierarchy and governance evidence.
-- Generate `visualization-plan.json` with `scripts/build_visualization_plan.py`. Do not delete a core or route figure because its input is missing; resolve every `blocked_missing_inputs` state before completion.
-- Render all four layers—structure, representation, taxonomy and governance. The core set includes topic-term bars, one interactive/static document map, topic map, similarity heatmap, hierarchy, term-score decline, prevalence, Pareto candidates, stability, Topic `-1` diagnostics and coverage/leakage.
-- For `network-short`, add the duplicate/source/template artifact audit. For `long-document`, add the parent-document topic profile. A `mixed` study requires both. Enable time, group, geography, lineage or document-distribution figures only from their registered contract modules.
-- Reuse one frozen `document_coordinates` artifact for interactive HTML and the publication datamap. Make the heatmap and hierarchy share one topic relation artifact and basis. State `ctfidf_lexical`, `semantic_topic_embeddings` or `document_topic_centroids` explicitly where applicable.
-- Keep Topic `-1` visible in the document map, prevalence and outlier diagnostics. Use one frozen topic-color map and permanent topic UIDs across figures.
-- Export each required figure as self-contained HTML, SVG or PDF, PNG, figure-specific source data, caption and alt text; record render parameters and SHA-256 values. Put the publication title in the caption rather than inside the static plot.
-
-Run:
+Run Pareto only when several semantically eligible research/publication
+candidates remain:
 
 ```text
-python scripts/build_visualization_plan.py --contract <study-bundle-directory>/visualization-contract.json --output <study-bundle-directory>/visualization-plan.json --require-ready
-python scripts/validate_visualization_bundle.py <study-bundle-directory>
+python scripts/select_pareto.py \
+  --input <candidate-metrics.csv> \
+  --output <pareto.json> \
+  --require-field semantic_review_status=pass \
+  --champion-id <current-champion> \
+  --maximize <registered-objective> \
+  --constraint <registered-constraint>
 ```
 
-Read `references/research-grade-visualization.md` completely for figure questions, native BERTopic method mapping, export rules and interpretation limits.
+Pareto output and champion deltas do not promote a model. Retain the simpler
+champion in an empirical tie unless original-text evidence supports the change.
 
-### 10. Iterate without losing history
+## Confirm bounded interactions
 
-- Distinguish representation refresh, structural refit, taxonomy edit and new-data mapping.
-- Keep lexicon bundle lineage separate from topic lineage. A synonym, stopword or custom-term edit creates a representation candidate, not a new structural model.
-- Freeze permanent `topic_uid` values outside BERTopic's local integer IDs.
-- Use a frozen reference encoder or shared anchor units when embedding spaces change.
-- Calibrate alignment thresholds locally and run:
+After the main path, inspect unresolved diagnostics for parameter interactions.
+Run `interaction_confirmation` only when a named diagnostic trigger exists.
+
+- Name the allowed parameter families.
+- Generate candidates that answer the unresolved interaction.
+- State a bounded candidate-generation and stop rule.
+- Preserve the pre-interaction champion as the rollback point.
+- Review original text again before promotion.
+
+Never turn this step into a Cartesian grid, exhaustive sweep, or reusable
+multi-family search.
+
+## Validate finalists
+
+- Recheck meaning, missing themes, artifacts, and Topic `-1`.
+- Use group-safe resampling: short-text dependence groups stay together;
+  long-document chunks stay with their parent document.
+- For long documents, interpret chunk support at parent-document level and
+  distinguish one-document repetition from cross-document support.
+- Compare matched topic counts, declared bands, or equivalent hierarchy levels.
+- Preserve the strongest counter-evidence and unresolved limitations.
+
+## Deliver by assurance level
+
+Always validate the study bundle:
 
 ```text
-python scripts/align_snapshots.py --old <old-topics.json> --new <new-topics.json> --thresholds <calibrated-thresholds.json> [--keyword-rbo-p <registered-p-when-keyword-gate-is-used>] [--lexicon-manifest <frozen-manifest.json>] --output <alignment.json>
-```
-
-- Treat one-to-many and many-to-one results as split/merge candidates requiring evidence and human review.
-- For temporal analysis, prefer one global taxonomy plus topics-over-time. Do not compare independently fitted period-specific topic numbers.
-
-### 11. Complete the research bundle
-
-Populate all core templates in `assets/`: corpus profile, corpus reading plan and ledger, theme reconnaissance, theme-candidate audit, modeling authorization, study contract, experiment registry, candidate metrics, selected-model decision, topic catalog, unit audit, nearest-topic pair audit, missing-theme audit, lineage, evidence log, visualization contract/plan/manifest and decision report. When lexical resources are enabled, also populate the lexicon source, candidate-audit, representation-iteration and lexicon-lineage artifacts.
-
-Validate before claiming completion:
-
-```text
-python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 python scripts/validate_study_bundle.py <study-bundle-directory>
-python scripts/validate_visualization_bundle.py <study-bundle-directory>
-python -m unittest discover -s scripts/tests -v
 ```
 
-Fix every validation error. A header-only template, uncited decision, uncalibrated threshold or missing lineage decision is incomplete.
+For publication/release, also validate the full reconnaissance and visualization
+bundles:
 
-## Output contract
+```text
+python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
+python scripts/validate_visualization_bundle.py <study-bundle-directory>
+```
 
-Lead with the selected route and substantive model decision. Report:
+Lead the decision report with:
 
-1. the approved pre-model reconnaissance, reading mode and feasibility basis, full-corpus census accounting, semantic-review depth, progressive holdout/residual risk and acknowledgement when applicable, user direction and authorization ID;
-2. preview-versus-model confirmations, merges, splits, absences and emergent themes;
-3. what changed and which layer changed;
-4. which diversity dimensions improved, deteriorated or remain uncertain;
-5. whether comparisons used matched granularity;
-6. which thresholds were locally calibrated and how;
-7. strongest counter-evidence and failure modes;
-8. topic merges, splits, new themes and retirements;
-9. lexicon bundle changes, frozen-assignment evidence and unresolved term decisions when enabled;
-10. the layered figure inventory, lexical/semantic relation bases, Topic `-1` treatment, conditional omissions, shared-coordinate evidence and visualization-bundle validation;
-11. reproducible artifact paths and validation results.
+1. assurance level, route, and final champion;
+2. stage promotions, retentions, deferrals, and rollbacks;
+3. substantive meaning changes and unresolved boundaries;
+4. bounded interaction result;
+5. finalist stability, coverage, and counter-evidence;
+6. supporting numerical diagnostics;
+7. only the artifacts and figures required by the selected assurance level.
 
-Do not present paper-derived numbers as universal recommendations. Do not describe a representation-only refresh as a new structural model. Do not claim that low outlier rate proves high-quality topic diversity.
+Do not leave empty publication-only headings in exploratory or research reports.
+Do not describe a representation refresh as a structural model. Do not claim
+that topic count, coherence, diversity, similarity, or outlier rate proves that
+the topic meanings are correct.

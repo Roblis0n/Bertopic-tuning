@@ -2075,6 +2075,342 @@ def validate_theme_reconnaissance(
     return result
 
 
+def validate_reconnaissance_for_level(
+    root: Path,
+    assurance_level: str,
+    *,
+    progressive_coverage_claim: bool,
+) -> dict[str, Any]:
+    """Apply reconnaissance obligations that match the intended claim.
+
+    Exploratory work may start from a compact profile and direct inspection.
+    Research needs a concise theme map; its full reading ledger is validated
+    only when the claim relies on progressive coverage. Publication retains
+    the existing complete preview and explicit approval gate.
+    """
+
+    root = Path(root)
+    if assurance_level == "exploratory":
+        errors: list[str] = []
+        warnings: list[str] = []
+        path = root / "theme-reconnaissance.json"
+        if path.is_file():
+            try:
+                loaded = json.loads(path.read_text(encoding="utf-8-sig"))
+                if not isinstance(loaded, dict):
+                    errors.append(
+                        "theme-reconnaissance.json must contain a JSON object"
+                    )
+            except (OSError, json.JSONDecodeError) as exc:
+                errors.append(f"Cannot read theme-reconnaissance.json: {exc}")
+        else:
+            warnings.append(
+                "Exploratory assurance does not require "
+                "theme-reconnaissance.json before a requested baseline"
+            )
+        return {
+            "valid": not errors,
+            "errors": errors,
+            "warnings": warnings,
+            "assurance_level": assurance_level,
+            "approval_required": False,
+        }
+
+    if assurance_level == "research":
+        errors = []
+        warnings = []
+        loaded: dict[str, Any] | None = None
+        path = root / "theme-reconnaissance.json"
+        if not path.is_file():
+            errors.append(
+                "Research assurance requires concise theme-reconnaissance.json"
+            )
+        else:
+            try:
+                loaded = json.loads(path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError) as exc:
+                loaded = None
+                errors.append(f"Cannot read theme-reconnaissance.json: {exc}")
+            if loaded is not None and not isinstance(loaded, dict):
+                errors.append(
+                    "theme-reconnaissance.json must contain a JSON object"
+                )
+            elif isinstance(loaded, dict):
+                for field in ("research_question", "review_scope"):
+                    if not str(loaded.get(field, "")).strip():
+                        errors.append(
+                            f"Research theme-reconnaissance.json requires {field}"
+                        )
+                if loaded.get("review_scope") != "concise_research_theme_map":
+                    errors.append(
+                        "Research theme-reconnaissance.json review_scope must be "
+                        "'concise_research_theme_map'"
+                    )
+                if loaded.get("route") not in {
+                    "network-short",
+                    "long-document",
+                    "mixed",
+                }:
+                    errors.append(
+                        "Research theme-reconnaissance.json route must be "
+                        "network-short, long-document, or mixed"
+                    )
+                themes = loaded.get("candidate_themes")
+                if not isinstance(themes, list) or not themes:
+                    errors.append(
+                        "Research theme-reconnaissance.json candidate_themes "
+                        "must be a non-empty list"
+                    )
+                else:
+                    seen_ids: set[str] = set()
+                    for index, theme in enumerate(themes):
+                        if not isinstance(theme, dict):
+                            errors.append(
+                                "Research candidate_themes entries must be objects"
+                            )
+                            continue
+                        candidate_id = str(
+                            theme.get("candidate_id", "")
+                        ).strip()
+                        if not candidate_id:
+                            errors.append(
+                                f"candidate_themes[{index}] requires candidate_id"
+                            )
+                        elif candidate_id in seen_ids:
+                            errors.append(
+                                f"Duplicate research candidate theme: {candidate_id}"
+                            )
+                        seen_ids.add(candidate_id)
+                        if not str(theme.get("definition", "")).strip():
+                            errors.append(
+                                f"candidate_themes[{index}] requires definition"
+                            )
+                        _nonempty_string_list(
+                            theme.get("evidence_unit_ids"),
+                            f"candidate_themes[{index}].evidence_unit_ids",
+                            errors,
+                        )
+                _nonempty_string_list(
+                    loaded.get("limitations"),
+                    "theme-reconnaissance.json limitations",
+                    errors,
+                )
+
+        if progressive_coverage_claim:
+            plan_path = root / "corpus-reading-plan.json"
+            ledger_path = root / "corpus-reading-ledger.csv"
+            if not plan_path.is_file():
+                errors.append(
+                    "Research progressive coverage requires "
+                    "corpus-reading-plan.json"
+                )
+            if not ledger_path.is_file():
+                errors.append(
+                    "Research progressive coverage requires "
+                    "corpus-reading-ledger.csv"
+                )
+
+            reading_plan = (
+                _read_json(plan_path, errors) if plan_path.is_file() else None
+            )
+            if reading_plan is not None and not isinstance(reading_plan, dict):
+                errors.append("corpus-reading-plan.json must contain a JSON object")
+                reading_plan = None
+
+            reading_plan_id = ""
+            route = str((loaded or {}).get("route", "")).strip()
+            if isinstance(reading_plan, dict):
+                reading_plan_id = str(
+                    reading_plan.get("reading_plan_id", "")
+                ).strip()
+                if not reading_plan_id:
+                    errors.append(
+                        "Research corpus-reading-plan.json requires reading_plan_id"
+                    )
+                if reading_plan.get("mode") != "progressive_extraction":
+                    errors.append(
+                        "Research progressive coverage requires reading plan "
+                        "mode 'progressive_extraction'"
+                    )
+                if not str(
+                    reading_plan.get("corpus_fingerprint", "")
+                ).strip():
+                    errors.append(
+                        "Research corpus-reading-plan.json requires "
+                        "corpus_fingerprint"
+                    )
+                plan_route = str(reading_plan.get("route", route)).strip()
+                if plan_route and route and plan_route != route:
+                    errors.append(
+                        "Research reading plan route disagrees with "
+                        "theme-reconnaissance.json"
+                    )
+                selection = reading_plan.get("selection")
+                channels = (
+                    selection.get("selection_channels")
+                    if isinstance(selection, dict)
+                    else None
+                )
+                registered_channels = set(
+                    _nonempty_string_list(
+                        channels,
+                        "corpus-reading-plan.json "
+                        "selection.selection_channels",
+                        errors,
+                    )
+                )
+                missing_channels = sorted(
+                    PROGRESSIVE_SELECTION_CHANNELS.difference(
+                        registered_channels
+                    )
+                )
+                if missing_channels:
+                    errors.append(
+                        "Research progressive reading plan is missing selection "
+                        "channel(s): "
+                        + ", ".join(missing_channels)
+                    )
+                stopping = reading_plan.get("stopping")
+                if not isinstance(stopping, dict):
+                    errors.append(
+                        "Research corpus-reading-plan.json stopping must be an object"
+                    )
+                else:
+                    for field in ("estimand", "rule", "status"):
+                        if not str(stopping.get(field, "")).strip():
+                            errors.append(
+                                "Research corpus-reading-plan.json "
+                                f"stopping.{field} must not be blank"
+                            )
+                if not str(reading_plan.get("residual_risk", "")).strip():
+                    errors.append(
+                        "Research corpus-reading-plan.json residual_risk "
+                        "must not be blank"
+                    )
+
+            if ledger_path.is_file():
+                header, rows = _read_candidates(ledger_path, errors)
+                for field in sorted(LEDGER_FIELDS.difference(header)):
+                    errors.append(
+                        "corpus-reading-ledger.csv lacks required column: "
+                        f"{field}"
+                    )
+                if not rows:
+                    errors.append(
+                        "Research corpus-reading-ledger.csv must contain "
+                        "at least one row"
+                    )
+                seen_units: set[str] = set()
+                reviewed_units: set[str] = set()
+                observed_channels: set[str] = set()
+                observed_subsets: set[str] = set()
+                for index, row in enumerate(rows, start=2):
+                    prefix = f"corpus-reading-ledger.csv row {index}"
+                    unit_id = str(row.get("unit_id", "")).strip()
+                    if not unit_id:
+                        errors.append(f"{prefix} lacks unit_id")
+                    elif unit_id in seen_units:
+                        errors.append(f"Duplicate ledger unit_id: {unit_id}")
+                    seen_units.add(unit_id)
+                    if (
+                        reading_plan_id
+                        and str(row.get("reading_plan_id", "")).strip()
+                        != reading_plan_id
+                    ):
+                        errors.append(f"{prefix} reading_plan_id does not match")
+                    subset = str(row.get("route_subset", "")).strip()
+                    if subset not in {"network-short", "long-document"}:
+                        errors.append(
+                            f"{prefix} route_subset must be network-short "
+                            "or long-document"
+                        )
+                    else:
+                        observed_subsets.add(subset)
+                    if (
+                        subset == "long-document"
+                        and not str(row.get("parent_document_id", "")).strip()
+                    ):
+                        errors.append(
+                            f"{prefix} long-document evidence requires "
+                            "parent_document_id"
+                        )
+                    review_depth = str(row.get("review_depth", "")).strip()
+                    if review_depth not in REVIEW_DEPTHS:
+                        errors.append(f"{prefix} has invalid review_depth")
+                    if unit_id and review_depth in SEMANTIC_REVIEW_DEPTHS:
+                        reviewed_units.add(unit_id)
+                    observed_channels.update(
+                        item.strip()
+                        for item in str(
+                            row.get("selection_channels", "")
+                        ).split("|")
+                        if item.strip()
+                    )
+
+                missing_observed_channels = sorted(
+                    PROGRESSIVE_SELECTION_CHANNELS.difference(observed_channels)
+                )
+                if missing_observed_channels:
+                    errors.append(
+                        "Research progressive ledger is missing selection "
+                        "channel evidence: "
+                        + ", ".join(missing_observed_channels)
+                    )
+                if route == "mixed" and not {
+                    "network-short",
+                    "long-document",
+                }.issubset(observed_subsets):
+                    errors.append(
+                        "Research mixed-route ledger requires both route subsets"
+                    )
+                if route in {"network-short", "long-document"} and any(
+                    subset != route for subset in observed_subsets
+                ):
+                    errors.append(
+                        "Research ledger route_subset disagrees with "
+                        "theme-reconnaissance.json"
+                    )
+
+                required_evidence_ids = {
+                    str(unit_id).strip()
+                    for theme in (loaded or {}).get("candidate_themes", [])
+                    if isinstance(theme, dict)
+                    for unit_id in theme.get("evidence_unit_ids", [])
+                    if str(unit_id).strip()
+                }
+                for unit_id in sorted(
+                    required_evidence_ids.difference(reviewed_units)
+                ):
+                    errors.append(
+                        "Research candidate theme evidence lacks full-text or "
+                        f"extracted-representation review in the ledger: {unit_id}"
+                    )
+        return {
+            "valid": not errors,
+            "errors": errors,
+            "warnings": warnings,
+            "assurance_level": assurance_level,
+            "approval_required": False,
+        }
+
+    if assurance_level == "publication_release":
+        result = validate_theme_reconnaissance(root, require_approval=True)
+        result = dict(result)
+        result["assurance_level"] = assurance_level
+        result["approval_required"] = True
+        return result
+
+    return {
+        "valid": False,
+        "errors": [
+            "assurance_level must be exploratory, research, or publication_release"
+        ],
+        "warnings": [],
+        "assurance_level": assurance_level,
+        "approval_required": True,
+    }
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Validate corpus reconnaissance and scalable reading evidence"

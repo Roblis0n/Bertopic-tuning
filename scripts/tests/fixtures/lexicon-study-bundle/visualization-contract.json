@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "study_id": "study-generic-fixture",
+  "snapshot_id": "snapshot-generic-fixture",
+  "assurance_level": "publication_release",
+  "decision_relevant_figure_ids": [],
+  "route": "network-short",
+  "field_map": {
+    "unit_id": "record_key",
+    "topic_id": "cluster_code",
+    "topic_uid": "stable_topic_key",
+    "topic_label": "topic_title",
+    "parent_document_id": "container_key",
+    "time": "event_period",
+    "group": "comparison_cohort",
+    "latitude": "northing_value",
+    "longitude": "easting_value"
+  },
+  "data_artifacts": {
+    "candidate_metrics": {
+      "path": "inputs/candidate_metrics.json",
+      "sha256": "sha256:d83fbf68e6cf27531ee01569c572c5b299d31f7fbbdf9dade44e8ed7d5ec5be0"
+    },
+    "coverage_diagnostics": {
+      "path": "inputs/coverage_diagnostics.json",
+      "sha256": "sha256:ebca04c17877e131a41a6660aece9deadacd6fa4c481537758e34d00dbd40a74"
+    },
+    "document_coordinates": {
+      "path": "inputs/document_coordinates.json",
+      "sha256": "sha256:8966e95433aebd578fae2e85eb26c7c4e9d3b827a01c0b7a5067c1aa0c2a9a0d"
+    },
+    "document_projection_parameters": {
+      "path": "inputs/document_projection_parameters.json",
+      "sha256": "sha256:cba2939bec989f5b4acc071df4126e70b09fdd2eaff17cf8065ec85e5456c39a"
+    },
+    "document_topic_distributions": {
+      "path": "inputs/document_topic_distributions.json",
+      "sha256": "sha256:642745198088f49da7986bf70e7644a0a7d31300096078ed40e802fff6f1d1d9"
+    },
+    "document_topics": {
+      "path": "inputs/document_topics.json",
+      "sha256": "sha256:d460fe3729e77c6e9f9a9cf6d1cddd12874b2c0df2c73908ae8fd502de9df412"
+    },
+    "outlier_diagnostics": {
+      "path": "inputs/outlier_diagnostics.json",
+      "sha256": "sha256:8306ab3c2a1ff68c16957a12a8d5b7e52a9fcf6359de457e72b552080cb00db0"
+    },
+    "parent_document_topics": {
+      "path": "inputs/parent_document_topics.json",
+      "sha256": "sha256:1bdc9bfea6f8ea53b933d5ef75bdf4095afa8a7eea56e5b6fa79d8e49ae92978"
+    },
+    "short_text_artifacts": {
+      "path": "inputs/short_text_artifacts.json",
+      "sha256": "sha256:1e0855f5aca4d6d34a17d8f79c1661c7d68125ece988717d4b829acf6392a90c"
+    },
+    "stability_metrics": {
+      "path": "inputs/stability_metrics.json",
+      "sha256": "sha256:3b1482204e4cd33949cde17ece4fa1b8db3498a44356ad7dd33a874a840b13e5"
+    },
+    "topic_catalog": {
+      "path": "inputs/topic_catalog.json",
+      "sha256": "sha256:ed0fd5b6f8ffb85cb612a026fc57a496c1539bc1b42bedb073d2833eef5b5340"
+    },
+    "topic_color_map": {
+      "path": "inputs/topic_color_map.json",
+      "sha256": "sha256:36f0faf238017f01261bbcbaf385c77e35c7b8cc14d3b3fd999f22716272cd9a"
+    },
+    "topic_coordinates": {
+      "path": "inputs/topic_coordinates.json",
+      "sha256": "sha256:a1e4c1353230dc28f418c21f0252fa1f07b8c96deb3672840c44f05f1473b89a"
+    },
+    "topic_geography": {
+      "path": "inputs/topic_geography.json",
+      "sha256": "sha256:bcaa038a88fdd1ee06794f23b1eef977f4ded75c600e959a88ab3d307b60e521"
+    },
+    "topic_hierarchy": {
+      "path": "inputs/topic_hierarchy.json",
+      "sha256": "sha256:d428aa2d7a04d38b1039ebab538715172937865c289fb521d734ad40092dcfef"
+    },
+    "topic_lineage": {
+      "path": "inputs/topic_lineage.json",
+      "sha256": "sha256:e426e4cb827655b9d7e15fb1877acf9efe7bfe665acdb57d325ed7c5ac17c019"
+    },
+    "topic_projection_parameters": {
+      "path": "inputs/topic_projection_parameters.json",
+      "sha256": "sha256:364d16515f0a884584a52320132bf955c94d2de4159d5429d42ad2dd371a88b4"
+    },
+    "topic_similarity": {
+      "path": "inputs/topic_similarity.json",
+      "sha256": "sha256:451421f3bf32236134e45c17e48e17ea91599124733ccc7b01e8cf2855ab68a9"
+    },
+    "topic_terms": {
+      "path": "inputs/topic_terms.json",
+      "sha256": "sha256:0bc3ac550016d039b460f8e6fdca1415f286dbacc771fc72b3bfa5b00f271d74"
+    },
+    "topics_by_group": {
+      "path": "inputs/topics_by_group.json",
+      "sha256": "sha256:e85f6af8150f8f715efe61e3e156ae32de1c621dcc0e576dac7e22d8d59ebacd"
+    },
+    "topics_over_time": {
+      "path": "inputs/topics_over_time.json",
+      "sha256": "sha256:a43d1f65a0226ab116f79428e3b07aa1102ed6e8ee7ee8d674eb889a4eb51daa"
+    }
+  },
+  "document_projection": {
+    "basis": "document_embeddings",
+    "coordinate_artifact_id": "document_coordinates",
+    "method": "registered_projection",
+    "parameters_artifact_id": "document_projection_parameters",
+    "seed_or_determinism": "recorded-in-run-registry"
+  },
+  "relation_spaces": {
+    "topic_map": {
+      "basis": "semantic_topic_embeddings",
+      "relation_artifact_id": "topic_coordinates",
+      "parameters_artifact_id": "topic_projection_parameters"
+    },
+    "taxonomy": {
+      "basis": "semantic_topic_embeddings",
+      "relation_artifact_id": "topic_similarity",
+      "hierarchy_artifact_id": "topic_hierarchy"
+    }
+  },
+  "conditional_modules": {
+    "time": {
+      "enabled": false,
+      "field_map_keys": [
+        "time"
+      ],
+      "data_artifact_ids": [
+        "topics_over_time"
+      ]
+    },
+    "group": {
+      "enabled": false,
+      "field_map_keys": [
+        "group"
+      ],
+      "data_artifact_ids": [
+        "topics_by_group"
+      ]
+    },
+    "geography": {
+      "enabled": false,
+      "field_map_keys": [
+        "latitude",
+        "longitude"
+      ],
+      "data_artifact_ids": [
+        "topic_geography"
+      ]
+    },
+    "lineage": {
+      "enabled": false,
+      "field_map_keys": [],
+      "data_artifact_ids": [
+        "topic_lineage"
+      ]
+    },
+    "document_distribution": {
+      "enabled": false,
+      "field_map_keys": [],
+      "data_artifact_ids": [
+        "document_topic_distributions"
+      ]
+    }
+  },
+  "topic_color_map_artifact_id": "topic_color_map",
+  "outlier_topic_id": "-1",
+  "export_policy": {
+    "self_contained_html": true,
+    "static_vector": true,
+    "static_raster_png": true,
+    "source_data": true,
+    "caption": true,
+    "alt_text": true,
+    "sha256": true,
+    "static_title_location": "caption",
+    "colorblind_safe": true
+  }
+}

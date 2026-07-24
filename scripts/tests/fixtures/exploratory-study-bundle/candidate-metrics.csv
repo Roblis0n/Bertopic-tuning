@@ -1,0 +1,2 @@
+candidate_id,stage_id,champion_parent_id,semantic_review_status,meaning_distinctiveness,boundary_clarity,theme_coverage_judgment,artifact_risk,unresolved_semantic_decisions,comparison_to_champion,td,irbo,stability
+explore-baseline,baseline,,pass,unchanged,clear,exploratory_only,low,0,retain,0.70,0.60,0.65

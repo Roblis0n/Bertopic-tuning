@@ -1,7 +1,16 @@
 # Model Iteration and Topic Lineage
 
+## Champion-to-lineage boundary
+
+Use `tuning-trace.json` inside one tuning study and `topic-lineage.csv` across
+released snapshots. A promoted champion becomes a lineage input only after
+final semantic review and release. Taxonomy merges and splits require
+original-text decisions; embedding or keyword similarity only proposes
+candidates. Preserve the retained champion as the rollback snapshot.
+
 ## Contents
 
+- Champion-to-lineage boundary
 - Snapshot model
 - Four update classes
 - Triggering shadow experiments

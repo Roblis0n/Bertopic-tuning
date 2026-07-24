@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "study_id": "lexicon-fixture",
+  "candidate_id": "R-LEX",
+  "review_scope": "publication_finalist",
+  "reviewer": {
+    "type": "human",
+    "id": "reviewer-1",
+    "blind_to_candidate_metrics": true
+  },
+  "topic_cards": [
+    {
+      "topic_uid": "T-001",
+      "evidence_unit_ids": [
+        "u-1",
+        "u-2"
+      ],
+      "meaning": {
+        "object": "消费券",
+        "claim_action_or_function": "描述领取后的使用体验",
+        "context": "消费券政策实施",
+        "stance_or_perspective": "使用者"
+      },
+      "label": "消费券使用体验",
+      "definition": "围绕消费券领取后实际使用过程与感受的文本。",
+      "inclusion_rules": [
+        "消费券使用过程",
+        "使用体验"
+      ],
+      "exclusion_rules": [
+        "无关补贴申请"
+      ],
+      "boundary_clarity": "clear",
+      "artifact_status": "substantive",
+      "counter_evidence": ""
+    }
+  ],
+  "pair_decisions": [],
+  "coverage_decisions": [
+    {
+      "theme": "消费券",
+      "status": "covered",
+      "evidence_unit_ids": [
+        "u-1"
+      ]
+    }
+  ],
+  "unresolved_issues": []
+}

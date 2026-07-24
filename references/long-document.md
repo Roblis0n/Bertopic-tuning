@@ -1,7 +1,20 @@
 # Long-Document Route
 
+## Assurance-aware semantic evidence
+
+Make `analysis_unit` the first cumulative stage. Link every reviewed chunk to
+its parent document and original offsets. Distinguish repeated chunks from one
+document, evidence across independent documents, and primary versus secondary
+document themes.
+
+Exploratory work may use compact original-text inspection. Research requires
+semantic review of promoted winners/finalists and parent-document grouped
+stability. Publication/release activates the full census, reading ledger,
+approval, audit, and visualization obligations below.
+
 ## Contents
 
+- Assurance-aware semantic evidence
 - Research threat model
 - Analysis-unit design
 - Pre-model full-corpus reconnaissance

@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "study_id": "research-fixture",
+  "assurance_level": "research",
+  "baseline_candidate_id": "research-baseline",
+  "current_champion_id": "research-embedding",
+  "stages": [
+    {
+      "stage_id": "analysis_unit",
+      "status": "skipped",
+      "champion_before": "research-baseline",
+      "candidate_ids": [],
+      "changed_parameter_family": "analysis_unit",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-baseline",
+      "decision_reason": "",
+      "skip_reason": "Registered posts already match the research claim."
+    },
+    {
+      "stage_id": "embedding",
+      "status": "completed",
+      "champion_before": "research-baseline",
+      "candidate_ids": [
+        "research-embedding"
+      ],
+      "changed_parameter_family": "embedding",
+      "semantic_review_artifact": "semantic-review.json",
+      "metric_artifacts": [
+        "candidate-metrics.csv"
+      ],
+      "decision": "promote",
+      "promoted_candidate_id": "research-embedding",
+      "champion_after": "research-embedding",
+      "decision_reason": "Original texts show clearer eligibility boundaries.",
+      "skip_reason": ""
+    },
+    {
+      "stage_id": "umap",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "umap",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "No unresolved neighborhood-geometry signal."
+    },
+    {
+      "stage_id": "hdbscan_min_cluster_size",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "hdbscan_min_cluster_size",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "The meaningful-theme support boundary is resolved."
+    },
+    {
+      "stage_id": "hdbscan_min_samples",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "hdbscan_min_samples",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "No unresolved density-conservatism signal."
+    },
+    {
+      "stage_id": "hdbscan_selection_method",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "hdbscan_selection_method",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "No unresolved granularity signal."
+    },
+    {
+      "stage_id": "representation",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "representation",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "Current labels satisfy the semantic stop rule."
+    },
+    {
+      "stage_id": "taxonomy",
+      "status": "skipped",
+      "champion_before": "research-embedding",
+      "candidate_ids": [],
+      "changed_parameter_family": "taxonomy",
+      "semantic_review_artifact": "",
+      "metric_artifacts": [],
+      "decision": "retain",
+      "promoted_candidate_id": "",
+      "champion_after": "research-embedding",
+      "decision_reason": "",
+      "skip_reason": "No reviewed merge or split remains unresolved."
+    }
+  ],
+  "interaction_confirmation": {
+    "required": false,
+    "diagnostic_triggers": [],
+    "allowed_parameter_families": [],
+    "candidate_generation_rule": "",
+    "candidate_ids": [],
+    "semantic_review_artifact": "",
+    "decision": "retain",
+    "promoted_candidate_id": "",
+    "decision_reason": "No unresolved interaction signal remained."
+  }
+}

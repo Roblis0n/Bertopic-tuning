@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "study_id": "exploratory-fixture",
+  "candidate_id": "explore-baseline",
+  "review_scope": "stage_winner",
+  "reviewer": {
+    "type": "codex",
+    "id": "fixture-reviewer",
+    "blind_to_candidate_metrics": true
+  },
+  "topic_cards": [
+    {
+      "topic_uid": "E-T001",
+      "evidence_unit_ids": [
+        "e-1",
+        "e-2"
+      ],
+      "meaning": {
+        "object": "application eligibility",
+        "claim_action_or_function": "checks entry requirements",
+        "context": "benefit application",
+        "stance_or_perspective": "applicant"
+      },
+      "label": "Eligibility review",
+      "definition": "Texts about checks performed before an application is accepted.",
+      "inclusion_rules": [
+        "entry condition or required evidence"
+      ],
+      "exclusion_rules": [
+        "restrictions after funds are received"
+      ],
+      "boundary_clarity": "clear",
+      "artifact_status": "substantive",
+      "counter_evidence": ""
+    }
+  ],
+  "pair_decisions": [],
+  "coverage_decisions": [],
+  "unresolved_issues": []
+}

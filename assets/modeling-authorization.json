@@ -1,5 +1,7 @@
 {
   "schema_version": 1,
+  "assurance_level": "",
+  "authorization_basis": "",
   "authorization_id": "",
   "reconnaissance_id": "",
   "reading_plan_id": "",

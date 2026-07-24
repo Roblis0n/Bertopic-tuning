@@ -1,0 +1,57 @@
+[
+  {
+    "scenario_id": "exploratory-baseline-must-run",
+    "capture_method": "deterministic_instruction_contract_due_to_runtime_no_subagents",
+    "observed_behavior": "Select exploratory assurance, record the trial as provisional, fit the requested baseline without a publication-release approval ritual, and restrict all conclusions to exploratory claims.",
+    "supporting_rules": [
+      "Choose assurance before route",
+      "exploratory does not impose a second approval ritual",
+      "Do not invent operational numbers"
+    ],
+    "pass": true
+  },
+  {
+    "scenario_id": "high-cosine-different-meaning",
+    "capture_method": "deterministic_instruction_contract_due_to_runtime_no_subagents",
+    "observed_behavior": "Use high cosine similarity only to place the pair in the semantic review queue, read linked original units, state the object and boundary of each topic, and keep the topics distinct when their meanings differ.",
+    "supporting_rules": [
+      "Algorithms create queues; they do not issue semantic verdicts",
+      "Original text is the authority",
+      "Record relationship and pair_reason"
+    ],
+    "pass": true
+  },
+  {
+    "scenario_id": "different-words-same-meaning",
+    "capture_method": "deterministic_instruction_contract_due_to_runtime_no_subagents",
+    "observed_behavior": "Do not treat low lexical overlap or good IRBO as proof of distinctness; compare original-text definitions and inclusion/exclusion boundaries, then flag a merge candidate when both topics express the same meaning.",
+    "supporting_rules": [
+      "Surface diversity is diagnostic triage only",
+      "Read original evidence before the verdict",
+      "Semantic eligibility precedes Pareto comparison"
+    ],
+    "pass": true
+  },
+  {
+    "scenario_id": "cumulative-champion-path",
+    "capture_method": "deterministic_instruction_contract_due_to_runtime_no_subagents",
+    "observed_behavior": "Start from one baseline champion, change one registered parameter family at each main stage, promote only a semantically eligible improvement, roll back rejected challengers, and run only a triggered bounded interaction confirmation at the end.",
+    "supporting_rules": [
+      "At each stage, change one parameter family",
+      "Every challenger descends from the current champion",
+      "Rejected candidates cannot become a later parent"
+    ],
+    "pass": true
+  },
+  {
+    "scenario_id": "publication-stays-strict",
+    "capture_method": "deterministic_instruction_contract_due_to_runtime_no_subagents",
+    "observed_behavior": "Select publication_release and require the strict release bundle, semantic evidence, tuning lineage, selected-model links, and all decision-relevant publication figures before making a release claim.",
+    "supporting_rules": [
+      "Publication release keeps the strict gate",
+      "Validate the complete study bundle",
+      "Required figures must be rendered and validated"
+    ],
+    "pass": true
+  }
+]

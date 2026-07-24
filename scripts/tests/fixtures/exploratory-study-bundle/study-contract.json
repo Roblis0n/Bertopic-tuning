@@ -1,0 +1,32 @@
+{
+  "study_id": "exploratory-fixture",
+  "assurance_level": "exploratory",
+  "claim_scope": "exploratory_only",
+  "authorization_basis": "user_request",
+  "provisional_defaults": {
+    "used": true,
+    "provenance": [
+      "Library-compatible smoke-test settings; not final evidence."
+    ],
+    "permitted_for_final_selection": false
+  },
+  "semantic_review_policy": {
+    "algorithmic_metrics_role": "triage_only",
+    "original_text_required": true,
+    "review_stage_winners": true,
+    "review_all_finalists": false
+  },
+  "cumulative_tuning_policy": {
+    "one_parameter_family_per_main_stage": true,
+    "carry_forward_champion": true,
+    "rollback_rejected_change": true,
+    "bounded_interaction_confirmation": true
+  },
+  "research_question": "Can a compact short-text baseline expose interpretable themes?",
+  "route": "network-short",
+  "analysis_unit": "post",
+  "progressive_coverage_claim": false,
+  "visualization_policy": {
+    "required": false
+  }
+}

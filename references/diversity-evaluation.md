@@ -1,7 +1,30 @@
 # Diversity Evaluation and Model Selection
 
+## Decision authority
+
+Use every metric in this file as diagnostic triage or quantitative supporting
+evidence. Original-text meaning judgments are authoritative. Cosine similarity,
+IRBO, Topic Diversity, coherence, stability, topic count, and Topic `-1` never
+produce a semantic merge, split, label, artifact, or promotion verdict.
+
+Apply this order:
+
+```text
+algorithmic diagnostics
+→ original-text semantic review
+→ semantic eligibility
+→ locally justified hard constraints
+→ Pareto or champion-relative comparison
+→ human/Codex promotion decision
+```
+
+Use Pareto only when multiple eligible research/publication candidates remain.
+A single eligible challenger may be compared directly with the current
+champion. Neither path promotes a candidate automatically.
+
 ## Contents
 
+- Decision authority
 - Effective diversity construct
 - Lexical metrics
 - Semantic metrics

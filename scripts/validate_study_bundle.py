@@ -10,7 +10,19 @@ from pathlib import Path
 from typing import Any
 
 from lexicon_tools import compile_lexicon_bundle
-from validate_theme_reconnaissance import validate_theme_reconnaissance
+from build_semantic_review_queue import validate_semantic_review
+from select_pareto import select_pareto
+from validate_theme_reconnaissance import (
+    validate_reconnaissance_for_level,
+    validate_theme_reconnaissance,
+)
+from validate_tuning_trace import validate_tuning_trace
+from validate_visualization_bundle import validate_visualization_bundle
+from workflow_policy import (
+    required_artifacts,
+    resolve_assurance_level,
+    validate_assurance_contract,
+)
 
 
 REQUIRED_FILES = {
@@ -491,7 +503,167 @@ def validate_lexicon_sources(
     return errors
 
 
-def validate_bundle(root: Path) -> dict[str, Any]:
+def validate_semantic_selection_links(
+    selected_model: dict[str, Any],
+    tuning_trace: dict[str, Any],
+    semantic_review: dict[str, Any],
+    candidate_rows: list[dict[str, str]],
+) -> list[str]:
+    """Validate that the selected model follows the semantic champion chain."""
+
+    errors: list[str] = []
+    selected_id = str(selected_model.get("candidate_id", "")).strip()
+    champion_id = str(tuning_trace.get("current_champion_id", "")).strip()
+    if not selected_id:
+        errors.append("selected-model.json candidate_id must not be blank")
+    if selected_id != champion_id:
+        errors.append(
+            "selected-model.json candidate_id must equal the tuning trace "
+            f"current champion {champion_id!r}"
+        )
+
+    final_stage_champion = str(
+        tuning_trace.get("baseline_candidate_id", "")
+    ).strip()
+    stages = tuning_trace.get("stages", [])
+    if isinstance(stages, list):
+        for stage in stages:
+            if isinstance(stage, dict) and str(
+                stage.get("champion_after", "")
+            ).strip():
+                final_stage_champion = str(stage["champion_after"]).strip()
+    interaction = tuning_trace.get("interaction_confirmation", {})
+    if (
+        isinstance(interaction, dict)
+        and interaction.get("decision") == "promote"
+        and str(interaction.get("promoted_candidate_id", "")).strip()
+    ):
+        final_stage_champion = str(
+            interaction["promoted_candidate_id"]
+        ).strip()
+    if champion_id != final_stage_champion:
+        errors.append(
+            "tuning-trace current_champion_id does not equal the final "
+            f"champion_after {final_stage_champion!r}"
+        )
+
+    assurance_level = str(
+        selected_model.get(
+            "assurance_level", tuning_trace.get("assurance_level", "")
+        )
+    ).strip()
+    trace_level = str(tuning_trace.get("assurance_level", "")).strip()
+    if assurance_level and trace_level and assurance_level != trace_level:
+        errors.append(
+            "selected-model.json assurance_level disagrees with tuning-trace.json"
+        )
+
+    review_candidate = str(semantic_review.get("candidate_id", "")).strip()
+    if review_candidate and review_candidate != selected_id:
+        errors.append(
+            "semantic-review.json candidate_id does not match the selected model"
+        )
+    unresolved = semantic_review.get("unresolved_issues", [])
+    if not isinstance(unresolved, list):
+        errors.append("semantic-review.json unresolved_issues must be a list")
+    elif any(str(item).strip() for item in unresolved):
+        errors.append(
+            "Selected model has unresolved semantic issues in semantic-review.json"
+        )
+    pair_decisions = semantic_review.get("pair_decisions", [])
+    if isinstance(pair_decisions, list) and any(
+        isinstance(item, dict) and item.get("unresolved") is True
+        for item in pair_decisions
+    ):
+        errors.append("Selected model has unresolved semantic pair decisions")
+
+    indexed_rows = {
+        str(row.get("candidate_id", "")).strip(): row
+        for row in candidate_rows
+        if str(row.get("candidate_id", "")).strip()
+    }
+    selected_row = indexed_rows.get(selected_id)
+    if selected_id and selected_row is None:
+        errors.append(
+            f"Selected candidate {selected_id} is absent from candidate-metrics.csv"
+        )
+    if (
+        selected_row is not None
+        and assurance_level in {"research", "publication_release"}
+    ):
+        if str(selected_row.get("semantic_review_status", "")).strip() != "pass":
+            errors.append(
+                "Research/publication selected candidate requires "
+                "semantic_review_status=pass"
+            )
+        unresolved_count = str(
+            selected_row.get("unresolved_semantic_decisions", "")
+        ).strip()
+        if unresolved_count not in {"", "0", "0.0", "false", "False"}:
+            errors.append(
+                "Selected candidate has unresolved semantic decisions in "
+                "candidate-metrics.csv"
+            )
+    if (
+        assurance_level in {"research", "publication_release"}
+        and selected_model.get("provisional_defaults_used") is True
+    ):
+        errors.append(
+            "Research/publication selection cannot use provisional exploratory "
+            "defaults as final justification"
+        )
+
+    objectives = selected_model.get("selection_objectives", {})
+    constraints = selected_model.get("selection_constraints", [])
+    required_fields = selected_model.get("semantic_required_fields", {})
+    if objectives:
+        if not isinstance(objectives, dict):
+            errors.append("selection_objectives must be an object")
+        elif not isinstance(constraints, list):
+            errors.append("selection_constraints must be a list")
+        elif not isinstance(required_fields, dict):
+            errors.append("semantic_required_fields must be an object")
+        else:
+            try:
+                selection = select_pareto(
+                    candidate_rows,
+                    objectives={
+                        str(field): str(direction)
+                        for field, direction in objectives.items()
+                    },
+                    constraints=[str(item) for item in constraints],
+                    required_fields={
+                        str(field): str(expected)
+                        for field, expected in required_fields.items()
+                    },
+                    champion_id=champion_id or None,
+                )
+            except ValueError as exc:
+                errors.append(f"Cannot recompute model selection: {exc}")
+            else:
+                if selection["eligible_count"] >= 2:
+                    declared = {
+                        str(item).strip()
+                        for item in selected_model.get(
+                            "eligible_pareto_frontier", []
+                        )
+                        if str(item).strip()
+                    }
+                    actual = set(selection["frontier_ids"])
+                    if declared != actual:
+                        errors.append(
+                            "selected-model.json eligible_pareto_frontier does "
+                            "not match recomputed semantic-eligible frontier"
+                        )
+                    if selected_id not in actual:
+                        errors.append(
+                            "Selected candidate is not on the recomputed eligible "
+                            "Pareto frontier"
+                        )
+    return errors
+
+
+def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
     """Return a machine-readable audit of a study bundle."""
     root = Path(root)
     errors: list[str] = []
@@ -811,6 +983,248 @@ def validate_bundle(root: Path) -> dict[str, Any]:
             )
 
     return {"valid": not errors, "errors": errors, "warnings": warnings}
+
+
+def _merge_audits(*audits: dict[str, Any]) -> dict[str, Any]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    for audit in audits:
+        errors.extend(str(item) for item in audit.get("errors", []))
+        warnings.extend(str(item) for item in audit.get("warnings", []))
+    return {
+        "valid": not errors,
+        "errors": list(dict.fromkeys(errors)),
+        "warnings": list(dict.fromkeys(warnings)),
+    }
+
+
+def _read_required_json(
+    root: Path,
+    name: str,
+    errors: list[str],
+) -> dict[str, Any]:
+    path = root / name
+    if not path.is_file():
+        return {}
+    loaded = _read_json(path, errors)
+    if loaded is None:
+        return {}
+    if not isinstance(loaded, dict):
+        errors.append(f"{name} must contain a JSON object")
+        return {}
+    return loaded
+
+
+def _validate_assurance_bundle(
+    root: Path,
+    contract: dict[str, Any],
+    *,
+    assurance_level: str,
+) -> dict[str, Any]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    errors.extend(validate_assurance_contract(contract))
+
+    progressive = contract.get("progressive_coverage_claim") is True
+    visualization_policy = contract.get("visualization_policy", {})
+    visualization_enabled = bool(
+        isinstance(visualization_policy, dict)
+        and visualization_policy.get("required") is True
+    )
+    required = required_artifacts(
+        assurance_level,
+        progressive_coverage_claim=progressive,
+        visualization_enabled=visualization_enabled,
+    )
+    missing = sorted(name for name in required if not (root / name).is_file())
+    errors.extend(f"Missing required file: {name}" for name in missing)
+
+    profile = _read_required_json(root, "corpus-profile.json", errors)
+    for field in CORPUS_PROFILE_FIELDS:
+        if field not in profile:
+            errors.append(f"corpus-profile.json lacks required field: {field}")
+
+    registry_header: list[str] = []
+    registry_rows: list[dict[str, str]] = []
+    registry_path = root / "experiment-registry.csv"
+    if registry_path.is_file():
+        registry_header, registry_rows = _read_table(registry_path, errors)
+        registry_required = {
+            "candidate_id",
+            "run_type",
+            "stage_id",
+            "champion_parent_id",
+            "changed_parameter_family",
+            "corpus_fingerprint",
+            "analysis_unit",
+            "embedding_model",
+            "umap_config",
+            "hdbscan_config",
+            "representation_config",
+            "assignment_fingerprint",
+            "semantic_review_status",
+            "status",
+        }
+        for field in sorted(registry_required.difference(registry_header)):
+            errors.append(f"experiment-registry.csv lacks required column: {field}")
+        if not registry_rows:
+            errors.append("experiment-registry.csv must contain at least one row")
+
+    metrics_header: list[str] = []
+    metric_rows: list[dict[str, str]] = []
+    metrics_path = root / "candidate-metrics.csv"
+    if metrics_path.is_file():
+        metrics_header, metric_rows = _read_table(metrics_path, errors)
+        metrics_required = {
+            "candidate_id",
+            "stage_id",
+            "champion_parent_id",
+            "semantic_review_status",
+            "meaning_distinctiveness",
+            "boundary_clarity",
+            "theme_coverage_judgment",
+            "artifact_risk",
+            "unresolved_semantic_decisions",
+            "comparison_to_champion",
+        }
+        for field in sorted(metrics_required.difference(metrics_header)):
+            errors.append(f"candidate-metrics.csv lacks required column: {field}")
+        if not metric_rows:
+            errors.append("candidate-metrics.csv must contain at least one row")
+
+    trace = _read_required_json(root, "tuning-trace.json", errors)
+    if trace:
+        trace_audit = validate_tuning_trace(
+            trace,
+            registry_rows,
+            assurance_level=assurance_level,
+        )
+        errors.extend(
+            f"Tuning trace: {item}" for item in trace_audit["errors"]
+        )
+        warnings.extend(
+            f"Tuning trace: {item}" for item in trace_audit["warnings"]
+        )
+
+    review = _read_required_json(root, "semantic-review.json", errors)
+    required_topic_uids: set[str] = set()
+    topic_catalog_path = root / "topic-catalog.csv"
+    if topic_catalog_path.is_file():
+        _, topic_rows = _read_table(topic_catalog_path, errors)
+        required_topic_uids = {
+            str(row.get("topic_uid", "")).strip()
+            for row in topic_rows
+            if str(row.get("topic_uid", "")).strip()
+        }
+    if review:
+        review_errors = validate_semantic_review(
+            review,
+            required_topic_uids=(
+                required_topic_uids
+                if assurance_level in {"research", "publication_release"}
+                else set()
+            ),
+            required_pair_ids=set(),
+        )
+        errors.extend(
+            f"Semantic review: {item}" for item in review_errors
+        )
+
+    selected = _read_required_json(root, "selected-model.json", errors)
+    if selected and trace and review:
+        errors.extend(
+            validate_semantic_selection_links(
+                selected,
+                trace,
+                review,
+                metric_rows,
+            )
+        )
+
+    if assurance_level in {"research", "publication_release"}:
+        reconnaissance = validate_reconnaissance_for_level(
+            root,
+            assurance_level,
+            progressive_coverage_claim=progressive,
+        )
+        errors.extend(
+            f"Theme reconnaissance: {item}"
+            for item in reconnaissance.get("errors", [])
+        )
+        warnings.extend(
+            f"Theme reconnaissance: {item}"
+            for item in reconnaissance.get("warnings", [])
+        )
+
+    if visualization_enabled:
+        visualization = validate_visualization_bundle(root)
+        errors.extend(
+            f"Visualization bundle: {item}"
+            for item in visualization.get("errors", [])
+        )
+        warnings.extend(
+            f"Visualization bundle: {item}"
+            for item in visualization.get("warnings", [])
+        )
+
+    report_path = root / "decision-report.md"
+    if report_path.is_file():
+        try:
+            report = report_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            errors.append(f"Cannot read decision-report.md: {exc}")
+        else:
+            if len(report.strip()) < 20:
+                errors.append("decision-report.md is too short to document a decision")
+            expected_marker = f"assurance level: {assurance_level}"
+            if expected_marker not in report.casefold():
+                errors.append(
+                    "decision-report.md assurance level disagrees with "
+                    "study-contract.json"
+                )
+
+    return {"valid": not errors, "errors": errors, "warnings": warnings}
+
+
+def validate_bundle(root: Path) -> dict[str, Any]:
+    """Validate a legacy or assurance-aware BERTopic study bundle."""
+
+    root = Path(root)
+    if not root.exists() or not root.is_dir():
+        return {
+            "valid": False,
+            "errors": [f"Study bundle directory does not exist: {root}"],
+            "warnings": [],
+        }
+    contract_path = root / "study-contract.json"
+    if not contract_path.is_file():
+        return _validate_legacy_bundle(root)
+    try:
+        contract = json.loads(contract_path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return _validate_legacy_bundle(root)
+    if not isinstance(contract, dict):
+        return _validate_legacy_bundle(root)
+
+    try:
+        resolved = resolve_assurance_level(contract)
+    except ValueError as exc:
+        return {"valid": False, "errors": [str(exc)], "warnings": []}
+    level = resolved["assurance_level"]
+    if resolved["legacy_strict"]:
+        legacy = _validate_legacy_bundle(root)
+        legacy["warnings"] = list(legacy["warnings"]) + resolved["warnings"]
+        return legacy
+
+    assurance_audit = _validate_assurance_bundle(
+        root,
+        contract,
+        assurance_level=level,
+    )
+    if level == "publication_release":
+        legacy_audit = _validate_legacy_bundle(root)
+        return _merge_audits(legacy_audit, assurance_audit)
+    return assurance_audit
 
 
 def _parse_args() -> argparse.Namespace:

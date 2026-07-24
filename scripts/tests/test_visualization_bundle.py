@@ -72,6 +72,7 @@ def make_contract(
     root: Path,
     *,
     route: str = "network-short",
+    assurance_level: str = "publication_release",
     enabled_modules: set[str] | None = None,
     missing_artifacts: set[str] | None = None,
 ) -> dict:
@@ -134,6 +135,8 @@ def make_contract(
         "schema_version": 1,
         "study_id": "study-generic-fixture",
         "snapshot_id": "snapshot-generic-fixture",
+        "assurance_level": assurance_level,
+        "decision_relevant_figure_ids": [],
         "route": route,
         "field_map": field_map,
         "data_artifacts": data_artifacts,
@@ -227,11 +230,13 @@ def write_complete_visualization_bundle(
     root: Path,
     *,
     route: str = "network-short",
+    assurance_level: str = "publication_release",
     enabled_modules: set[str] | None = None,
 ) -> dict:
     contract = make_contract(
         root,
         route=route,
+        assurance_level=assurance_level,
         enabled_modules=enabled_modules,
     )
     plan = build_plan(contract)
@@ -810,7 +815,6 @@ class VisualizationDocumentationTests(unittest.TestCase):
         required_text = {
             "SKILL.md": [
                 "references/research-grade-visualization.md",
-                "build_visualization_plan.py",
                 "validate_visualization_bundle.py",
                 "structure",
                 "representation",
@@ -818,10 +822,9 @@ class VisualizationDocumentationTests(unittest.TestCase):
                 "governance",
             ],
             "README.md": [
-                "build_visualization_plan.py",
                 "validate_visualization_bundle.py",
-                "visualization-contract.json",
-                "visualization-manifest.json",
+                "publication_release",
+                "assurance",
             ],
             "references/research-grade-visualization.md": [
                 "visualize_barchart.html",
@@ -836,7 +839,7 @@ class VisualizationDocumentationTests(unittest.TestCase):
                 "topic_minus_one",
                 "self_contained_html",
             ],
-            "agents/openai.yaml": ["分层研究级图谱"],
+            "agents/openai.yaml": ["研究交付"],
         }
         for relative, needles in required_text.items():
             path = SKILL_ROOT / relative

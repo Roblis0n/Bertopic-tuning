@@ -1,0 +1,3 @@
+candidate_id,stage_id,champion_parent_id,semantic_review_status,meaning_distinctiveness,boundary_clarity,theme_coverage_judgment,artifact_risk,unresolved_semantic_decisions,comparison_to_champion,td,irbo,stability
+research-baseline,baseline,,pass,unchanged,mixed,covered,low,0,retain,0.70,0.60,0.70
+research-embedding,embedding,research-baseline,pass,improved,clear,covered,low,0,promote,0.72,0.63,0.76

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "study_id": "exploratory-fixture",
+  "assurance_level": "exploratory",
+  "baseline_candidate_id": "explore-baseline",
+  "current_champion_id": "explore-baseline",
+  "stages": [],
+  "interaction_confirmation": {
+    "required": false,
+    "diagnostic_triggers": [],
+    "allowed_parameter_families": [],
+    "candidate_generation_rule": "",
+    "candidate_ids": [],
+    "semantic_review_artifact": "",
+    "decision": "retain",
+    "promoted_candidate_id": "",
+    "decision_reason": "No interaction claim is made in this smoke test."
+  }
+}

@@ -1,5 +1,26 @@
 {
   "study_id": "lexicon-fixture",
+  "assurance_level": "publication_release",
+  "claim_scope": "publication_release",
+  "authorization_basis": "explicit_preview_approval",
+  "provisional_defaults": {
+    "used": false,
+    "provenance": [],
+    "permitted_for_final_selection": false
+  },
+  "semantic_review_policy": {
+    "algorithmic_metrics_role": "triage_only",
+    "original_text_required": true,
+    "review_stage_winners": true,
+    "review_all_finalists": true
+  },
+  "cumulative_tuning_policy": {
+    "one_parameter_family_per_main_stage": true,
+    "carry_forward_champion": true,
+    "rollback_rejected_change": true,
+    "bounded_interaction_confirmation": true
+  },
+  "progressive_coverage_claim": true,
   "route": "network-short",
   "research_question": "验证词表刷新能否改善主题表示而不改变分配",
   "analysis_unit": "post",
@@ -45,5 +66,20 @@
     "stop_rule": "stop when every generated candidate has an accepted, rejected, or deferred disposition",
     "assignment_invariant_required": true,
     "human_review_required": true
+  },
+  "visualization_policy": {
+    "required": true,
+    "contract_artifact": "visualization-contract.json",
+    "plan_artifact": "visualization-plan.json",
+    "manifest_artifact": "visualization-manifest.json",
+    "validation_command": "python scripts/validate_visualization_bundle.py <study-bundle-directory>",
+    "layer_model": [
+      "structure",
+      "representation",
+      "taxonomy",
+      "governance"
+    ],
+    "shared_document_coordinates_required": true,
+    "topic_minus_one_visible": true
   }
 }

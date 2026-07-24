@@ -1,7 +1,21 @@
 # Network and Short-Text Route
 
+## Assurance-aware semantic evidence
+
+For exploratory work, inspect enough original posts to identify obvious themes,
+duplicates, templates, and artifacts without requiring the full publication
+ledger. For research, review every promoted stage winner and finalist across
+registered source, account, thread, duplicate, and time groups when available.
+For publication/release, apply the complete reconnaissance and audit protocol
+below.
+
+Similarity and lexical overlap only order review. Read original posts before
+deciding meaning. Warn when all topic evidence comes from one dependence group,
+and keep those groups together in finalist resampling.
+
 ## Contents
 
+- Assurance-aware semantic evidence
 - Research threat model
 - Corpus construction
 - Pre-model full-corpus reconnaissance

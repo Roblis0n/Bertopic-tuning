@@ -1,5 +1,25 @@
 {
   "study_id": "",
+  "assurance_level": "",
+  "claim_scope": "",
+  "authorization_basis": "",
+  "provisional_defaults": {
+    "used": false,
+    "provenance": [],
+    "permitted_for_final_selection": false
+  },
+  "semantic_review_policy": {
+    "algorithmic_metrics_role": "triage_only",
+    "original_text_required": true,
+    "review_stage_winners": true,
+    "review_all_finalists": true
+  },
+  "cumulative_tuning_policy": {
+    "one_parameter_family_per_main_stage": true,
+    "carry_forward_champion": true,
+    "rollback_rejected_change": true,
+    "bounded_interaction_confirmation": true
+  },
   "research_question": "",
   "inferential_scope": "exploratory-discovery",
   "population_and_sampling": "",
@@ -66,7 +86,17 @@
   "overlap_accounting": "",
   "aggregation_policy": "",
   "pre_model_reconnaissance": {
-    "required": true,
+    "requirement_basis": "assurance_level",
+    "required_by_level": {
+      "exploratory": false,
+      "research": "when_claim_depends_on_progressive_coverage",
+      "publication_release": true
+    },
+    "authorization_by_level": {
+      "exploratory": "user_request",
+      "research": "user_request_unless_scope_changing_ambiguity",
+      "publication_release": "explicit_preview_approval"
+    },
     "user_theme_mode": "coverage_and_interpretation_anchor",
     "allow_emergent_themes": true,
     "reading_plan_artifact": "corpus-reading-plan.json",
@@ -74,8 +104,7 @@
     "reconnaissance_artifact": "theme-reconnaissance.json",
     "candidate_audit_artifact": "theme-candidate-audit.csv",
     "authorization_artifact": "modeling-authorization.json",
-    "authorization_id": "",
-    "user_authorization_required": true
+    "authorization_id": ""
   },
   "lexicon_policy": {
     "enabled": false,
@@ -87,7 +116,8 @@
     "human_review_required": true
   },
   "visualization_policy": {
-    "required": true,
+    "required": false,
+    "requirement_basis": "assurance_level",
     "contract_artifact": "visualization-contract.json",
     "plan_artifact": "visualization-plan.json",
     "manifest_artifact": "visualization-manifest.json",

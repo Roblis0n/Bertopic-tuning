@@ -1,20 +1,34 @@
 # Research-Grade BERTopic Visualization
 
+## Assurance routing
+
+- `exploratory`: figures are optional and never block model selection.
+- `research`: only figures explicitly enabled as decision-relevant are required;
+  other figures are optional or not applicable.
+- `publication_release`: retain the complete core, route, conditional, export,
+  caption, alt-text, source-data, and hash requirements below.
+
+Whenever any figure is produced, keep its integrity rules: registered inputs,
+Topic `-1` treatment, shared coordinates or relation basis where applicable,
+and honest interpretation limits. Assurance changes whether a figure is
+required, not whether a produced figure may be misleading.
+
 ## Contents
 
-1. [Purpose](#purpose)
-2. [Four-layer question map](#four-layer-question-map)
-3. [Freeze the visualization contract](#freeze-the-visualization-contract)
-4. [Build and inspect the plan](#build-and-inspect-the-plan)
-5. [Mandatory core figures](#mandatory-core-figures)
-6. [Render the seven baseline views](#render-the-seven-baseline-views)
-7. [Render governance figures](#render-governance-figures)
-8. [Activate route and metadata figures](#activate-route-and-metadata-figures)
-9. [Preserve cross-figure consistency](#preserve-cross-figure-consistency)
-10. [Export and manifest contract](#export-and-manifest-contract)
-11. [Caption and interpretation contract](#caption-and-interpretation-contract)
-12. [Validate the bundle](#validate-the-bundle)
-13. [Common failures](#common-failures)
+1. [Assurance routing](#assurance-routing)
+2. [Purpose](#purpose)
+3. [Four-layer question map](#four-layer-question-map)
+4. [Freeze the visualization contract](#freeze-the-visualization-contract)
+5. [Build and inspect the plan](#build-and-inspect-the-plan)
+6. [Mandatory core figures](#mandatory-core-figures)
+7. [Render the seven baseline views](#render-the-seven-baseline-views)
+8. [Render governance figures](#render-governance-figures)
+9. [Activate route and metadata figures](#activate-route-and-metadata-figures)
+10. [Preserve cross-figure consistency](#preserve-cross-figure-consistency)
+11. [Export and manifest contract](#export-and-manifest-contract)
+12. [Caption and interpretation contract](#caption-and-interpretation-contract)
+13. [Validate the bundle](#validate-the-bundle)
+14. [Common failures](#common-failures)
 
 ## Purpose
 

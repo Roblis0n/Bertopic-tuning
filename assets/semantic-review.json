@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "study_id": "",
+  "candidate_id": "",
+  "review_scope": "stage_winner",
+  "reviewer": {
+    "type": "codex",
+    "id": "",
+    "blind_to_candidate_metrics": true
+  },
+  "topic_cards": [
+    {
+      "topic_uid": "",
+      "evidence_unit_ids": [],
+      "meaning": {
+        "object": "",
+        "claim_action_or_function": "",
+        "context": "",
+        "stance_or_perspective": ""
+      },
+      "label": "",
+      "definition": "",
+      "inclusion_rules": [],
+      "exclusion_rules": [],
+      "boundary_clarity": "uncertain",
+      "artifact_status": "uncertain",
+      "counter_evidence": ""
+    }
+  ],
+  "pair_decisions": [
+    {
+      "topic_uid_a": "",
+      "topic_uid_b": "",
+      "evidence_unit_ids": [],
+      "relationship": "uncertain",
+      "meaning_difference": "",
+      "decision_reason": "",
+      "unresolved": true
+    }
+  ],
+  "coverage_decisions": [],
+  "unresolved_issues": []
+}

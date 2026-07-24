@@ -1,2 +1,2 @@
-candidate_id,topic_count,td,irbo,semantic_diversity,coverage,stability,coherence,human_labelability,outlier_fraction
-R-LEX,2,0.8,0.7,0.6,0.8,0.9,0.7,0.9,0.1
+candidate_id,stage_id,champion_parent_id,topic_count,td,irbo,semantic_diversity,coverage,stability,coherence,human_labelability,outlier_fraction,semantic_review_status,meaning_distinctiveness,boundary_clarity,theme_coverage_judgment,artifact_risk,unresolved_semantic_decisions,comparison_to_champion
+R-LEX,baseline,,2,0.8,0.7,0.6,0.8,0.9,0.7,0.9,0.1,pass,unchanged,clear,covered,low,0,retain

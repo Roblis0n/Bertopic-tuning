@@ -1,5 +1,7 @@
 {
   "schema_version": 1,
+  "assurance_level": "publication_release",
+  "authorization_basis": "explicit_preview_approval",
   "authorization_id": "auth-lexicon-fixture",
   "reconnaissance_id": "recon-lexicon-fixture",
   "reading_plan_id": "read-plan-lexicon-fixture",

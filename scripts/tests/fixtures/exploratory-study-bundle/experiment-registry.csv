@@ -1,0 +1,2 @@
+candidate_id,run_type,stage_id,champion_parent_id,changed_parameter_family,corpus_fingerprint,analysis_unit,embedding_model,umap_config,hdbscan_config,representation_config,assignment_fingerprint,semantic_review_status,status
+explore-baseline,baseline,baseline,,baseline,sha256:exploratory-fixture,post,fixture-encoder,"{""n_neighbors"": 5}","{""min_cluster_size"": 2, ""min_samples"": 1, ""cluster_selection_method"": ""eom""}","{""vectorizer"": ""fixture""}",sha256:explore-assignments,pass,selected

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "study_id": "research-fixture",
+  "candidate_id": "research-embedding",
+  "review_scope": "finalist",
+  "reviewer": {
+    "type": "codex",
+    "id": "fixture-reviewer",
+    "blind_to_candidate_metrics": true
+  },
+  "topic_cards": [
+    {
+      "topic_uid": "R-T001",
+      "evidence_unit_ids": [
+        "r-1",
+        "r-2",
+        "r-3"
+      ],
+      "meaning": {
+        "object": "application eligibility",
+        "claim_action_or_function": "checks entry requirements",
+        "context": "benefit application",
+        "stance_or_perspective": "applicant"
+      },
+      "label": "Eligibility review",
+      "definition": "Checks and evidence that determine whether an applicant may enter the program.",
+      "inclusion_rules": [
+        "qualification checks",
+        "required application evidence"
+      ],
+      "exclusion_rules": [
+        "restrictions on spending after receipt"
+      ],
+      "boundary_clarity": "clear",
+      "artifact_status": "substantive",
+      "counter_evidence": "Boundary examples were reviewed and retained outside this topic."
+    }
+  ],
+  "pair_decisions": [],
+  "coverage_decisions": [
+    {
+      "theme": "eligibility",
+      "status": "covered",
+      "evidence_unit_ids": [
+        "r-1",
+        "r-2"
+      ]
+    }
+  ],
+  "unresolved_issues": []
+}

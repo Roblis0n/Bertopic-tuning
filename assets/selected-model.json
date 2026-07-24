@@ -1,5 +1,13 @@
 {
   "candidate_id": "",
+  "assurance_level": "",
+  "tuning_trace_artifact": "tuning-trace.json",
+  "semantic_review_artifact": "semantic-review.json",
+  "selection_objectives": {},
+  "selection_constraints": [],
+  "semantic_required_fields": {
+    "semantic_review_status": "pass"
+  },
   "structure_snapshot_id": "",
   "representation_snapshot_id": "",
   "taxonomy_snapshot_id": "",

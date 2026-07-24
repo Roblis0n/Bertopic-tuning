@@ -1,7 +1,25 @@
 # Study Contract and Reporting
 
+## Assurance-specific contract
+
+Create the contract before the first candidate, but activate only the evidence
+needed by the claim. Record `assurance_level`, `claim_scope`,
+`authorization_basis`, provisional-default provenance, semantic-review policy,
+and cumulative-tuning policy.
+
+- `exploratory` uses the compact artifact set and `claim_scope:
+  exploratory_only`;
+- `research` adds the selected model, catalog, concise reconnaissance,
+  missing-theme evidence, and finalist validation;
+- `publication_release` adds the complete reading, authorization, compatibility
+  audit, lineage, evidence, and visualization bundle.
+
+Missing `assurance_level` retains legacy strict behavior. Original-text semantic
+review and the champion trace are canonical across all three levels.
+
 ## Contents
 
+- Assurance-specific contract
 - Contract-before-modeling rule
 - Corpus-scale reconnaissance and authorization
 - Study-contract fields
@@ -15,13 +33,26 @@
 
 ## Contract-before-modeling rule
 
-Create the study contract after the user has reviewed the corpus-scale reconnaissance and its reading limits, and before fitting candidates. The contract prevents silent changes in analysis unit, reading mode, metric depth, threshold source, validation sample or selection priority after results are visible.
+Create the study contract before fitting candidates. Require a separately
+reviewed corpus-scale preview first only for `publication_release`, or when a
+research reconnaissance exposes a scope-changing ambiguity. The contract
+prevents silent changes in analysis unit, reading mode, metric depth, threshold
+source, validation sample or selection priority after results are visible.
 
 Copy templates from `assets/` into a study-specific output directory. Preserve the templates in plain CSV/JSON/Markdown; do not add decorative formatting that obscures machine readability.
 
 ## Corpus-scale reconnaissance and authorization
 
-Before the study contract is frozen, complete and show these five artifacts to the user:
+Match reconnaissance to the assurance level:
+
+- `exploratory`: a corpus profile and direct inspection of enough original text
+  to identify obvious themes, artifacts, and limitations are sufficient; the
+  user's modeling request is the authorization;
+- `research`: create a concise evidence-linked theme map; add the full reading
+  plan and ledger only when the claim depends on progressive coverage, and
+  pause only for a scope-changing ambiguity;
+- `publication_release`: complete and show all five artifacts below before the
+  study contract is frozen:
 
 - `corpus-reading-plan.json`: direct/progressive mode, feasibility basis, extraction, selection, escalation, stopping, holdout and residual risk;
 - `corpus-reading-ledger.csv`: exactly one row per unique source unit with content hash/length, duplicate identity, review depth, holdout role, registered artifact, bounded locator and extraction hash;
@@ -29,21 +60,45 @@ Before the study contract is frozen, complete and show these five artifacts to t
 - `theme-candidate-audit.csv`: evidence-linked candidate hierarchy, relation to the user's mainline and one disposition per candidate after review;
 - `modeling-authorization.json`: explicit gate state, user instruction, resolved candidate IDs, decision timestamp and the fingerprint binding all approved pre-model artifacts.
 
-The user theme mode is `coverage_and_interpretation_anchor`, with emergent themes open. The estimate is `pre_model_hypothesis_not_target_k`; it is not a forced BERTopic topic count. Census accounting must reconcile profiled, full-text-reviewed, extracted-representation-reviewed, exact-duplicate-inherited, unreviewed, excluded and failed units. Long and mixed routes require analogous parent-document accounting. Only `direct_full_text` with zero extracted, unreviewed and failed units is complete full-text review.
+In the publication workflow, the user theme mode is
+`coverage_and_interpretation_anchor`, with emergent themes open. The estimate is
+`pre_model_hypothesis_not_target_k`; it is not a forced BERTopic topic count.
+Census accounting must reconcile profiled, full-text-reviewed,
+extracted-representation-reviewed, exact-duplicate-inherited, unreviewed,
+excluded and failed units. Long and mixed routes require analogous
+parent-document accounting. Only `direct_full_text` with zero extracted,
+unreviewed and failed units is complete full-text review.
 
-Set `gate_status: awaiting_user_direction` and `modeling_may_start: false` while the preview is with the user. Modeling begins only after the user direction is recorded, every candidate has a disposition, the gate becomes `approved_for_modeling`, and this command succeeds:
+For `publication_release`, set `gate_status: awaiting_user_direction` and
+`modeling_may_start: false` while the preview is with the user. Modeling begins
+only after the user direction is recorded, every candidate has a disposition,
+the gate becomes `approved_for_modeling`, and this command succeeds:
 
 ```text
 python scripts/validate_theme_reconnaissance.py <study-bundle-directory> --require-approval
 ```
 
-For `progressive_extraction`, approval additionally requires `progressive_reading_risk_acknowledged: true` after the user sees the semantic-review denominator, final-independent holdout and residual risk. The approved `authorization_id` and corpus fingerprint must appear in each modeling row of `experiment-registry.csv`, whose `run_type` must be one of the registered types. A changed corpus fingerprint, route, research question, reading plan/ledger, user-theme policy or resolved candidate map invalidates stale authorization through `pre_model_artifact_fingerprint`. See `references/corpus-theme-reconnaissance.md` and `references/scalable-corpus-reading.md` for the complete method.
+For publication `progressive_extraction`, approval additionally requires
+`progressive_reading_risk_acknowledged: true` after the user sees the
+semantic-review denominator, final-independent holdout and residual risk. The
+approved `authorization_id` and corpus fingerprint must appear in each
+publication modeling row of `experiment-registry.csv`, whose `run_type` must be
+one of the registered types. A changed corpus fingerprint, route, research
+question, reading plan/ledger, user-theme policy or resolved candidate map
+invalidates stale authorization through `pre_model_artifact_fingerprint`. See
+`corpus-theme-reconnaissance.md` and `scalable-corpus-reading.md` for the
+complete method.
 
 ## Study-contract fields
 
-Complete `study-contract.json`.
-
-Keep `pre_model_reconnaissance.required` and `user_authorization_required` true. Its five artifact paths must point to the approved files and its `authorization_id` must exactly match `modeling-authorization.json`. `user_theme_mode` must remain `coverage_and_interpretation_anchor`, and `allow_emergent_themes` must remain true unless the user explicitly changes the analytical scope and the authorization is renewed.
+Complete `study-contract.json`. Keep
+`pre_model_reconnaissance.requirement_basis: assurance_level` and use its
+`required_by_level` and `authorization_by_level` mappings. Only
+`publication_release` requires the five artifact paths to resolve to approved
+files and its `authorization_id` to match `modeling-authorization.json`.
+`user_theme_mode` remains `coverage_and_interpretation_anchor`, and
+`allow_emergent_themes` remains true unless the user explicitly changes the
+analytical scope.
 
 ### Identity and scope
 

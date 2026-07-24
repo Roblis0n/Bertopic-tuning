@@ -2,6 +2,8 @@
   "schema_version": 1,
   "study_id": "",
   "snapshot_id": "",
+  "assurance_level": "",
+  "decision_relevant_figure_ids": [],
   "route": "",
   "field_map": {
     "unit_id": "",
