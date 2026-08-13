@@ -1,0 +1,88 @@
+name: Feature request
+description: Propose a scoped improvement to the semantic-first BERTopic workflow.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep proposals evidence-led. Do not attach sensitive corpora, participant data, credentials, or confidential research materials.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user or research-workflow problem, not only a preferred implementation.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: corpus_route
+    attributes:
+      label: Corpus route
+      options:
+        - network-short
+        - long-document
+        - mixed
+        - Not corpus-specific
+    validations:
+      required: true
+
+  - type: dropdown
+    id: assurance_level
+    attributes:
+      label: Assurance level
+      options:
+        - exploratory
+        - research
+        - publication_release
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_behavior
+    attributes:
+      label: Proposed behavior and semantic safeguards
+      description: Explain how the proposal preserves the distinction between diagnostic triage and original-text semantic decisions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_command
+    attributes:
+      label: Current reproduction or validation command
+      description: Provide the command that demonstrates the current limitation, or write Not applicable.
+    validations:
+      required: true
+
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal privacy-safe fixture or example
+      description: Use synthetic/redacted text only; never post sensitive corpus material.
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Python version and operating system
+      placeholder: Python 3.11.9 on Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected outcome
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Current outcome or limitation
+    validations:
+      required: true
