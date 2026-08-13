@@ -1377,6 +1377,16 @@ class SkillInstructionTests(unittest.TestCase):
     def test_skill_identity_matches_bertopic_tuning(self):
         skill_root = Path(__file__).resolve().parents[2]
         skill_text = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        plugin_manifest = json.loads(
+            (skill_root / ".codex-plugin" / "plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        package_policy = json.loads(
+            (skill_root / ".codex-plugin" / "package-policy.json").read_text(
+                encoding="utf-8"
+            )
+        )
         try:
             openai_yaml = (skill_root / "agents" / "openai.yaml").read_text(
                 encoding="utf-8"
@@ -1384,7 +1394,11 @@ class SkillInstructionTests(unittest.TestCase):
         except UnicodeDecodeError as exc:
             self.fail(f"agents/openai.yaml must be UTF-8: {exc}")
 
-        self.assertEqual(skill_root.name, "bertopic-tuning")
+        # A checkout directory is chosen by the host (for example GitHub Actions
+        # uses the repository's display casing), so identity must come from the
+        # package contracts rather than the repository folder name.
+        self.assertEqual(plugin_manifest["name"], "bertopic-tuning")
+        self.assertEqual(package_policy["skill_name"], "bertopic-tuning")
         self.assertIn("\nname: bertopic-tuning\n", skill_text)
         self.assertIn('# BERTopic Tuning', skill_text)
         self.assertIn('display_name: "BERTopic Tuning"', openai_yaml)
