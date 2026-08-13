@@ -97,6 +97,11 @@ class PluginPackagingTests(unittest.TestCase):
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(SKILL_ROOT / relative, destination)
         self.git(source, "init", "-q")
+        # Tests create and discard repositories rapidly. Disable detached Git
+        # maintenance so no background writer can race TemporaryDirectory
+        # cleanup after a commit returns.
+        self.git(source, "config", "maintenance.auto", "false")
+        self.git(source, "config", "gc.auto", "0")
         self.git(source, "add", "-A")
         return source
 
@@ -299,6 +304,19 @@ class PluginPackagingTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("symlink", result.stderr)
             self.assertFalse(output.exists())
+
+    def test_index_fixture_disables_background_git_maintenance(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = self.make_index_repo(Path(temp_dir))
+
+            self.assertEqual(
+                self.git(source, "config", "--get", "maintenance.auto").strip(),
+                "false",
+            )
+            self.assertEqual(
+                self.git(source, "config", "--get", "gc.auto").strip(),
+                "0",
+            )
 
     def test_build_rejects_unmerged_git_index_entries(self):
         with tempfile.TemporaryDirectory() as temp_dir:
