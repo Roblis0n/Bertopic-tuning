@@ -1,0 +1,19 @@
+{
+  "topics": [
+    {
+      "topic_uid": "topic-a",
+      "representative_unit_ids": ["u1"],
+      "boundary_unit_ids": ["u2"]
+    },
+    {
+      "topic_uid": "topic-b",
+      "representative_unit_ids": ["u3"],
+      "random_unit_ids": ["u4"]
+    },
+    {
+      "topic_uid": "topic-c",
+      "representative_unit_ids": ["u5"]
+    }
+  ],
+  "outlier_unit_ids": ["u6"]
+}

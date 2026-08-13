@@ -566,6 +566,7 @@ def main() -> int:
     args.output.write_text(
         json.dumps(queue, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     print(f"Wrote semantic review queue: {args.output}")
     return 0

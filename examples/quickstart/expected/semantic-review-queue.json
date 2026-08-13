@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "candidate_id": "candidate-semantic-test",
+  "route": "network-short",
+  "decision_role": "original_text_review_queue_only",
+  "algorithmic_metrics_role": "diagnostic_triage_only",
+  "semantic_verdict_produced": false,
+  "topic_reviews": [
+    {
+      "topic_uid": "topic-a",
+      "algorithmic_signal_role": "review_trigger_only",
+      "evidence_units": [
+        {
+          "unit_id": "u1",
+          "source_id": "s1",
+          "duplicate_group_id": "d1",
+          "display_text": "申请补贴必须满足本地户籍和收入门槛。"
+        },
+        {
+          "unit_id": "u2",
+          "source_id": "s2",
+          "duplicate_group_id": "d2",
+          "display_text": "资格材料需要经过审核。"
+        }
+      ],
+      "review_prompts": [
+        "What object is this topic about?",
+        "What claim, action, or function connects the evidence?",
+        "What context and perspective delimit the topic?",
+        "Which original texts contradict the proposed boundary?"
+      ]
+    },
+    {
+      "topic_uid": "topic-b",
+      "algorithmic_signal_role": "review_trigger_only",
+      "evidence_units": [
+        {
+          "unit_id": "u3",
+          "source_id": "s3",
+          "duplicate_group_id": "d3",
+          "display_text": "补贴领取后只能在指定商户使用。"
+        },
+        {
+          "unit_id": "u4",
+          "source_id": "s4",
+          "duplicate_group_id": "d4",
+          "display_text": "到账资金存在消费范围限制。"
+        }
+      ],
+      "review_prompts": [
+        "What object is this topic about?",
+        "What claim, action, or function connects the evidence?",
+        "What context and perspective delimit the topic?",
+        "Which original texts contradict the proposed boundary?"
+      ]
+    },
+    {
+      "topic_uid": "topic-c",
+      "algorithmic_signal_role": "review_trigger_only",
+      "evidence_units": [
+        {
+          "unit_id": "u5",
+          "source_id": "s5",
+          "duplicate_group_id": "d5",
+          "display_text": "系统核验申请人的准入条件。"
+        }
+      ],
+      "review_prompts": [
+        "What object is this topic about?",
+        "What claim, action, or function connects the evidence?",
+        "What context and perspective delimit the topic?",
+        "Which original texts contradict the proposed boundary?"
+      ]
+    }
+  ],
+  "pair_reviews": [
+    {
+      "topic_uid_a": "topic-a",
+      "topic_uid_b": "topic-b",
+      "algorithmic_signal_role": "review_trigger_only",
+      "algorithmic_signals": [
+        {
+          "signal_type": "semantic_similarity",
+          "source_field": "most_semantically_similar_pairs",
+          "cosine_similarity": 0.96
+        }
+      ],
+      "evidence_units": [
+        {
+          "unit_id": "u1",
+          "source_id": "s1",
+          "duplicate_group_id": "d1",
+          "display_text": "申请补贴必须满足本地户籍和收入门槛。"
+        },
+        {
+          "unit_id": "u2",
+          "source_id": "s2",
+          "duplicate_group_id": "d2",
+          "display_text": "资格材料需要经过审核。"
+        },
+        {
+          "unit_id": "u3",
+          "source_id": "s3",
+          "duplicate_group_id": "d3",
+          "display_text": "补贴领取后只能在指定商户使用。"
+        },
+        {
+          "unit_id": "u4",
+          "source_id": "s4",
+          "duplicate_group_id": "d4",
+          "display_text": "到账资金存在消费范围限制。"
+        }
+      ],
+      "review_prompts": [
+        "Do the topics concern the same substantive object?",
+        "Are their functions, stages, contexts, or perspectives different?",
+        "Write the inclusion and exclusion boundary before choosing a relationship."
+      ]
+    },
+    {
+      "topic_uid_a": "topic-a",
+      "topic_uid_b": "topic-c",
+      "algorithmic_signal_role": "review_trigger_only",
+      "algorithmic_signals": [
+        {
+          "signal_type": "lexical_overlap",
+          "source_field": "most_lexically_overlapping_pairs",
+          "rbo": 0.03
+        }
+      ],
+      "evidence_units": [
+        {
+          "unit_id": "u1",
+          "source_id": "s1",
+          "duplicate_group_id": "d1",
+          "display_text": "申请补贴必须满足本地户籍和收入门槛。"
+        },
+        {
+          "unit_id": "u2",
+          "source_id": "s2",
+          "duplicate_group_id": "d2",
+          "display_text": "资格材料需要经过审核。"
+        },
+        {
+          "unit_id": "u5",
+          "source_id": "s5",
+          "duplicate_group_id": "d5",
+          "display_text": "系统核验申请人的准入条件。"
+        }
+      ],
+      "review_prompts": [
+        "Do the topics concern the same substantive object?",
+        "Are their functions, stages, contexts, or perspectives different?",
+        "Write the inclusion and exclusion boundary before choosing a relationship."
+      ]
+    }
+  ],
+  "coverage_reviews": [
+    {
+      "review_type": "topic_minus_one_missing_theme",
+      "algorithmic_signal_role": "review_trigger_only",
+      "evidence_units": [
+        {
+          "unit_id": "u6",
+          "source_id": "s6",
+          "duplicate_group_id": "d6",
+          "display_text": "模板页脚与来源水印。"
+        }
+      ]
+    }
+  ]
+}
