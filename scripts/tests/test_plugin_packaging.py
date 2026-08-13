@@ -351,6 +351,45 @@ class PluginPackagingTests(unittest.TestCase):
                 info = bundle.getinfo(f"skills/{PLUGIN_NAME}/SKILL.md")
             self.assertEqual((info.external_attr >> 16) & 0o777, 0o755)
 
+    def test_git_source_archive_preserves_indexed_license_bytes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "source"
+            source.mkdir()
+            shutil.copyfile(SKILL_ROOT / "LICENSE", source / "LICENSE")
+            shutil.copyfile(SKILL_ROOT / ".gitattributes", source / ".gitattributes")
+            self.git(source, "init", "-q")
+            self.git(source, "config", "user.name", "Packaging Test")
+            self.git(source, "config", "user.email", "packaging@example.invalid")
+            self.git(source, "add", "LICENSE", ".gitattributes")
+            indexed = subprocess.run(
+                ["git", "show", ":LICENSE"],
+                cwd=source,
+                capture_output=True,
+                check=True,
+            ).stdout
+            self.git(source, "commit", "-q", "-m", "archive fixture")
+            archive_path = root / "source.zip"
+            result = subprocess.run(
+                [
+                    "git",
+                    "archive",
+                    "--format=zip",
+                    f"--output={archive_path}",
+                    "HEAD",
+                    "LICENSE",
+                ],
+                cwd=source,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            with zipfile.ZipFile(archive_path) as bundle:
+                exported = bundle.read("LICENSE")
+        self.assertEqual(exported, indexed)
+
     def test_vendored_contract_rejects_unsupported_manifest_field(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
