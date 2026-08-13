@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -9,6 +10,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path, PurePosixPath
+from urllib.parse import unquote
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[2]
@@ -27,6 +29,33 @@ def tree_digest(root: Path) -> str:
         digest.update(len(payload).to_bytes(8, "big"))
         digest.update(payload)
     return digest.hexdigest()
+
+
+def local_markdown_targets(markdown: Path, *, images_only: bool = False) -> set[Path]:
+    targets: set[Path] = set()
+    pattern = re.compile(r"(!?)\[[^\]]*\]\(([^)]+)\)")
+    for marker, raw_target in pattern.findall(markdown.read_text(encoding="utf-8")):
+        if images_only and marker != "!":
+            continue
+        raw_target = raw_target.strip()
+        if raw_target.startswith("<") and raw_target.endswith(">"):
+            raw_target = raw_target[1:-1]
+        raw_target = raw_target.split(maxsplit=1)[0]
+        if not raw_target or raw_target.startswith(("#", "http://", "https://", "mailto:")):
+            continue
+        target = unquote(raw_target.split("#", 1)[0])
+        if target:
+            targets.add((markdown.parent / target).resolve())
+    return targets
+
+
+def local_markdown_link_failures(root: Path) -> list[tuple[str, str]]:
+    failures: list[tuple[str, str]] = []
+    for markdown in sorted(root.rglob("*.md")):
+        for target in local_markdown_targets(markdown):
+            if not target.exists():
+                failures.append((markdown.relative_to(root).as_posix(), str(target)))
+    return failures
 
 
 class PluginPackagingTests(unittest.TestCase):
@@ -141,6 +170,22 @@ class PluginPackagingTests(unittest.TestCase):
         self.assertNotIn("scripts/build_plugin.py", sources)
         self.assertFalse(any(source.startswith("scripts/tests/") for source in sources))
 
+    def test_repository_entrypoints_are_bilingual_and_show_the_brand_banner(self):
+        english = SKILL_ROOT / "README.md"
+        chinese = SKILL_ROOT / "README.zh-CN.md"
+        chinese_skill = SKILL_ROOT / "SKILL.zh-CN.md"
+        banner = (SKILL_ROOT / "assets" / "social-preview.png").resolve()
+
+        self.assertTrue(chinese.is_file())
+        self.assertTrue(chinese_skill.is_file())
+        self.assertIn(banner, local_markdown_targets(english, images_only=True))
+        self.assertIn(banner, local_markdown_targets(chinese, images_only=True))
+        self.assertIn(chinese.resolve(), local_markdown_targets(english))
+        self.assertIn(chinese_skill.resolve(), local_markdown_targets(english))
+        self.assertIn(english.resolve(), local_markdown_targets(chinese))
+        self.assertIn((SKILL_ROOT / "SKILL.md").resolve(), local_markdown_targets(chinese))
+        self.assertEqual(local_markdown_link_failures(SKILL_ROOT), [])
+
     def test_build_rejects_an_existing_output_path(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / PLUGIN_NAME
@@ -179,6 +224,11 @@ class PluginPackagingTests(unittest.TestCase):
             self.assertEqual(actual, expected)
             packaged_skill = output / "skills" / "bertopic-tuning" / "SKILL.md"
             self.assertEqual(packaged_skill.read_bytes(), (SKILL_ROOT / "SKILL.md").read_bytes())
+            packaged_chinese_skill = output / "skills" / "bertopic-tuning" / "SKILL.zh-CN.md"
+            self.assertEqual(
+                packaged_chinese_skill.read_bytes(),
+                (SKILL_ROOT / "SKILL.zh-CN.md").read_bytes(),
+            )
             self.assertNotIn("scripts/tests/test_plugin_packaging.py", actual)
             self.assertNotIn("README.md", actual)
 
@@ -190,7 +240,7 @@ class PluginPackagingTests(unittest.TestCase):
                 (output / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["name"], "bertopic-tuning")
-            self.assertEqual(manifest["version"], "1.0.0")
+            self.assertEqual(manifest["version"], "1.0.1")
             self.assertEqual(manifest["skills"], "./skills/")
             referenced_assets = {
                 manifest["interface"]["composerIcon"],
@@ -545,12 +595,17 @@ class PluginPackagingTests(unittest.TestCase):
         self.assertIn("/bertopic-tuning.zip", workflow)
         self.assertNotIn("bertopic-tuning-plugin", workflow)
 
-    def test_release_links_and_changelog_match_v1_release(self):
+    def test_release_links_and_changelog_match_v101_release(self):
         readme = (SKILL_ROOT / "README.md").read_text(encoding="utf-8")
         changelog = (SKILL_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         self.assertIn("releases/latest", readme)
         self.assertIn("/bertopic-tuning --archive", readme)
+        self.assertIn("## [1.0.1] - 2026-08-13", changelog)
         self.assertIn("## [1.0.0] - 2026-08-13", changelog)
+        self.assertIn(
+            "[1.0.1]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.1",
+            changelog,
+        )
         self.assertIn(
             "[1.0.0]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.0",
             changelog,
