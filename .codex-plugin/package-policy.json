@@ -16,6 +16,10 @@
       "destination": "skills/bertopic-tuning/SKILL.md"
     },
     {
+      "source": "SKILL.zh-CN.md",
+      "destination": "skills/bertopic-tuning/SKILL.zh-CN.md"
+    },
+    {
       "source": "agents/openai.yaml",
       "destination": "skills/bertopic-tuning/agents/openai.yaml"
     },

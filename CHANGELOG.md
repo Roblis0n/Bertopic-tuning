@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.1] - 2026-08-13
+
+### Added
+
+- A complete Simplified Chinese README and `SKILL.zh-CN.md` companion, with
+  executable commands, paths, identifiers, and workflow contracts preserved
+  from the canonical English source.
+- Visible README banner placement in both languages using the existing
+  approved `assets/social-preview.png` brand asset.
+- Deterministic plugin packaging and link coverage for the Chinese skill while
+  retaining root `SKILL.md` as the only Codex runtime entry point.
+
 ## [1.0.0] - 2026-08-13
 
 The first complete public release of the semantic-first BERTopic tuning skill.
@@ -65,4 +77,5 @@ The first complete public release of the semantic-first BERTopic tuning skill.
 - The committed quickstart reproduces its expected queue byte for byte on a
   clean output path.
 
+[1.0.1]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.0

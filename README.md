@@ -1,8 +1,12 @@
 # BERTopic Tuning
 
+[English](README.md) · [简体中文](README.zh-CN.md) · [English Skill](SKILL.md) · [中文 Skill](SKILL.zh-CN.md)
+
 [![CI](https://github.com/Roblis0n/Bertopic-tuning/actions/workflows/validate.yml/badge.svg)](https://github.com/Roblis0n/Bertopic-tuning/actions/workflows/validate.yml)
 [![Release](https://img.shields.io/github/v/release/Roblis0n/Bertopic-tuning?display_name=tag&sort=semver)](https://github.com/Roblis0n/Bertopic-tuning/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+![BERTopic Tuning：语义优先的主题调优](assets/social-preview.png)
 
 Turn short text, long documents, or mixed corpora into an auditable BERTopic
 champion whose topic meanings are grounded in original-text review.
@@ -42,11 +46,12 @@ python -X utf8 -B scripts/build_plugin.py --output <outside-repository-path>/ber
 ```
 
 The builder reads the policy and every source file from the Git index, copies
-only the explicit whitelist, and projects the indexed root `SKILL.md`
-byte-for-byte into `skills/bertopic-tuning/SKILL.md`. It rejects unmerged or
-symlink index entries, unsafe paths, existing targets, incorrect plugin names,
-and destinations inside the source tree. The vendored plugin contract always
-runs. `--codex-home` additionally runs both official Codex validators before
+only the explicit whitelist, projects the indexed root `SKILL.md` byte-for-byte
+into `skills/bertopic-tuning/SKILL.md`, and ships the human-readable
+`SKILL.zh-CN.md` companion beside it. It rejects unmerged or symlink index
+entries, unsafe paths, existing targets, incorrect plugin names, and
+destinations inside the source tree. The vendored plugin contract always runs.
+`--codex-home` additionally runs both official Codex validators before
 publishing either output; CI exercises the vendored contract and deterministic
 directory/ZIP build on Linux and Windows.
 

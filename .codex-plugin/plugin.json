@@ -1,6 +1,6 @@
 {
   "name": "bertopic-tuning",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Semantic-first BERTopic tuning, interpretation, and reproducible model selection.",
   "author": {
     "name": "Roblis0n",
