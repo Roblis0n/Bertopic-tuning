@@ -33,19 +33,22 @@ python -c "import pathlib, subprocess; p=pathlib.Path('.agents/skills/bertopic-t
 Codex detects skill changes automatically; restart it only if the skill does
 not appear.
 
-To build the standalone plugin and run both official Codex validators, choose
-a new output directory outside this repository:
+The cloned repository root is the installable skill source, not a standalone
+plugin root. To build the standalone plugin and deterministic release archive,
+choose new output paths outside this repository:
 
 ```text
-python -X utf8 -B scripts/build_plugin.py --output <outside-repository-path>/bertopic-tuning-plugin --codex-home <codex-home-path>
+python -X utf8 -B scripts/build_plugin.py --output <outside-repository-path>/bertopic-tuning --archive <outside-repository-path>/bertopic-tuning.zip --codex-home <codex-home-path>
 ```
 
-The builder reads `.codex-plugin/package-policy.json`, copies only its explicit
-whitelist, and projects the root `SKILL.md` byte-for-byte into
-`skills/bertopic-tuning/SKILL.md`. It rejects existing outputs and any output
-inside the source tree. Omitting `--codex-home` performs the same deterministic
-build without the two environment-owned validator commands; CI exercises that
-portable build path on Linux and Windows.
+The builder reads the policy and every source file from the Git index, copies
+only the explicit whitelist, and projects the indexed root `SKILL.md`
+byte-for-byte into `skills/bertopic-tuning/SKILL.md`. It rejects unmerged or
+symlink index entries, unsafe paths, existing targets, incorrect plugin names,
+and destinations inside the source tree. The vendored plugin contract always
+runs. `--codex-home` additionally runs both official Codex validators before
+publishing either output; CI exercises the vendored contract and deterministic
+directory/ZIP build on Linux and Windows.
 
 ## Invoke
 

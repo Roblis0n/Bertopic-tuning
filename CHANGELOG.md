@@ -37,9 +37,11 @@ Planned for `v1.0.0`. The GitHub tag and release have not been published.
 - Exact user-level and repository-level Codex installation commands, an exact
   `$bertopic-tuning` invocation prompt, an MIT license, and full methodological
   references.
-- A deterministic standalone plugin builder with an explicit package
-  whitelist, byte-identical canonical skill projection, safe output rules,
-  official-validator integration, and cross-platform CI coverage.
+- A deterministic standalone plugin directory and ZIP builder sourced only
+  from regular Git-index blobs, with an explicit package whitelist,
+  byte-identical canonical skill projection, cross-platform path containment,
+  normalized metadata, a vendored schema contract, optional official-validator
+  release gates, and Linux/Windows CI coverage.
 - Concise UTF-8 Codex UI metadata, matching cluster-and-champion brand assets,
   and a GitHub social preview using the approved semantic-first positioning.
 
@@ -56,7 +58,7 @@ Planned for `v1.0.0`. The GitHub tag and release have not been published.
 
 ### Validation
 
-- 192 standard-library unit and integration tests cover assurance policy,
+- 203+ standard-library unit and integration tests cover assurance policy,
   semantic review, cumulative tuning, route evidence, selection integrity,
   reconnaissance, lexicon iteration, lineage, visualization, and study-bundle
   contracts.
