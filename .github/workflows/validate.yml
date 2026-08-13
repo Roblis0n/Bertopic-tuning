@@ -36,3 +36,6 @@ jobs:
 
       - name: Run offline validation suite
         run: python -X utf8 -B -m unittest discover -s scripts/tests -v
+
+      - name: Build standalone plugin package
+        run: python -X utf8 -B scripts/build_plugin.py --output "${{ runner.temp }}/bertopic-tuning-plugin"

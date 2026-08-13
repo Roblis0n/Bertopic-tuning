@@ -1,7 +1,7 @@
 # BERTopic Tuning
 
 [![CI](https://github.com/Roblis0n/Bertopic-tuning/actions/workflows/validate.yml/badge.svg)](https://github.com/Roblis0n/Bertopic-tuning/actions/workflows/validate.yml)
-[![Release](https://img.shields.io/github/v/release/Roblis0n/Bertopic-tuning?display_name=tag&sort=semver)](https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.0)
+[![Release](https://img.shields.io/github/v/release/Roblis0n/Bertopic-tuning?display_name=tag&sort=semver)](https://github.com/Roblis0n/Bertopic-tuning/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Turn short text, long documents, or mixed corpora into an auditable BERTopic
@@ -32,6 +32,20 @@ python -c "import pathlib, subprocess; p=pathlib.Path('.agents/skills/bertopic-t
 
 Codex detects skill changes automatically; restart it only if the skill does
 not appear.
+
+To build the standalone plugin and run both official Codex validators, choose
+a new output directory outside this repository:
+
+```text
+python -X utf8 -B scripts/build_plugin.py --output <outside-repository-path>/bertopic-tuning-plugin --codex-home <codex-home-path>
+```
+
+The builder reads `.codex-plugin/package-policy.json`, copies only its explicit
+whitelist, and projects the root `SKILL.md` byte-for-byte into
+`skills/bertopic-tuning/SKILL.md`. It rejects existing outputs and any output
+inside the source tree. Omitting `--codex-home` performs the same deterministic
+build without the two environment-owned validator commands; CI exercises that
+portable build path on Linux and Windows.
 
 ## Invoke
 
