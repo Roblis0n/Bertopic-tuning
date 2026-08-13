@@ -665,6 +665,41 @@ class SemanticReviewTests(unittest.TestCase):
             self.assertNotIn(b"\r\n", output_bytes)
             self.assertTrue(output_bytes.endswith(b"\n"))
 
+    def test_committed_quickstart_matches_expected_from_clean_output_path(self):
+        quickstart = SKILL_ROOT / "examples" / "quickstart"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "clean-output" / "semantic-review-queue.json"
+            self.assertFalse(output.parent.exists())
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS_DIR / "build_semantic_review_queue.py"),
+                    "--topics",
+                    str(quickstart / "inputs" / "topics.json"),
+                    "--units",
+                    str(quickstart / "inputs" / "units.csv"),
+                    "--assignments",
+                    str(quickstart / "inputs" / "assignments.csv"),
+                    "--scorecard",
+                    str(quickstart / "inputs" / "scorecard.json"),
+                    "--candidate-id",
+                    "candidate-semantic-test",
+                    "--route",
+                    "network-short",
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                output.read_bytes(),
+                (quickstart / "expected" / "semantic-review-queue.json").read_bytes(),
+            )
+
     def test_missing_evidence_id_fails(self):
         module = load_module("build_semantic_review_queue")
         topic_payload, units, assignments, scorecard = self.evidence()
