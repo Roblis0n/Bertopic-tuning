@@ -2,9 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
-## [1.0.0] - 2026-08-13
+## [Unreleased]
 
-The first complete public release of the semantic-first BERTopic tuning skill.
+Planned for `v1.0.0`. The GitHub tag and release have not been published.
 
 ### Added
 
@@ -57,5 +57,3 @@ The first complete public release of the semantic-first BERTopic tuning skill.
   contracts.
 - The committed quickstart reproduces its expected queue byte for byte on a
   clean output path.
-
-[1.0.0]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.0
