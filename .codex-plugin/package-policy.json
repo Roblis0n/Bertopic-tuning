@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "skill_name": "bertopic-tuning",
+  "description": "Explicit source-to-package whitelist. The repository root SKILL.md is the only canonical skill instruction source.",
+  "files": [
+    {
+      "source": ".codex-plugin/plugin.json",
+      "destination": ".codex-plugin/plugin.json"
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE"
+    },
+    {
+      "source": "SKILL.md",
+      "destination": "skills/bertopic-tuning/SKILL.md"
+    },
+    {
+      "source": "agents/openai.yaml",
+      "destination": "skills/bertopic-tuning/agents/openai.yaml"
+    },
+    {
+      "source": "assets/candidate-metrics.csv",
+      "destination": "skills/bertopic-tuning/assets/candidate-metrics.csv"
+    },
+    {
+      "source": "assets/corpus-profile.json",
+      "destination": "skills/bertopic-tuning/assets/corpus-profile.json"
+    },
+    {
+      "source": "assets/corpus-reading-ledger.csv",
+      "destination": "skills/bertopic-tuning/assets/corpus-reading-ledger.csv"
+    },
+    {
+      "source": "assets/corpus-reading-plan.json",
+      "destination": "skills/bertopic-tuning/assets/corpus-reading-plan.json"
+    },
+    {
+      "source": "assets/custom-terms.csv",
+      "destination": "skills/bertopic-tuning/assets/custom-terms.csv"
+    },
+    {
+      "source": "assets/decision-report.md",
+      "destination": "skills/bertopic-tuning/assets/decision-report.md"
+    },
+    {
+      "source": "assets/evidence-log.csv",
+      "destination": "skills/bertopic-tuning/assets/evidence-log.csv"
+    },
+    {
+      "source": "assets/experiment-registry.csv",
+      "destination": "skills/bertopic-tuning/assets/experiment-registry.csv"
+    },
+    {
+      "source": "assets/human-topic-audit.csv",
+      "destination": "skills/bertopic-tuning/assets/human-topic-audit.csv"
+    },
+    {
+      "source": "assets/icon-large.png",
+      "destination": "skills/bertopic-tuning/assets/icon-large.png"
+    },
+    {
+      "source": "assets/icon-small.png",
+      "destination": "skills/bertopic-tuning/assets/icon-small.png"
+    },
+    {
+      "source": "assets/lexicon-candidate-audit.csv",
+      "destination": "skills/bertopic-tuning/assets/lexicon-candidate-audit.csv"
+    },
+    {
+      "source": "assets/lexicon-config.json",
+      "destination": "skills/bertopic-tuning/assets/lexicon-config.json"
+    },
+    {
+      "source": "assets/lexicon-lineage.csv",
+      "destination": "skills/bertopic-tuning/assets/lexicon-lineage.csv"
+    },
+    {
+      "source": "assets/missing-theme-audit.csv",
+      "destination": "skills/bertopic-tuning/assets/missing-theme-audit.csv"
+    },
+    {
+      "source": "assets/modeling-authorization.json",
+      "destination": "skills/bertopic-tuning/assets/modeling-authorization.json"
+    },
+    {
+      "source": "assets/representation-iteration.csv",
+      "destination": "skills/bertopic-tuning/assets/representation-iteration.csv"
+    },
+    {
+      "source": "assets/selected-model.json",
+      "destination": "skills/bertopic-tuning/assets/selected-model.json"
+    },
+    {
+      "source": "assets/semantic-review.json",
+      "destination": "skills/bertopic-tuning/assets/semantic-review.json"
+    },
+    {
+      "source": "assets/social-preview.png",
+      "destination": "skills/bertopic-tuning/assets/social-preview.png"
+    },
+    {
+      "source": "assets/stopwords.csv",
+      "destination": "skills/bertopic-tuning/assets/stopwords.csv"
+    },
+    {
+      "source": "assets/study-contract.json",
+      "destination": "skills/bertopic-tuning/assets/study-contract.json"
+    },
+    {
+      "source": "assets/synonyms.csv",
+      "destination": "skills/bertopic-tuning/assets/synonyms.csv"
+    },
+    {
+      "source": "assets/theme-candidate-audit.csv",
+      "destination": "skills/bertopic-tuning/assets/theme-candidate-audit.csv"
+    },
+    {
+      "source": "assets/theme-reconnaissance.json",
+      "destination": "skills/bertopic-tuning/assets/theme-reconnaissance.json"
+    },
+    {
+      "source": "assets/topic-catalog.csv",
+      "destination": "skills/bertopic-tuning/assets/topic-catalog.csv"
+    },
+    {
+      "source": "assets/topic-lineage.csv",
+      "destination": "skills/bertopic-tuning/assets/topic-lineage.csv"
+    },
+    {
+      "source": "assets/topic-pair-audit.csv",
+      "destination": "skills/bertopic-tuning/assets/topic-pair-audit.csv"
+    },
+    {
+      "source": "assets/tuning-trace.json",
+      "destination": "skills/bertopic-tuning/assets/tuning-trace.json"
+    },
+    {
+      "source": "assets/visualization-contract.json",
+      "destination": "skills/bertopic-tuning/assets/visualization-contract.json"
+    },
+    {
+      "source": "assets/visualization-manifest.json",
+      "destination": "skills/bertopic-tuning/assets/visualization-manifest.json"
+    },
+    {
+      "source": "references/academic-evidence.md",
+      "destination": "skills/bertopic-tuning/references/academic-evidence.md"
+    },
+    {
+      "source": "references/bertopic-implementation.md",
+      "destination": "skills/bertopic-tuning/references/bertopic-implementation.md"
+    },
+    {
+      "source": "references/corpus-theme-reconnaissance.md",
+      "destination": "skills/bertopic-tuning/references/corpus-theme-reconnaissance.md"
+    },
+    {
+      "source": "references/diversity-evaluation.md",
+      "destination": "skills/bertopic-tuning/references/diversity-evaluation.md"
+    },
+    {
+      "source": "references/iteration-and-lineage.md",
+      "destination": "skills/bertopic-tuning/references/iteration-and-lineage.md"
+    },
+    {
+      "source": "references/lexicon-management-and-iteration.md",
+      "destination": "skills/bertopic-tuning/references/lexicon-management-and-iteration.md"
+    },
+    {
+      "source": "references/long-document.md",
+      "destination": "skills/bertopic-tuning/references/long-document.md"
+    },
+    {
+      "source": "references/network-short-text.md",
+      "destination": "skills/bertopic-tuning/references/network-short-text.md"
+    },
+    {
+      "source": "references/publication-decision-report-sections.md",
+      "destination": "skills/bertopic-tuning/references/publication-decision-report-sections.md"
+    },
+    {
+      "source": "references/publication-release-workflow.md",
+      "destination": "skills/bertopic-tuning/references/publication-release-workflow.md"
+    },
+    {
+      "source": "references/repository-background-and-capabilities.md",
+      "destination": "skills/bertopic-tuning/references/repository-background-and-capabilities.md"
+    },
+    {
+      "source": "references/research-grade-visualization.md",
+      "destination": "skills/bertopic-tuning/references/research-grade-visualization.md"
+    },
+    {
+      "source": "references/scalable-corpus-reading.md",
+      "destination": "skills/bertopic-tuning/references/scalable-corpus-reading.md"
+    },
+    {
+      "source": "references/semantic-review-and-cumulative-tuning.md",
+      "destination": "skills/bertopic-tuning/references/semantic-review-and-cumulative-tuning.md"
+    },
+    {
+      "source": "references/study-contract-and-reporting.md",
+      "destination": "skills/bertopic-tuning/references/study-contract-and-reporting.md"
+    },
+    {
+      "source": "references/web-research-protocol.md",
+      "destination": "skills/bertopic-tuning/references/web-research-protocol.md"
+    },
+    {
+      "source": "scripts/align_snapshots.py",
+      "destination": "skills/bertopic-tuning/scripts/align_snapshots.py"
+    },
+    {
+      "source": "scripts/build_lexicon_bundle.py",
+      "destination": "skills/bertopic-tuning/scripts/build_lexicon_bundle.py"
+    },
+    {
+      "source": "scripts/build_semantic_review_queue.py",
+      "destination": "skills/bertopic-tuning/scripts/build_semantic_review_queue.py"
+    },
+    {
+      "source": "scripts/build_visualization_plan.py",
+      "destination": "skills/bertopic-tuning/scripts/build_visualization_plan.py"
+    },
+    {
+      "source": "scripts/evaluate_diversity.py",
+      "destination": "skills/bertopic-tuning/scripts/evaluate_diversity.py"
+    },
+    {
+      "source": "scripts/evaluate_representation_update.py",
+      "destination": "skills/bertopic-tuning/scripts/evaluate_representation_update.py"
+    },
+    {
+      "source": "scripts/lexicon_tools.py",
+      "destination": "skills/bertopic-tuning/scripts/lexicon_tools.py"
+    },
+    {
+      "source": "scripts/select_pareto.py",
+      "destination": "skills/bertopic-tuning/scripts/select_pareto.py"
+    },
+    {
+      "source": "scripts/validate_study_bundle.py",
+      "destination": "skills/bertopic-tuning/scripts/validate_study_bundle.py"
+    },
+    {
+      "source": "scripts/validate_theme_reconnaissance.py",
+      "destination": "skills/bertopic-tuning/scripts/validate_theme_reconnaissance.py"
+    },
+    {
+      "source": "scripts/validate_tuning_trace.py",
+      "destination": "skills/bertopic-tuning/scripts/validate_tuning_trace.py"
+    },
+    {
+      "source": "scripts/validate_visualization_bundle.py",
+      "destination": "skills/bertopic-tuning/scripts/validate_visualization_bundle.py"
+    },
+    {
+      "source": "scripts/workflow_policy.py",
+      "destination": "skills/bertopic-tuning/scripts/workflow_policy.py"
+    },
+    {
+      "source": "assets/icon-small.png",
+      "destination": "assets/icon-small.png"
+    },
+    {
+      "source": "assets/icon-large.png",
+      "destination": "assets/icon-large.png"
+    },
+    {
+      "source": "assets/social-preview.png",
+      "destination": "assets/social-preview.png"
+    }
+  ]
+}

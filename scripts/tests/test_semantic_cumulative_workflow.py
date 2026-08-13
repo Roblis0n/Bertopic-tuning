@@ -1,6 +1,7 @@
 import csv
 import importlib
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -607,6 +608,97 @@ class SemanticReviewTests(unittest.TestCase):
         self.assertIn("display_text", pair["evidence_units"][0])
         serialized = json.dumps(queue, ensure_ascii=False)
         self.assertNotIn('"semantic_verdict"', serialized)
+
+    def test_queue_cli_writes_lf_terminated_output_for_byte_stable_examples(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "topics.json").write_text(
+                json.dumps(
+                    {
+                        "topics": [
+                            {
+                                "topic_uid": "topic-a",
+                                "representative_unit_ids": ["u1"],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "units.csv").write_text(
+                "unit_id,display_text,source_id,duplicate_group_id\n"
+                "u1,Eligibility evidence,s1,d1\n",
+                encoding="utf-8",
+            )
+            (root / "assignments.csv").write_text(
+                "unit_id,topic_uid\nu1,topic-a\n",
+                encoding="utf-8",
+            )
+            (root / "scorecard.json").write_text("{}", encoding="utf-8")
+            output = root / "semantic-review-queue.json"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS_DIR / "build_semantic_review_queue.py"),
+                    "--topics",
+                    str(root / "topics.json"),
+                    "--units",
+                    str(root / "units.csv"),
+                    "--assignments",
+                    str(root / "assignments.csv"),
+                    "--scorecard",
+                    str(root / "scorecard.json"),
+                    "--candidate-id",
+                    "candidate-a",
+                    "--route",
+                    "network-short",
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            output_bytes = output.read_bytes()
+            self.assertNotIn(b"\r\n", output_bytes)
+            self.assertTrue(output_bytes.endswith(b"\n"))
+
+    def test_committed_quickstart_matches_expected_from_clean_output_path(self):
+        quickstart = SKILL_ROOT / "examples" / "quickstart"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "clean-output" / "semantic-review-queue.json"
+            self.assertFalse(output.parent.exists())
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS_DIR / "build_semantic_review_queue.py"),
+                    "--topics",
+                    str(quickstart / "inputs" / "topics.json"),
+                    "--units",
+                    str(quickstart / "inputs" / "units.csv"),
+                    "--assignments",
+                    str(quickstart / "inputs" / "assignments.csv"),
+                    "--scorecard",
+                    str(quickstart / "inputs" / "scorecard.json"),
+                    "--candidate-id",
+                    "candidate-semantic-test",
+                    "--route",
+                    "network-short",
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                output.read_bytes(),
+                (quickstart / "expected" / "semantic-review-queue.json").read_bytes(),
+            )
 
     def test_missing_evidence_id_fails(self):
         module = load_module("build_semantic_review_queue")

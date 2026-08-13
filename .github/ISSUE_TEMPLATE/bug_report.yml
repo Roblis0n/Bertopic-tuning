@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a reproducible defect in BERTopic Tuning's documented workflow or validators.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include sensitive corpora, participant data, credentials, or confidential artifacts. Use a synthetic or redacted fixture. For security vulnerabilities, use the private Security advisory form instead.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: State the defect and its impact.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: corpus_route
+    attributes:
+      label: Corpus route
+      options:
+        - network-short
+        - long-document
+        - mixed
+        - Not corpus-specific
+    validations:
+      required: true
+
+  - type: dropdown
+    id: assurance_level
+    attributes:
+      label: Assurance level
+      options:
+        - exploratory
+        - research
+        - publication_release
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_command
+    attributes:
+      label: Exact reproduction command
+      description: Include every argument and run it with UTF-8 enabled where relevant.
+      placeholder: python -X utf8 -B -m unittest discover -s scripts/tests -v
+    validations:
+      required: true
+
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal privacy-safe fixture
+      description: Attach or paste the smallest synthetic/redacted fixture that reproduces the behavior. Do not share sensitive corpus text.
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Python version and operating system
+      placeholder: Python 3.11.9 on Windows 11
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and complete non-sensitive output
+    validations:
+      required: true
