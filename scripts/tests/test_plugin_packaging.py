@@ -527,12 +527,17 @@ class PluginPackagingTests(unittest.TestCase):
         self.assertIn("/bertopic-tuning.zip", workflow)
         self.assertNotIn("bertopic-tuning-plugin", workflow)
 
-    def test_release_links_and_unreleased_notes_match_pre_release_state(self):
+    def test_release_links_and_changelog_match_v1_release(self):
         readme = (SKILL_ROOT / "README.md").read_text(encoding="utf-8")
         changelog = (SKILL_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-        self.assertNotIn("releases/tag/v1.0.0", readme)
         self.assertIn("releases/latest", readme)
         self.assertIn("/bertopic-tuning --archive", readme)
+        self.assertIn("## [1.0.0] - 2026-08-13", changelog)
+        self.assertIn(
+            "[1.0.0]: https://github.com/Roblis0n/Bertopic-tuning/releases/tag/v1.0.0",
+            changelog,
+        )
+        self.assertNotIn("The GitHub tag and release have not been published", changelog)
         self.assertIn("203+ standard-library", changelog)
         for phrase in ("standalone plugin", "Codex UI", "brand assets"):
             self.assertIn(phrase, changelog)
