@@ -1,4 +1,7 @@
 interface:
   display_name: "BERTopic Tuning"
-  short_description: "语义优先的BERTopic主题解释、模型比较、调参与词表治理"
-  default_prompt: "使用 $bertopic-tuning 对我的语料进行与用途相匹配的 BERTopic 建模、语义复核、模型比较、同义词/停用词/自定义词治理或研究交付。"
+  short_description: "语义优先的 BERTopic 调优、同义词治理、比较解释与研究交付"
+  icon_small: "./assets/icon-small.png"
+  icon_large: "./assets/icon-large.png"
+  brand_color: "#6D5CE7"
+  default_prompt: "Use $bertopic-tuning to tune and interpret my corpus with semantic review and reproducible evidence."

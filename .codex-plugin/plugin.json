@@ -1,0 +1,40 @@
+{
+  "name": "bertopic-tuning",
+  "version": "1.0.0",
+  "description": "Semantic-first BERTopic tuning, interpretation, and reproducible model selection.",
+  "author": {
+    "name": "Roblis0n",
+    "url": "https://github.com/Roblis0n"
+  },
+  "homepage": "https://github.com/Roblis0n/Bertopic-tuning",
+  "repository": "https://github.com/Roblis0n/Bertopic-tuning",
+  "license": "MIT",
+  "keywords": [
+    "bertopic",
+    "topic-modeling",
+    "semantic-review",
+    "research",
+    "reproducibility"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "BERTopic Tuning",
+    "shortDescription": "Semantic-first BERTopic tuning and review.",
+    "longDescription": "Tune, compare, interpret, and document one auditable BERTopic champion using original-text semantic review and reproducible evidence.",
+    "developerName": "Roblis0n",
+    "category": "Data Science",
+    "capabilities": [
+      "Analyze",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use $bertopic-tuning to tune and interpret my corpus with semantic review and reproducible evidence."
+    ],
+    "brandColor": "#6D5CE7",
+    "composerIcon": "./assets/icon-small.png",
+    "logo": "./assets/icon-large.png",
+    "screenshots": [
+      "./assets/social-preview.png"
+    ]
+  }
+}
