@@ -13,6 +13,8 @@ from lexicon_tools import compile_lexicon_bundle
 from build_semantic_review_queue import validate_semantic_review
 from select_pareto import select_pareto
 from validate_theme_reconnaissance import (
+    read_csv_table,
+    read_json,
     validate_reconnaissance_for_level,
     validate_theme_reconnaissance,
 )
@@ -232,24 +234,6 @@ EXPECTED_VISUALIZATION_POLICY = {
     "shared_document_coordinates_required": True,
     "topic_minus_one_visible": True,
 }
-
-
-def _read_json(path: Path, errors: list[str]) -> Any:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        errors.append(f"Cannot read valid JSON from {path.name}: {exc}")
-        return None
-
-
-def _read_table(path: Path, errors: list[str]) -> tuple[list[str], list[dict[str, str]]]:
-    try:
-        with path.open("r", encoding="utf-8-sig", newline="") as handle:
-            reader = csv.DictReader(handle)
-            return list(reader.fieldnames or []), list(reader)
-    except (OSError, csv.Error) as exc:
-        errors.append(f"Cannot read CSV {path.name}: {exc}")
-        return [], []
 
 
 def validate_visualization_policy(policy: Any) -> list[str]:
@@ -681,7 +665,7 @@ def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
     contract: dict[str, Any] | None = None
     contract_path = root / "study-contract.json"
     if contract_path.is_file():
-        loaded = _read_json(contract_path, errors)
+        loaded = read_json(contract_path, errors)
         if isinstance(loaded, dict):
             contract = loaded
             missing_fields = sorted(CONTRACT_FIELDS.difference(contract))
@@ -800,7 +784,7 @@ def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
     profile: dict[str, Any] = {}
     profile_path = root / "corpus-profile.json"
     if profile_path.is_file():
-        loaded = _read_json(profile_path, errors)
+        loaded = read_json(profile_path, errors)
         if isinstance(loaded, dict):
             profile = loaded
             missing_fields = sorted(CORPUS_PROFILE_FIELDS.difference(loaded))
@@ -816,7 +800,7 @@ def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
         path = root / name
         if not path.is_file():
             continue
-        header, rows = _read_table(path, errors)
+        header, rows = read_csv_table(path, errors)
         tables[name] = rows
         missing_columns = sorted(required_fields.difference(header))
         errors.extend(f"{name} lacks required column: {field}" for field in missing_columns)
@@ -898,7 +882,7 @@ def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
     lexicon_manifest: dict[str, Any] | None = None
     lexicon_manifest_path = root / "lexicon-manifest.json"
     if lexicon_manifest_path.is_file():
-        loaded = _read_json(lexicon_manifest_path, errors)
+        loaded = read_json(lexicon_manifest_path, errors)
         if isinstance(loaded, dict):
             lexicon_manifest = loaded
         elif loaded is not None:
@@ -934,7 +918,7 @@ def _validate_legacy_bundle(root: Path) -> dict[str, Any]:
     selected_model: dict[str, Any] | None = None
     selected_path = root / "selected-model.json"
     if selected_path.is_file():
-        loaded = _read_json(selected_path, errors)
+        loaded = read_json(selected_path, errors)
         if isinstance(loaded, dict):
             selected_model = loaded
             if not str(selected_model.get("candidate_id", "")).strip():
@@ -1006,7 +990,7 @@ def _read_required_json(
     path = root / name
     if not path.is_file():
         return {}
-    loaded = _read_json(path, errors)
+    loaded = read_json(path, errors)
     if loaded is None:
         return {}
     if not isinstance(loaded, dict):
@@ -1048,7 +1032,7 @@ def _validate_assurance_bundle(
     registry_rows: list[dict[str, str]] = []
     registry_path = root / "experiment-registry.csv"
     if registry_path.is_file():
-        registry_header, registry_rows = _read_table(registry_path, errors)
+        registry_header, registry_rows = read_csv_table(registry_path, errors)
         registry_required = {
             "candidate_id",
             "run_type",
@@ -1074,7 +1058,7 @@ def _validate_assurance_bundle(
     metric_rows: list[dict[str, str]] = []
     metrics_path = root / "candidate-metrics.csv"
     if metrics_path.is_file():
-        metrics_header, metric_rows = _read_table(metrics_path, errors)
+        metrics_header, metric_rows = read_csv_table(metrics_path, errors)
         metrics_required = {
             "candidate_id",
             "stage_id",
@@ -1110,7 +1094,7 @@ def _validate_assurance_bundle(
     required_topic_uids: set[str] = set()
     topic_catalog_path = root / "topic-catalog.csv"
     if topic_catalog_path.is_file():
-        _, topic_rows = _read_table(topic_catalog_path, errors)
+        _, topic_rows = read_csv_table(topic_catalog_path, errors)
         required_topic_uids = {
             str(row.get("topic_uid", "")).strip()
             for row in topic_rows

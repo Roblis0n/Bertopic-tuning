@@ -188,10 +188,6 @@
       "destination": "skills/bertopic-tuning/references/publication-release-workflow.md"
     },
     {
-      "source": "references/repository-background-and-capabilities.md",
-      "destination": "skills/bertopic-tuning/references/repository-background-and-capabilities.md"
-    },
-    {
       "source": "references/research-grade-visualization.md",
       "destination": "skills/bertopic-tuning/references/research-grade-visualization.md"
     },

@@ -60,10 +60,10 @@ ordinary research work must not call the publication-only approval validator.
 import json
 from pathlib import Path
 
-from scripts.validate_theme_reconnaissance import (
+from validate_theme_reconnaissance import (
     validate_reconnaissance_for_level,
 )
-from scripts.workflow_policy import resolve_assurance_level
+from workflow_policy import resolve_assurance_level
 
 
 def check_modeling_entry(bundle_dir):

@@ -1979,6 +1979,19 @@ class ThemeReconnaissanceValidationTests(unittest.TestCase):
                 any("decision_recorded_at" in error for error in result["errors"])
             )
 
+    def test_awaiting_fixture_reports_awaiting_gate(self):
+        root = (
+            Path(__file__).resolve().parent
+            / "fixtures"
+            / "theme-reconnaissance-awaiting"
+        )
+
+        result = validate_theme_reconnaissance(root)
+
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertEqual(result["gate_status"], "awaiting_user_direction")
+        self.assertEqual(result["authorization_id"], "")
+
     def test_cli_returns_zero_for_valid_waiting_preview(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

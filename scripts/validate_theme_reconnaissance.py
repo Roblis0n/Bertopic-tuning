@@ -204,7 +204,13 @@ def _contains_unsupported_prevalence_claim(value: str) -> bool:
     return not NEGATED_PREVALENCE_PATTERN.search(rendered)
 
 
-def _read_json(path: Path, errors: list[str]) -> Any:
+def read_json(path: Path, errors: list[str]) -> Any:
+    """Read a JSON artifact, appending a named error instead of raising.
+
+    Canonical copy shared with validate_study_bundle; keep the two
+    call sites on this implementation so error wording cannot drift.
+    """
+
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -212,9 +218,10 @@ def _read_json(path: Path, errors: list[str]) -> Any:
         return None
 
 
-def _read_candidates(
+def read_csv_table(
     path: Path, errors: list[str]
 ) -> tuple[list[str], list[dict[str, str]]]:
+    """Read a CSV artifact as (fieldnames, rows); shared with validate_study_bundle."""
     try:
         with path.open("r", encoding="utf-8-sig", newline="") as handle:
             reader = csv.DictReader(handle)
@@ -948,11 +955,11 @@ def validate_theme_reconnaissance(
     if errors:
         return result
 
-    profile = _read_json(root / "corpus-profile.json", errors)
-    reading_plan = _read_json(root / "corpus-reading-plan.json", errors)
-    reconnaissance = _read_json(root / "theme-reconnaissance.json", errors)
-    authorization = _read_json(root / "modeling-authorization.json", errors)
-    header, candidates = _read_candidates(
+    profile = read_json(root / "corpus-profile.json", errors)
+    reading_plan = read_json(root / "corpus-reading-plan.json", errors)
+    reconnaissance = read_json(root / "theme-reconnaissance.json", errors)
+    authorization = read_json(root / "modeling-authorization.json", errors)
+    header, candidates = read_csv_table(
         root / "theme-candidate-audit.csv", errors
     )
     if not all(
@@ -2211,7 +2218,7 @@ def validate_reconnaissance_for_level(
                 )
 
             reading_plan = (
-                _read_json(plan_path, errors) if plan_path.is_file() else None
+                read_json(plan_path, errors) if plan_path.is_file() else None
             )
             if reading_plan is not None and not isinstance(reading_plan, dict):
                 errors.append("corpus-reading-plan.json must contain a JSON object")
@@ -2289,7 +2296,7 @@ def validate_reconnaissance_for_level(
                     )
 
             if ledger_path.is_file():
-                header, rows = _read_candidates(ledger_path, errors)
+                header, rows = read_csv_table(ledger_path, errors)
                 for field in sorted(LEDGER_FIELDS.difference(header)):
                     errors.append(
                         "corpus-reading-ledger.csv lacks required column: "
